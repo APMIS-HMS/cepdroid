@@ -69,6 +69,10 @@ final class NetworkService {
         return dataResponse;
     }
 
+    /**
+     * Creates a new person and sends apmis id and password via sms to user to be used to login to the application
+     * @param uniquePerson
+     */
     public void signUp(JSONObject uniquePerson) {
 
         JsonObjectRequest strRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "save-person", uniquePerson, new Response.Listener<JSONObject>() {
@@ -87,6 +91,18 @@ final class NetworkService {
             }
         });
         queue.add(strRequest);
+    }
+
+    public void resetPassword () {
+
+    }
+
+    public String[] getGenders () {
+        return null;
+    }
+
+    public String[] getSecurityQuestions () {
+        return null;
     }
 
 }
