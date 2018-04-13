@@ -1,8 +1,15 @@
 package ng.apmis.apmismobile.data.database.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
+
 import java.util.Date;
 
+@Entity(tableName = "wallet", indices = {@Index("refCode"), @Index(value = "refCode")})
 public class Wallet {
+
+    private double balance;
+    private double ledgerBalance;
 
        /* balance: { type: Schema.Types.Number, default:0 },
         ledgerBalance: { type: Schema.Types.Number, default:0 },

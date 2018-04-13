@@ -17,9 +17,9 @@ import org.json.JSONObject;
  * This class handles all call to the network for every segment of the application
  */
 
-final class NetworkService {
+final class NetworkDataCalls {
 
-    private static final String TAG = NetworkService.class.getSimpleName();
+    private static final String TAG = NetworkDataCalls.class.getSimpleName();
 
     private static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
 
@@ -27,7 +27,7 @@ final class NetworkService {
     private Context context;
     RequestQueue queue;
 
-    NetworkService (Context context) {
+    NetworkDataCalls(Context context) {
         this.context = context;
         queue = Volley.newRequestQueue(context);
     }

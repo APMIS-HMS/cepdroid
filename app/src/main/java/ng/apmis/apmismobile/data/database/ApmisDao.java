@@ -2,6 +2,9 @@ package ng.apmis.apmismobile.data.database;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
@@ -17,6 +20,11 @@ import ng.apmis.apmismobile.data.database.model.PersonEntry;
 public interface ApmisDao {
 
     @Query("SELECT * FROM person")
-    LiveData<PersonEntry> getUser();
+    LiveData<PersonEntry> getUserData();
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertData(PersonEntry... personEntries);
+
+    @Query("DELETE FROM person")
+    void deleteOldData();
 }
