@@ -16,9 +16,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
     }
 }
 
@@ -34,7 +38,6 @@ dependencies {
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    compile 'com.google.code.gson:gson:2.8.2'
 
     // ViewModel and LiveData
     implementation "android.arch.lifecycle:extensions:1.1.1"
@@ -46,20 +49,23 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
     // Room (use 1.1.0-beta2 for latest beta)
-    implementation "android.arch.persistence.room:runtime:1.0.0"
+    compile "android.arch.persistence.room:runtime:1.0.0"
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
 
     // Paging
-    implementation "android.arch.paging:runtime:1.0.0-beta1"
+    compile "android.arch.paging:runtime:1.0.0-beta1"
 
     // Test helpers for LiveData
     testImplementation "android.arch.core:core-testing:1.1.1"
 
     // Test helpers for Room
     testImplementation "android.arch.persistence.room:testing:1.0.0"
-
     // Java8 support for Lifecycles
-    implementation "android.arch.lifecycle:common-java8:1.1.1"
+    compile "android.arch.lifecycle:common-java8:1.1.1"
+
+    // Lifecycles only (no ViewModel or LiveData)
+    compile "android.arch.lifecycle:runtime:1.1.1"
+    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
 
 }

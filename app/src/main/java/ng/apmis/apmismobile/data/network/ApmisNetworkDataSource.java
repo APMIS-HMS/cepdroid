@@ -80,6 +80,8 @@ public class ApmisNetworkDataSource {
 
     /**
      * Schedules a repeating job service which fetches the person information.
+     * This is scheduled after every login, say 10 secs interval
+     * Should not run at long intervals since the application session times out (like a banking app)
      */
     public void scheduleRecurringFetchPersonDataSync() {
         Driver driver = new GooglePlayDriver(mContext);

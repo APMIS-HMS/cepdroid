@@ -91,6 +91,7 @@ public class ApmisRepository {
     }
 
     //TODO consider condition to check before fetching data from server
+    //TODO If data equal to null and or if the time of last update is greater than 1 hour
     private boolean isFetchNeeded() {
         return true;
     }

@@ -6,6 +6,7 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.ApmisDatabase;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
+import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
 
 
 /**
@@ -34,6 +35,16 @@ public class InjectorUtils {
     public static ApmisNetworkDataSource provideNetworkData (Context context) {
         APMISAPP executorThreads = APMISAPP.getInstance();
         return ApmisNetworkDataSource.getsInstance(context, executorThreads);
+    }
+
+    /**
+     * Injects all dependencies to provide local data
+     * @param context
+     * @return
+     */
+    public static PersonFactory providePersonFactory (Context context) {
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new PersonFactory(apmisRepository);
     }
 
 }
