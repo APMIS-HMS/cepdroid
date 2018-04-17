@@ -1,9 +1,14 @@
 package ng.apmis.apmismobile;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -16,6 +21,12 @@ public class APMISAPP extends Activity{
     private final Executor diskIO;
     private final Executor mainThread;
     private final Executor networkIO;
+    private RequestQueue queue;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     private APMISAPP(Executor diskIO, Executor networkIO, Executor mainThread) {
         this.diskIO = diskIO;
@@ -33,6 +44,7 @@ public class APMISAPP extends Activity{
         }
         return sInstance;
     }
+
 
     public Executor diskIO() {
         return diskIO;
