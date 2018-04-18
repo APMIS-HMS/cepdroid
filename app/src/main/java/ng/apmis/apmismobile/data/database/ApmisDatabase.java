@@ -1,12 +1,20 @@
 package ng.apmis.apmismobile.data.database;
 
+import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
+
+import ng.apmis.apmismobile.data.database.model.Converters;
+import ng.apmis.apmismobile.data.database.model.PersonEntry;
 
 /**
  * This class takes care of creating the person database (ROOM)
  */
+
+@Database(entities = {PersonEntry.class}, version = 1)
+@TypeConverters({Converters.class})
 
 public abstract class ApmisDatabase extends RoomDatabase {
 

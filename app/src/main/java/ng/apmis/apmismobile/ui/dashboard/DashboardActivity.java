@@ -19,9 +19,11 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        PersonFactory personFactory = InjectorUtils.providePersonFactory(this);
+        PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this
+        );
         mPersonViewModel = ViewModelProviders.of(this, personFactory).get(PersonViewModel.class);
 
+        InjectorUtils.provideNetworkData(this).startPersonDataFetchService();
 
         //TODO Setup recycler view list and pass to recycler in observer
 

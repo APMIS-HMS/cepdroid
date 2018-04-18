@@ -1,9 +1,13 @@
 package ng.apmis.apmismobile.data.database.model;
 
+import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -12,7 +16,7 @@ import java.util.Date;
  * Person model has all details about the person (Patient)
  */
 
-@Entity(tableName = "person", indices = {@Index("personId"), @Index(value = {"personId"}, unique = true)})
+@Entity(tableName = "person", indices = {@Index(value = "apmisId", unique = true)})
 public class PersonEntry {
 
     @PrimaryKey(autoGenerate = true)
@@ -26,23 +30,27 @@ public class PersonEntry {
     private String securityQuestion;
     private String securityAnswer;
     private String primaryContactPhoneNo;
-    private String [] secondaryContactPhoneNo;
-    private Date dateOfBirth;
+    @Expose
+    private String secondaryContactPhoneNo;
+    private String dateOfBirth;
     private String email;
     private String otherNames;
     private String biometric; //Buffer according to web
-    private String[] personProfessions; //[personProfessionsSchema]
+    @Expose
+    private String personProfessions; //[personProfessionsSchema]
     private String nationality;
     private String stateOfOrigin;
     private String lgaOfOrigin;
     private String profileImageObject; //Store Image uri
     private String homeAddress;
     private String maritalStatus;
-    private String[] nextOfKin;
-    private Wallet wallet;
+    @Expose
+    private String nextOfKin;
+    @Expose
+    private String wallet;
 
     @Ignore
-    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String[] secondaryContactPhoneNo, Date dateOfBirth, String email, String otherNames, String biometric, String[] personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String[] nextOfKin, Wallet wallet) {
+    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
         this.apmisId = apmisId;
         this.title = title;
         this.firstName = firstName;
@@ -52,7 +60,7 @@ public class PersonEntry {
         this.securityQuestion = securityQuestion;
         this.securityAnswer = securityAnswer;
         this.primaryContactPhoneNo = primaryContactPhoneNo;
-        this.secondaryContactPhoneNo = secondaryContactPhoneNo;
+        this.secondaryContactPhoneNo = new Gson().toJson(secondaryContactPhoneNo);
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.otherNames = otherNames;
@@ -68,7 +76,7 @@ public class PersonEntry {
         this.wallet = wallet;
     }
 
-    public PersonEntry(int id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String[] secondaryContactPhoneNo, Date dateOfBirth, String email, String otherNames, String biometric, String[] personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String[] nextOfKin, Wallet wallet) {
+    public PersonEntry(int id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
         this.id = id;
         this.apmisId = apmisId;
         this.title = title;
@@ -175,19 +183,19 @@ public class PersonEntry {
         this.primaryContactPhoneNo = primaryContactPhoneNo;
     }
 
-    public String[] getSecondaryContactPhoneNo() {
+    public String getSecondaryContactPhoneNo() {
         return secondaryContactPhoneNo;
     }
 
-    public void setSecondaryContactPhoneNo(String[] secondaryContactPhoneNo) {
+    public void setSecondaryContactPhoneNo(String secondaryContactPhoneNo) {
         this.secondaryContactPhoneNo = secondaryContactPhoneNo;
     }
 
-    public Date getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -215,11 +223,11 @@ public class PersonEntry {
         this.biometric = biometric;
     }
 
-    public String[] getPersonProfessions() {
+    public String getPersonProfessions() {
         return personProfessions;
     }
 
-    public void setPersonProfessions(String[] personProfessions) {
+    public void setPersonProfessions(String personProfessions) {
         this.personProfessions = personProfessions;
     }
 
@@ -271,19 +279,19 @@ public class PersonEntry {
         this.maritalStatus = maritalStatus;
     }
 
-    public String[] getNextOfKin() {
+    public String getNextOfKin() {
         return nextOfKin;
     }
 
-    public void setNextOfKin(String[] nextOfKin) {
+    public void setNextOfKin(String nextOfKin) {
         this.nextOfKin = nextOfKin;
     }
 
-    public Wallet getWallet() {
+    public String getWallet() {
         return wallet;
     }
 
-    public void setWallet(Wallet wallet) {
+    public void setWallet(String wallet) {
         this.wallet = wallet;
     }
 
@@ -300,19 +308,19 @@ public class PersonEntry {
                 ", securityQuestion='" + securityQuestion + '\'' +
                 ", securityAnswer='" + securityAnswer + '\'' +
                 ", primaryContactPhoneNo='" + primaryContactPhoneNo + '\'' +
-                ", secondaryContactPhoneNo=" + Arrays.toString(secondaryContactPhoneNo) +
-                ", dateOfBirth=" + dateOfBirth +
+                ", secondaryContactPhoneNo=" + secondaryContactPhoneNo + '\'' +
+                ", dateOfBirth=" + dateOfBirth + '\'' +
                 ", email='" + email + '\'' +
                 ", otherNames='" + otherNames + '\'' +
                 ", biometric='" + biometric + '\'' +
-                ", personProfessions=" + Arrays.toString(personProfessions) +
+                ", personProfessions=" + personProfessions + '\'' +
                 ", nationality='" + nationality + '\'' +
                 ", stateOfOrigin='" + stateOfOrigin + '\'' +
                 ", lgaOfOrigin='" + lgaOfOrigin + '\'' +
                 ", profileImageObject='" + profileImageObject + '\'' +
                 ", homeAddress='" + homeAddress + '\'' +
                 ", maritalStatus='" + maritalStatus + '\'' +
-                ", nextOfKin=" + Arrays.toString(nextOfKin) +
+                ", nextOfKin=" + nextOfKin + '\'' +
                 ", wallet=" + wallet +
                 '}';
     }

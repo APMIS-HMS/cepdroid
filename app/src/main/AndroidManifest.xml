@@ -26,7 +26,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.signup.SignupActivity" />
-        <activity android:name=".ui.dashboard.DashboardActivity"></activity>
+        <activity android:name=".ui.dashboard.DashboardActivity" />
+
+        <service
+            android:name=".data.network.ApmisSyncIntentService"
+            android:enabled="true" />
     </application>
 
 </manifest>
