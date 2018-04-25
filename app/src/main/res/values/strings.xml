@@ -4,8 +4,11 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Apmis ID</string>
     <string name="prompt_password">Password</string>
+    <string name="phone_number">Phone Number</string>
     <string name="action_sign_in">Sign Up</string>
+    <string name="reset_password">Reset Password</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="password_instruction">We just need your APMIS ID and Phone Number and we will send you a reset link</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
