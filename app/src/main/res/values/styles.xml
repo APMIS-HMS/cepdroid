@@ -6,6 +6,16 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <style name="LoginTheme" parent="AppTheme">
+        <item name="colorAccent">#3D3D3D</item>
+        <item name="android:checked">@color/colorPrimary</item>
+    </style>
+
+    <style name="BackgroundTheme" parent="AppTheme">
+        <item name="android:background">#fff</item>
     </style>
 
 </resources>

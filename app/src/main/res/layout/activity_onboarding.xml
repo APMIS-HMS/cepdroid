@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_height="0dp"
+        android:layout_weight="15"
+        android:layout_width="match_parent" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        style="@style/BackgroundTheme"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/previous"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            app:srcCompat="@drawable/ic_keyboard_arrow_left_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/image_btn1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/image_btn2"
+            android:layout_centerVertical="true"/>
+
+        <ImageButton
+            android:id="@+id/image_btn2"
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"/>
+
+        <ImageButton
+            android:id="@+id/image_btn3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/image_btn2"
+            android:layout_centerVertical="true"/>
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#0071BC"
+            android:id="@+id/next"
+            app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp" />
+
+    </RelativeLayout>
+
+</LinearLayout>
