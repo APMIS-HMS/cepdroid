@@ -2,7 +2,11 @@ package ng.apmis.apmismobile.onboarding;
 
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -29,6 +33,12 @@ public class OnboardingActivity extends AppCompatActivity {
     ImageButton bottomDot3;
 
     FragmentManager fragmentManager;
+    private static final int NUM_PAGES = 3;
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +51,12 @@ public class OnboardingActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+        // Instantiate a ViewPager and a PagerAdapter.
+        mPager = (ViewPager) findViewById(R.id.container);
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+/*
         fragmentManager = getSupportFragmentManager();
 
         fragmentManager.beginTransaction()
@@ -49,17 +65,22 @@ public class OnboardingActivity extends AppCompatActivity {
                 .commit();
 
         previous.setVisibility(View.INVISIBLE);
-        bottomDot1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        bottomDot1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));*/
 
+/*
 
         previous.setOnClickListener((view) -> {
+            if (fragmentManager.getBackStackEntryCount() < 1) {
+                finish();
+            }
+
             if (fragmentManager.findFragmentById(R.id.container) instanceof MedicineOnboardingFragment) {
                 previous.setVisibility(View.INVISIBLE);
-                fragmentManager.popBackStack();
+                onBackPressed();
                 switchDots("med", 0);
             }
             if (fragmentManager.findFragmentById(R.id.container) instanceof AppointmentOnboardingFragment) {
-                fragmentManager.popBackStack();
+                onBackPressed();
                 switchDots("app", 0);
             }
         });
@@ -88,9 +109,22 @@ public class OnboardingActivity extends AppCompatActivity {
 
 
         });
-
+*/
 
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mPager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+        }
+    }
+
 
     //TODO add transition
     public void switchDots(String fragment, int direction) {
@@ -122,6 +156,31 @@ public class OnboardingActivity extends AppCompatActivity {
                 bottomDot2.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 bottomDot3.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
                 break;
+        }
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return new DoctorOnboardingFragment();
+                case 1:
+                    return new MedicineOnboardingFragment();
+                case 2:
+                    return new AppointmentOnboardingFragment();
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
         }
     }
 
