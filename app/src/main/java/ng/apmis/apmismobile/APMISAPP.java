@@ -13,7 +13,7 @@ import com.android.volley.toolbox.Volley;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class APMISAPP extends Activity{
+public class APMISAPP extends Activity {
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
