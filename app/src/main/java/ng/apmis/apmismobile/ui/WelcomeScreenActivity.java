@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 
 import ng.apmis.apmismobile.R;
@@ -15,7 +16,7 @@ import ng.apmis.apmismobile.onboarding.OnboardingActivity;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
 
-public class WelcomeScreenActivity extends AppCompatActivity{
+public class WelcomeScreenActivity extends AppCompatActivity {
 
     android.support.v7.app.ActionBar actionBar;
     SharedPreferencesManager prefs;
@@ -44,9 +45,9 @@ public class WelcomeScreenActivity extends AppCompatActivity{
 
                 } else {
                     if (prefs.isLoggedIn()) {
-                        //           launchHomeScreen(prefs.isLoggedIn());
+                        launchHomeScreen(prefs.isLoggedIn());
                     } else {
-                        //         launchHomeScreen(false);
+                        launchHomeScreen(false);
                     }
 
                 }
@@ -54,10 +55,9 @@ public class WelcomeScreenActivity extends AppCompatActivity{
         }
 
 
-
     }
 
-    public void launchHomeScreen (boolean isLoggedIn) {
+    public void launchHomeScreen(boolean isLoggedIn) {
         Toast.makeText(WelcomeScreenActivity.this, String.valueOf(isLoggedIn), Toast.LENGTH_SHORT).show();
         if (isLoggedIn) {
             prefs.setIsLoggedIn(isLoggedIn);

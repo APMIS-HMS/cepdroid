@@ -41,6 +41,15 @@
                 android:gravity="center"
                 android:text="Find and connect with doctors and health Experts on one tap" />
 
+            <Button
+                android:id="@+id/next_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:background="#4fcef2"
+                android:text="Next" />
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

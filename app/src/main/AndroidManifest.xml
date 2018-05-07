@@ -17,35 +17,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.WelcomeScreenActivity">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
-            android:theme="@style/LoginTheme" />
-        <activity
-            android:name=".ui.signup.SignupActivity"
-            android:theme="@style/BackgroundTheme" />
-        <activity android:name=".ui.dashboard.DashboardActivity">
+            android:theme="@style/BackgroundTheme"
+            android:label="@string/action_sign_in">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.signup.SignupActivity"
+            android:theme="@style/BackgroundTheme" />
+        <activity android:name=".ui.dashboard.DashboardActivity" />
 
         <service
             android:name=".data.network.ApmisSyncIntentService"
             android:enabled="true" />
 
         <activity
-            android:name=".onboarding.OnboardingActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:name=".onboarding.OnboardingActivity"/>
         <activity android:name=".ui.dashboard.view.ViewActivity" />
         <activity android:name=".ui.dashboard.buy.BuyActivity" />
         <activity android:name=".ui.dashboard.find.FindActivity" />
@@ -53,10 +47,9 @@
         <activity
             android:name=".ui.dashboard.ScrollingActivity"
             android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.dashboard.chat.ChatActivity" />
-        <activity android:name=".ui.dashboard.read.ReadActivity"></activity>
+        <activity android:name=".ui.dashboard.read.ReadActivity" />
     </application>
 
 </manifest>

@@ -20,7 +20,7 @@ import ng.apmis.apmismobile.ui.signup.SignupActivity;
 
 public class OnboardingActivity extends AppCompatActivity {
 
-    @BindView(R.id.previous)
+   /* @BindView(R.id.previous)
     ImageButton previous;
     @BindView(R.id.next)
     ImageButton next;
@@ -30,7 +30,7 @@ public class OnboardingActivity extends AppCompatActivity {
     @BindView(R.id.image_btn2)
     ImageButton bottomDot2;
     @BindView(R.id.image_btn3)
-    ImageButton bottomDot3;
+    ImageButton bottomDot3;*/
 
     FragmentManager fragmentManager;
     private static final int NUM_PAGES = 3;
@@ -47,6 +47,7 @@ public class OnboardingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         //new SharedPreferencesManager(this).setFirstTimeLaunch(false);
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
@@ -126,9 +127,13 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
+    public void onNextPressed() {
+        mPager.setCurrentItem(mPager.getCurrentItem() + 1);
+    }
+
 
     //TODO add transition
-    public void switchDots(String fragment, int direction) {
+    /*public void switchDots(String fragment, int direction) {
         switch (fragment) {
             case "doc":
                 if (direction == 1) {
@@ -158,7 +163,7 @@ public class OnboardingActivity extends AppCompatActivity {
                 bottomDot3.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
                 break;
         }
-    }
+    } */
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {

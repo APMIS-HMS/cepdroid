@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -14,7 +15,9 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
@@ -45,6 +48,7 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
+import ng.apmis.apmismobile.ui.signup.SignupActivity;
 
 /**
  * A login screen that offers login via apmisId/password.
@@ -55,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.password) TextInputEditText passwordEditText;
     @BindView(R.id.email_sign_in_button) Button submitButton;
     @BindView(R.id.remember_me) CheckBox rememberMe;
+    @BindView(R.id.create_account) TextView createAccount;
 
     private static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
     RequestQueue queue;
@@ -80,8 +85,10 @@ public class LoginActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         }
         if (actionBar != null) {
-            //actionBar.setCustomView();
-            actionBar.hide();
+            TextView tv = new TextView(this);
+            tv.setText("SIGN IN");
+            tv.setGravity(Gravity.CENTER);
+            actionBar.setCustomView(tv, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
         queue = Volley.newRequestQueue(this.getApplicationContext());
@@ -101,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        createAccount.setOnClickListener( (view) -> startActivity (new Intent(this, SignupActivity.class)) );
 
     }
 
