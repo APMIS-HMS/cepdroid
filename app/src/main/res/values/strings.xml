@@ -111,4 +111,6 @@
     <string name="action_settings">Settings</string>
 
 
+    <string name="apmis_id_placeholder">FO-11258</string>
+    <string name="password_placeholder">******</string>
 </resources>
