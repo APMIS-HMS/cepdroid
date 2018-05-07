@@ -121,6 +121,7 @@ public class OnboardingActivity extends AppCompatActivity {
             super.onBackPressed();
         } else {
             // Otherwise, select the previous step.
+            //TODO replicate this in reverse to achieve button clicks
             mPager.setCurrentItem(mPager.getCurrentItem() - 1);
         }
     }
