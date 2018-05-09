@@ -53,10 +53,11 @@
         <activity
             android:name=".ui.dashboard.ScrollingActivity"
             android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.dashboard.chat.ChatActivity" />
-        <activity android:name=".ui.dashboard.read.ReadActivity"></activity>
+        <activity android:name=".ui.dashboard.read.ReadActivity" />
+        <activity android:name=".ui.dashboard.find.Hospital_list" />
+        <activity android:name=".ui.dashboard.find.VisitActionsActivity"></activity>
     </application>
 
 </manifest>

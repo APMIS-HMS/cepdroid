@@ -19,14 +19,17 @@ public class ProfileActivity extends AppCompatActivity {
             "Settings"
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+
         LinearLayout parentLayout = new LinearLayout(this);
 
         ArrayAdapter<String> viewMenus = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, profileItems);
+
 
         ListView listView = new ListView(this);
 
@@ -37,8 +40,21 @@ public class ProfileActivity extends AppCompatActivity {
 
         parentLayout.addView(listView);
 
-        listView.setOnItemClickListener((parent, view, position, id) -> Toast.makeText(ProfileActivity.this, parent.getItemAtPosition(position).toString() , Toast.LENGTH_SHORT).show());
+
+
+
+        listView.setOnItemClickListener((parent, view, position, id) -> Toast.makeText(ProfileActivity.this, parent.getItemAtPosition(position).toString() , Toast.LENGTH_SHORT).show()
+
+ );
+
+
+
+
+
 
 
     }
+
+
+
 }

@@ -49,7 +49,7 @@ public class FindActivity extends AppCompatActivity {
     public void openView(String selected) {
         switch (selected.toLowerCase()) {
             case "hospital":
-                startActivity(new Intent(this, ViewActivity.class));
+                startActivity(new Intent(this, Hospital_list.class));
                 break;
             case "general practitioner":
                 startActivity(new Intent(this, BuyActivity.class));
