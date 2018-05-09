@@ -14,12 +14,14 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyActivity;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatActivity;
 import ng.apmis.apmismobile.ui.dashboard.find.FindActivity;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.ui.dashboard.read.ReadActivity;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewActivity;
+import ng.apmis.apmismobile.ui.login.LoginActivity;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -81,9 +83,12 @@ public class DashboardActivity extends AppCompatActivity {
         int menuId = item.getItemId();
         switch (menuId) {
             case R.id.profile:
-                Toast.makeText(this, "Profile was clicked", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, ProfileActivity.class));
                 break;
+            case R.id.sign_out:
+                new SharedPreferencesManager(this).storeLoggedInUserKeys("","","","");
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
         }
         return false;
     }

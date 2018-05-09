@@ -17,11 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.WelcomeScreenActivity">
-        </activity>
-        <activity
-            android:name=".ui.login.LoginActivity"
-            android:theme="@style/BackgroundTheme"
-            android:label="@string/action_sign_in">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,8 +25,13 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.login.LoginActivity"
+            android:label="@string/action_sign_in"
+            android:theme="@style/BackgroundTheme">
+        </activity>
+        <activity
             android:name=".ui.signup.SignupActivity"
-            android:theme="@style/BackgroundTheme" />
+            android:theme="@style/BackgroundTheme"/>
         <activity android:name=".ui.dashboard.DashboardActivity" />
 
         <service
@@ -39,7 +39,7 @@
             android:enabled="true" />
 
         <activity
-            android:name=".onboarding.OnboardingActivity"/>
+            android:name=".onboarding.OnboardingActivity" />
         <activity android:name=".ui.dashboard.view.ViewActivity" />
         <activity android:name=".ui.dashboard.buy.BuyActivity" />
         <activity android:name=".ui.dashboard.find.FindActivity" />

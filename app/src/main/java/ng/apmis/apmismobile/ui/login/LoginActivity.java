@@ -67,7 +67,6 @@ public class LoginActivity extends AppCompatActivity {
     boolean fieldsOk = false;
 
     SharedPreferencesManager sharedPreferencesManager;
-    android.support.v7.app.ActionBar actionBar;
     ProgressDialog progressDialog;
 
 
@@ -77,26 +76,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        actionBar = getSupportActionBar();
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        }
-        if (actionBar != null) {
-            TextView tv = new TextView(this);
-            tv.setText("SIGN IN");
-            tv.setGravity(Gravity.CENTER);
-            actionBar.setCustomView(tv, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
-
         queue = Volley.newRequestQueue(this.getApplicationContext());
 
         sharedPreferencesManager = new SharedPreferencesManager(this.getApplicationContext());
 
         submitButton.setOnClickListener((view) -> {
-            Toast.makeText(this, "Button Clicked", Toast.LENGTH_SHORT).show();
             checkFields();
         });
 
@@ -196,6 +180,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 progressDialog.dismiss();
                 startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+                finish();
             }, error -> {
                 Log.d("error", String.valueOf(error.getMessage()) + "Error");
                 progressDialog.dismiss();
