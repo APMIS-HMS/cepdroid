@@ -20,22 +20,12 @@ import ng.apmis.apmismobile.ui.signup.SignupActivity;
 
 public class OnboardingActivity extends AppCompatActivity {
 
-   /* @BindView(R.id.previous)
-    ImageButton previous;
-    @BindView(R.id.next)
-    ImageButton next;
-
-    @BindView(R.id.image_btn1)
-    ImageButton bottomDot1;
-    @BindView(R.id.image_btn2)
-    ImageButton bottomDot2;
-    @BindView(R.id.image_btn3)
-    ImageButton bottomDot3;*/
-
     FragmentManager fragmentManager;
     private static final int NUM_PAGES = 3;
-    private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
+
+    @BindView(R.id.container)
+    ViewPager mPager;
 
 
 
@@ -46,71 +36,16 @@ public class OnboardingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_onboarding);
         ButterKnife.bind(this);
 
-        //new SharedPreferencesManager(this).setFirstTimeLaunch(false);
+        new SharedPreferencesManager(this).setFirstTimeLaunch(false);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         // Instantiate a ViewPager and a PagerAdapter.
-        mPager = (ViewPager) findViewById(R.id.container);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
-/*
-        fragmentManager = getSupportFragmentManager();
-
-        fragmentManager.beginTransaction()
-                .add(R.id.container, new DoctorOnboardingFragment())
-                .addToBackStack(null)
-                .commit();
-
-        previous.setVisibility(View.INVISIBLE);
-        bottomDot1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));*/
-
-/*
-
-        previous.setOnClickListener((view) -> {
-            if (fragmentManager.getBackStackEntryCount() < 1) {
-                finish();
-            }
-
-            if (fragmentManager.findFragmentById(R.id.container) instanceof MedicineOnboardingFragment) {
-                previous.setVisibility(View.INVISIBLE);
-                onBackPressed();
-                switchDots("med", 0);
-            }
-            if (fragmentManager.findFragmentById(R.id.container) instanceof AppointmentOnboardingFragment) {
-                onBackPressed();
-                switchDots("app", 0);
-            }
-        });
-
-        next.setOnClickListener((view) -> {
-
-            if (fragmentManager.findFragmentById(R.id.container) instanceof DoctorOnboardingFragment) {
-                fragmentManager.beginTransaction()
-                        .add(R.id.container, new MedicineOnboardingFragment())
-                        .addToBackStack(null)
-                        .commit();
-                previous.setVisibility(View.VISIBLE);
-                switchDots("doc", 1);
-            }
-            if (fragmentManager.findFragmentById(R.id.container) instanceof MedicineOnboardingFragment) {
-                fragmentManager.beginTransaction()
-                        .add(R.id.container, new AppointmentOnboardingFragment())
-                        .addToBackStack(null)
-                        .commit();
-                switchDots("med", 1);
-            }
-            if (fragmentManager.findFragmentById(R.id.container) instanceof AppointmentOnboardingFragment) {
-                startActivity(new Intent(this, SignupActivity.class));
-                finish();
-            }
-
-
-        });
-*/
 
     }
 

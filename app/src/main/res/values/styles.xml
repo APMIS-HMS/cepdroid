@@ -14,8 +14,9 @@
         <item name="android:checked">@color/colorPrimary</item>
     </style>
 
-    <style name="BackgroundTheme" parent="AppTheme">
-        <item name="android:background">#fff</item>
+    <style name="BackgroundTheme" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">#fff</item>
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
