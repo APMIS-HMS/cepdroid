@@ -5,8 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -14,8 +13,8 @@ import ng.apmis.apmismobile.R;
 
 public class DoctorOnboardingFragment extends Fragment {
 
-    @BindView(R.id.next_btn)
-    Button nextBtn;
+    @BindView(R.id.next_tv)
+    TextView next;
 
 
     public DoctorOnboardingFragment() {
@@ -30,7 +29,7 @@ public class DoctorOnboardingFragment extends Fragment {
 
         ButterKnife.bind(this, rootView);
 
-        nextBtn.setOnClickListener((view) -> ((OnboardingActivity)getActivity()).onNextPressed());
+        next.setOnClickListener((view) -> ((OnboardingActivity)getActivity()).onNextPressed());
 
         return rootView;
     }

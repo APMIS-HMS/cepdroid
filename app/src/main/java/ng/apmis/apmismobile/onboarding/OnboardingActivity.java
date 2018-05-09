@@ -20,7 +20,6 @@ import ng.apmis.apmismobile.ui.signup.SignupActivity;
 
 public class OnboardingActivity extends AppCompatActivity {
 
-    FragmentManager fragmentManager;
     private static final int NUM_PAGES = 3;
     private PagerAdapter mPagerAdapter;
 
@@ -42,7 +41,6 @@ public class OnboardingActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        // Instantiate a ViewPager and a PagerAdapter.
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
@@ -52,12 +50,8 @@ public class OnboardingActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (mPager.getCurrentItem() == 0) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed();
         } else {
-            // Otherwise, select the previous step.
-            //TODO replicate this in reverse to achieve button clicks
             mPager.setCurrentItem(mPager.getCurrentItem() - 1);
         }
     }

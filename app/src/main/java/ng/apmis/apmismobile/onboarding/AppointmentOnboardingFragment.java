@@ -6,18 +6,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.ui.signup.SignupActivity;
+import ng.apmis.apmismobile.ui.login.LoginActivity;
 
 public class AppointmentOnboardingFragment extends Fragment {
 
-    @BindView(R.id.finish_btn)
-    Button finishBtn;
-    @BindView(R.id.previous_btn) Button previousBtn;
+    @BindView(R.id.finish_tv)
+    TextView finish;
+    @BindView(R.id.skip_tv) TextView skip;
 
     public AppointmentOnboardingFragment() {
         // Required empty public constructor
@@ -32,10 +32,13 @@ public class AppointmentOnboardingFragment extends Fragment {
 
         ButterKnife.bind(this, rootView);
 
-        previousBtn.setOnClickListener((view) -> getActivity().onBackPressed());
+        skip.setOnClickListener((view) -> {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
+    });
 
-        finishBtn.setOnClickListener((view) -> {
-            startActivity(new Intent(getActivity(), SignupActivity.class));
+        finish.setOnClickListener((view) -> {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();
         });
 

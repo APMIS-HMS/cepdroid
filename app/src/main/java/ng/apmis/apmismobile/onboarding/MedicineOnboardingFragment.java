@@ -1,7 +1,6 @@
 package ng.apmis.apmismobile.onboarding;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,18 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.ui.login.LoginActivity;
 
 public class MedicineOnboardingFragment extends Fragment {
 
-    @BindView(R.id.previous_btn)
-    Button previous;
-    @BindView(R.id.next_btn)
-    Button nextBtn;
+    @BindView(R.id.skip_tv)
+    TextView skip;
+    @BindView(R.id.next_tv)
+    TextView nextBtn;
 
     public MedicineOnboardingFragment() {
         // Required empty public constructor
@@ -35,7 +34,10 @@ public class MedicineOnboardingFragment extends Fragment {
 
         ButterKnife.bind(this, rootView);
 
-        previous.setOnClickListener((view) -> getActivity().onBackPressed());
+        skip.setOnClickListener((view) -> {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
+        });
 
         nextBtn.setOnClickListener((view) -> ((OnboardingActivity)getActivity()).onNextPressed());
 

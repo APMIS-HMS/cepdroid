@@ -20,26 +20,23 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/action_sign_in"
-            android:theme="@style/BackgroundTheme">
-        </activity>
+            android:theme="@style/BackgroundTheme"/>
         <activity
             android:name=".ui.signup.SignupActivity"
-            android:theme="@style/BackgroundTheme"/>
+            android:theme="@style/BackgroundTheme" />
         <activity android:name=".ui.dashboard.DashboardActivity" />
 
         <service
             android:name=".data.network.ApmisSyncIntentService"
             android:enabled="true" />
 
-        <activity
-            android:name=".onboarding.OnboardingActivity" />
+        <activity android:name=".onboarding.OnboardingActivity" />
         <activity android:name=".ui.dashboard.view.ViewActivity" />
         <activity android:name=".ui.dashboard.buy.BuyActivity" />
         <activity android:name=".ui.dashboard.find.FindActivity" />
@@ -50,6 +47,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.dashboard.chat.ChatActivity" />
         <activity android:name=".ui.dashboard.read.ReadActivity" />
+        <activity android:name=".ui.login.ForgotPasswordActivity"
+            android:theme="@style/BackgroundTheme"/>
     </application>
 
 </manifest>

@@ -213,5 +213,8 @@ public class LoginActivity extends AppCompatActivity {
         return !TextUtils.isEmpty(password);
     }
 
+    public void forgotPassword(View view) {
+        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
+    }
 }
 

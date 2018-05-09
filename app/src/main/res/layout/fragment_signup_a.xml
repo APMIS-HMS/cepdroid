@@ -4,207 +4,166 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ui.signup.SignupActivity">
 
-        <ScrollView
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_horizontal_margin"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
 
-
-            <LinearLayout
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="12dp">
 
-                <RelativeLayout
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/title_et"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp">
-
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/title_et"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/edittext_background"
-                            android:hint="Title"
-                            android:inputType="text"
-                            android:maxLines="1"
-                            android:paddingLeft="24dp"
-                            android:singleLine="true"
-                            android:focusable="true"/>
+                    android:layout_height="60dp"
+                    android:background="@drawable/edittext_background"
+                    android:focusable="true"
+                    android:hint="Title"
+                    android:inputType="textCapSentences"
+                    android:imeOptions="actionNext"
+                    android:maxLines="1"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:singleLine="true" />
 
 
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-                </RelativeLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
 
-                <RelativeLayout
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/firstname_et"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp">
-
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/firstname_et"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/edittext_background"
-                            android:hint="Firstname"
-                            android:imeActionLabel="@string/action_sign_in_short"
-                            android:imeOptions="actionUnspecified"
-                            android:inputType="textPersonName"
-                            android:maxLines="1"
-                            android:paddingLeft="24dp"
-                            android:singleLine="true" />
+                    android:layout_height="60dp"
+                    android:background="@drawable/edittext_background"
+                    android:hint="Firstname"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapSentences"
+                    android:maxLines="1"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:singleLine="true" />
 
 
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-                </RelativeLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
 
-
-                <RelativeLayout
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/lastname_et"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp">
-
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/lastname_et"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/edittext_background"
-                            android:hint="Lastname"
-                            android:imeActionLabel="@string/action_sign_in_short"
-                            android:imeOptions="actionUnspecified"
-                            android:inputType="textPersonName"
-                            android:maxLines="1"
-                            android:paddingLeft="24dp"
-                            android:singleLine="true" />
+                    android:layout_height="60dp"
+                    android:background="@drawable/edittext_background"
+                    android:hint="Lastname"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapSentences"
+                    android:maxLines="1"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:singleLine="true" />
 
 
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-                </RelativeLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
 
-
-                <RelativeLayout
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/mothers_maiden_name_et"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp">
-
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/mothers_maiden_name_et"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/edittext_background"
-                            android:hint="Mother's Maiden Name"
-                            android:imeActionLabel="@string/action_sign_in_short"
-                            android:imeOptions="actionUnspecified"
-                            android:inputType="textPersonName"
-                            android:maxLines="1"
-                            android:paddingLeft="24dp"
-                            android:singleLine="true" />
+                    android:layout_height="60dp"
+                    android:background="@drawable/edittext_background"
+                    android:hint="Mother's Maiden Name"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapSentences"
+                    android:maxLines="1"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:singleLine="true" />
 
 
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-                </RelativeLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
 
-                <RelativeLayout
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/phone_number_et"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp">
-
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/phone_number_et"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/edittext_background"
-                            android:hint="Phone"
-                            android:imeActionLabel="@string/action_sign_in_short"
-                            android:imeOptions="actionUnspecified"
-                            android:inputType="number"
-                            android:maxLines="1"
-                            android:paddingLeft="24dp"
-                            android:singleLine="true" />
+                    android:layout_height="60dp"
+                    android:background="@drawable/edittext_background"
+                    android:hint="Phone"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:singleLine="true" />
 
 
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-                </RelativeLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
 
-
-
-                <RelativeLayout
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/dob"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-
-                        <android.support.design.widget.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="80dp">
-
-                            <android.support.design.widget.TextInputEditText
-                                android:id="@+id/dob"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/edittext_background"
-                                android:hint="Date of Birth"
-                                android:imeActionLabel="@string/action_sign_in_short"
-                                android:imeOptions="actionUnspecified"
-                                android:inputType="textPersonName"
-                                android:maxLines="1"
-                                android:paddingLeft="24dp"
-                                android:singleLine="true" />
+                    android:layout_height="60dp"
+                    android:background="@drawable/edittext_background"
+                    android:hint="Date of Birth"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionNext"
+                    android:inputType="date"
+                    android:maxLines="1"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:singleLine="true" />
 
 
-                        </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
+            <Button
+                android:id="@+id/continue_btn"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/gradient"
+                android:text="Continue  ->"
+                android:textColor="#fff"
+                android:textStyle="bold" />
 
+        </LinearLayout>
 
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-                <Button
-                    android:id="@+id/continue_btn"
-                    style="?android:textAppearanceSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/gradient"
-                    android:text="Continue ->"
-                    android:textColor="#fff"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-        </ScrollView>
-
-
+    </ScrollView>
 
 
 </LinearLayout>

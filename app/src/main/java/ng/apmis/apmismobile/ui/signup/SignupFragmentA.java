@@ -11,10 +11,12 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -60,7 +62,8 @@ public class SignupFragmentA extends Fragment implements View.OnTouchListener {
 
     private OnFragmentInteractionListener mListener;
 
-    public SignupFragmentA() {}
+    public SignupFragmentA() {
+    }
 
 
     @Override
@@ -83,19 +86,25 @@ public class SignupFragmentA extends Fragment implements View.OnTouchListener {
 
         dob.setOnTouchListener(this);
 
+        dob.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                mListener.clickContinue(continueBtn);
+                return true;
+            }
+            return false;
+        });
+
         return rootView;
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        switch (view.getId()) {
-            case R.id.dob:
-                dialogfragment = new DatePicker();
-                dialogfragment.show(getActivity().getFragmentManager(), "Select Date");
-                return true;
-            default:
-                return false;
+        if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            dialogfragment = new DatePicker();
+            dialogfragment.show(getActivity().getFragmentManager(), "Select Date");
+            return true;
         }
+        return false;
     }
 
 
@@ -119,7 +128,7 @@ public class SignupFragmentA extends Fragment implements View.OnTouchListener {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         //void onFragmentInteraction(Uri uri);
-        void clickContinue (View view);
+        void clickContinue(View view);
     }
 
     public static class DatePicker extends DialogFragment implements DatePickerDialog.OnDateSetListener {
@@ -180,12 +189,12 @@ public class SignupFragmentA extends Fragment implements View.OnTouchListener {
         }
 
         if (checks) {
-            ((SignupActivity)getActivity()).personObject.put("title", titleEt.getText().toString());
-            ((SignupActivity)getActivity()).personObject.put("firstName", firstnameEt.getText().toString());
-            ((SignupActivity)getActivity()).personObject.put("lastName", lastnameEt.getText().toString());
-            ((SignupActivity)getActivity()).personObject.put("motherMaidenName", mothersMaidenEt.getText().toString());
-            ((SignupActivity)getActivity()).personObject.put("primaryContactPhoneNo", phoneNumberEt.getText().toString());
-            ((SignupActivity)getActivity()).personObject.put("dateOfBirth", dateOfBirth);
+            ((SignupActivity) getActivity()).personObject.put("title", titleEt.getText().toString());
+            ((SignupActivity) getActivity()).personObject.put("firstName", firstnameEt.getText().toString());
+            ((SignupActivity) getActivity()).personObject.put("lastName", lastnameEt.getText().toString());
+            ((SignupActivity) getActivity()).personObject.put("motherMaidenName", mothersMaidenEt.getText().toString());
+            ((SignupActivity) getActivity()).personObject.put("primaryContactPhoneNo", phoneNumberEt.getText().toString());
+            ((SignupActivity) getActivity()).personObject.put("dateOfBirth", dateOfBirth);
             return checks;
         }
 

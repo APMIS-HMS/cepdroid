@@ -115,15 +115,16 @@
 
 
     <string name="apmis_id_placeholder">APMIS ID</string>
-    <string name="password_placeholder">Password</string>
+    <string name="password_placeholder">PASSWORD</string>
     <string name="security_questions">security-questions</string>
     <string name="genders">genders</string>
     <string name="input_error">Check field</string>
     <string name="security_answer">Security Answer</string>
     <string name="sign_out">Sign out</string>
+    <string name="loading">Loading ...</string>
 
     <string-array name="select">
-        <item>Select</item>
+        <item>@string/loading</item>
     </string-array>
 
 </resources>

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -58,6 +59,14 @@ public class SignupFragmentB extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        });
+
+        securityAnswerEt.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                mListener.clickSignup(signupBtn);
+                return true;
+            }
+            return false;
         });
 
         ((SignupActivity)getActivity()).getGenderOrSecurityQuestions(getString(R.string.genders), genderSpinner);

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -117,9 +118,19 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (spinnerType.equals(getString(R.string.security_questions))) {
-                    securityQuestionString = adapterView.getItemAtPosition(i).toString();
+                    String selectedString = adapterView.getItemAtPosition(i).toString();
+                    if (TextUtils.isEmpty(selectedString)) {
+                        securityQuestionString = selectedString;
+                    }else {
+                        securityQuestionString = "";
+                    }
                 } else {
-                    genderString = adapterView.getItemAtPosition(i).toString();
+                    String selectedString = adapterView.getItemAtPosition(i).toString();
+                    if (TextUtils.isEmpty(selectedString)) {
+                        genderString = selectedString;
+                    } else {
+                        genderString = "";
+                    }
                 }
             }
 
@@ -131,46 +142,31 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
     }
 
     void getGenderOrSecurityQuestions(final String urlPath, Spinner spinner) {
-        StringRequest any = new StringRequest(Request.Method.GET, BASE_URL + urlPath, new com.android.volley.Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject responseObj = new JSONObject(response.toString());
-                    JSONArray jar = responseObj.getJSONArray("data");
-                    if (urlPath.equals(getString(R.string.genders))) {
-                        final String[] gendersArray = new String[jar.length()];
-                        for (int i = 0; i < jar.length(); i++) {
-                            gendersArray[i] = jar.getJSONObject(i).getString("name");
-                        }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setupSpinnerAdapters(gendersArray, spinner);
-                            }
-                        });
+        StringRequest any = new StringRequest(Request.Method.GET, BASE_URL + urlPath, response -> {
+            try {
+                JSONObject responseObj = new JSONObject(response.toString());
+                JSONArray jar = responseObj.getJSONArray("data");
+                if (urlPath.equals(getString(R.string.genders))) {
+                    final String[] gendersArray = new String[jar.length()];
+                    for (int i = 0; i < jar.length(); i++) {
+                        gendersArray[i] = jar.getJSONObject(i).getString("name");
                     }
-                    if (urlPath.equals(getString(R.string.security_questions))) {
-                        final String[] securityQuestionsArray = new String[jar.length()];
-                        for (int i = 0; i < jar.length(); i++) {
-                            securityQuestionsArray[i] = jar.getJSONObject(i).getString("name");
-                        }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setupSpinnerAdapters(securityQuestionsArray, spinner);
-                            }
-                        });
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    runOnUiThread(() -> setupSpinnerAdapters(gendersArray, spinner));
                 }
+                if (urlPath.equals(getString(R.string.security_questions))) {
+                    final String[] securityQuestionsArray = new String[jar.length()];
+                    for (int i = 0; i < jar.length(); i++) {
+                        securityQuestionsArray[i] = jar.getJSONObject(i).getString("name");
+                    }
+                    runOnUiThread(() -> setupSpinnerAdapters(securityQuestionsArray, spinner));
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("Volley Error", String.valueOf(error));
-            }
+        }, error -> {
+            Log.d("Volley Error", String.valueOf(error));
+            getGenderOrSecurityQuestions(urlPath, spinner);
         });
 
         queue.add(any);
@@ -178,21 +174,15 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
 
     void signUp(JSONObject uniquePerson) {
 
-        JsonObjectRequest strRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "save-person", uniquePerson, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                progressDialog.dismiss();
-                Log.v("Sign up response", String.valueOf(response));
-                startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-                finish();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
-                Log.v("SIgn up error", String.valueOf(error));
-                Toast.makeText(SignupActivity.this, "There was an error try again", Toast.LENGTH_SHORT).show();
-            }
+        JsonObjectRequest strRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "save-person", uniquePerson, response -> {
+            progressDialog.dismiss();
+            Log.v("Sign up response", String.valueOf(response));
+            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+            finish();
+        }, error -> {
+            progressDialog.dismiss();
+            Log.v("SIgn up error", String.valueOf(error));
+            Toast.makeText(SignupActivity.this, "There was an error try again", Toast.LENGTH_SHORT).show();
         });
         queue.add(strRequest);
     }

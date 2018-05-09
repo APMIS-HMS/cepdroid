@@ -10,12 +10,10 @@
     </style>
 
     <style name="LoginTheme" parent="AppTheme">
-        <item name="colorAccent">#3D3D3D</item>
         <item name="android:checked">@color/colorPrimary</item>
     </style>
 
     <style name="BackgroundTheme" parent="AppTheme.NoActionBar">
-        <item name="colorPrimary">#fff</item>
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
