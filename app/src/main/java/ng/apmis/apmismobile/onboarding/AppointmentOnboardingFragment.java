@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -18,6 +19,8 @@ public class AppointmentOnboardingFragment extends Fragment {
     @BindView(R.id.finish_tv)
     TextView finish;
     @BindView(R.id.skip_tv) TextView skip;
+    @BindView(R.id.selected)
+    ImageButton selected;
 
     public AppointmentOnboardingFragment() {
         // Required empty public constructor
@@ -36,6 +39,8 @@ public class AppointmentOnboardingFragment extends Fragment {
             startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();
     });
+
+        selected.setBackgroundResource(R.drawable.imagebutton_background_colored);
 
         finish.setOnClickListener((view) -> {
             startActivity(new Intent(getActivity(), LoginActivity.class));

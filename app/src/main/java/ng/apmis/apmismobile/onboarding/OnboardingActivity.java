@@ -1,6 +1,7 @@
 package ng.apmis.apmismobile.onboarding;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +10,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Transition;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -18,15 +20,18 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.signup.SignupActivity;
 
+import static android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE;
+
 public class OnboardingActivity extends AppCompatActivity {
 
     private static final int NUM_PAGES = 3;
-    private PagerAdapter mPagerAdapter;
 
     @BindView(R.id.container)
     ViewPager mPager;
 
 
+    private static final float MIN_SCALE = 0.85f;
+    private static final float MIN_ALPHA = 0.5f;
 
 
     @Override
@@ -41,8 +46,46 @@ public class OnboardingActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+
+        PagerAdapter mPagerAdapter;
+
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
+        mPager.setPageTransformer(true, (page, position) -> {
+
+            int pageWidth = page.getWidth();
+            int pageHeight = page.getHeight();
+
+            if (position < -1) { // [-Infinity,-1)
+                // This page is way off-screen to the left.
+                page.setAlpha(0);
+
+            } else if (position <= 1) { // [-1,1]
+                // Modify the default slide transition to shrink the page as well
+                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
+                float vertMargin = pageHeight * (1 - scaleFactor) / 2;
+                float horzMargin = pageWidth * (1 - scaleFactor) / 2;
+                if (position < 0) {
+                    page.setTranslationX(horzMargin - vertMargin / 2);
+                } else {
+                    page.setTranslationX(-horzMargin + vertMargin / 2);
+                }
+
+                // Scale the page down (between MIN_SCALE and 1)
+                page.setScaleX(scaleFactor);
+                page.setScaleY(scaleFactor);
+
+                // Fade the page relative to its size.
+                page.setAlpha(MIN_ALPHA +
+                        (scaleFactor - MIN_SCALE) /
+                                (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+
+            } else { // (1,+Infinity]
+                // This page is way off-screen to the right.
+                page.setAlpha(0);
+            }
+        }
+    );
 
 
     }
@@ -60,41 +103,8 @@ public class OnboardingActivity extends AppCompatActivity {
         mPager.setCurrentItem(mPager.getCurrentItem() + 1);
     }
 
-
-    //TODO add transition
-    /*public void switchDots(String fragment, int direction) {
-        switch (fragment) {
-            case "doc":
-                if (direction == 1) {
-                    bottomDot1.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                    bottomDot2.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    bottomDot3.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                } else {
-                    bottomDot1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    bottomDot2.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                    bottomDot3.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                }
-                break;
-            case "med":
-                if (direction == 1) {
-                    bottomDot1.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                    bottomDot2.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                    bottomDot3.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                } else {
-                    bottomDot1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    bottomDot2.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                    bottomDot3.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                }
-                break;
-            case "app":
-                bottomDot1.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                bottomDot2.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                bottomDot3.setBackgroundColor(getResources().getColor(R.color.cardview_dark_background));
-                break;
-        }
-    } */
-
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }

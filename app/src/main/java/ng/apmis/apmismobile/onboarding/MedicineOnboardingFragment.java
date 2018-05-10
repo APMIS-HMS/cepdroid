@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -20,6 +21,9 @@ public class MedicineOnboardingFragment extends Fragment {
     TextView skip;
     @BindView(R.id.next_tv)
     TextView nextBtn;
+
+    @BindView(R.id.selected)
+    ImageButton selected;
 
     public MedicineOnboardingFragment() {
         // Required empty public constructor
@@ -38,6 +42,8 @@ public class MedicineOnboardingFragment extends Fragment {
             startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();
         });
+
+        selected.setBackgroundResource(R.drawable.imagebutton_background_colored);
 
         nextBtn.setOnClickListener((view) -> ((OnboardingActivity)getActivity()).onNextPressed());
 

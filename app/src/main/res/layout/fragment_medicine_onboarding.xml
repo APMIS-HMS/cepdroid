@@ -26,12 +26,12 @@
 
             <TextView
                 android:id="@+id/heading"
-                style="@style/Base.TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
-                android:text="MEDICINE" />
+                android:textSize="20dp"
+                android:text="MEDICATION" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -39,7 +39,7 @@
                 android:layout_below="@id/heading"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
-                android:text="All prescibed drugs can be bought from here" />
+                android:text="Get access to your prescriptions and medications on the go" />
 
             <TextView
                 android:id="@+id/skip_tv"
@@ -54,20 +54,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true">
+                android:layout_centerHorizontal="true"
+                android:gravity="center_vertical">
 
                 <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/imagebutton_background_normal"/>
 
                 <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/edittext_background"/>
+                    android:id="@+id/selected"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_margin="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/imagebutton_background_colored"
+                    android:tintMode="@color/colorPrimary"
+                    />
 
                 <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/imagebutton_background_normal"/>
 
             </LinearLayout>
 

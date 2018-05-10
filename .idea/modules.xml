@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\ainoj\Documents\Apmis\apmismobile\apmis-mobile.iml" filepath="C:\Users\ainoj\Documents\Apmis\apmismobile\apmis-mobile.iml" />
+      <module fileurl="file://C:/Users/ainoj/Documents/Apmis/apmismobile/apmis-mobile.iml" filepath="C:/Users/ainoj/Documents/Apmis/apmismobile/apmis-mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/apmismobile.iml" filepath="$PROJECT_DIR$/apmismobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
