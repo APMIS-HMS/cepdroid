@@ -8,7 +8,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.ui.dashboard.view.ViewActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 

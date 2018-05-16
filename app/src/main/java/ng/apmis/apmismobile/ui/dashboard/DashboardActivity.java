@@ -3,45 +3,55 @@ package ng.apmis.apmismobile.ui.dashboard;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
-import ng.apmis.apmismobile.ui.dashboard.buy.BuyActivity;
-import ng.apmis.apmismobile.ui.dashboard.chat.ChatActivity;
-import ng.apmis.apmismobile.ui.dashboard.find.FindActivity;
+import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
+import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
+import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
-import ng.apmis.apmismobile.ui.dashboard.read.ReadActivity;
-import ng.apmis.apmismobile.ui.dashboard.view.ViewActivity;
+import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
+import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
+import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    @BindView(R.id.listview)
-    ListView listView;
     PersonViewModel mPersonViewModel;
 
-    String [] modules = new String[] {
-            "VIEW",
-            "BUY",
-            "FIND",
-            "READ",
-            "CHAT"
-    };
+    @BindView(R.id.navigation)
+    BottomNavigationView mBottomNav;
+    @BindView(R.id.toolbar_title_tv)
+    TextView toolBarTitleTv;
+    @BindView(R.id.back_btn)
+    ImageView backButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         ButterKnife.bind(this);
+
+        mBottomNav.setOnNavigationItemSelectedListener(item -> {
+            selectFragment(item);
+            return true;
+        });
+        BottomNavigationViewHelper.disableShiftMode(mBottomNav);
 
       /*  PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this
         );
@@ -61,15 +71,51 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });*/
 
-        ArrayAdapter<String> dbAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, modules);
+     getSupportFragmentManager().beginTransaction()
+             .add(R.id.fragment_container, new DashboardFragment())
+             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+             .commit();
 
-        listView.setAdapter(dbAdapter);
 
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-                    Toast.makeText(DashboardActivity.this, parent.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show();
-                    openView(parent.getItemAtPosition(position).toString());
-                }
-        );
+    }
+
+    public void setToolBarTitle (String title, boolean welcomeScreen) {
+        toolBarTitleTv.setText(title);
+        if (welcomeScreen) {
+            backButton.setVisibility(View.GONE);
+        } else {
+            backButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void selectFragment(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.view_menu:
+                placeFragment(new ViewFragment());
+                break;
+            case R.id.buy_menu:
+                placeFragment(new BuyFragment());
+                break;
+            case R.id.chat_menu:
+                placeFragment(new ChatFragment());
+                break;
+            case R.id.read_menu:
+                placeFragment(new ReadFragment());
+                break;
+            case R.id.find_menu:
+                placeFragment(new FindFragment());
+                break;
+        }
+    }
+
+    private void placeFragment (Fragment fragment) {
+        getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack("current")
+                .commit();
     }
 
     @Override
@@ -93,24 +139,4 @@ public class DashboardActivity extends AppCompatActivity {
         return false;
     }
 
-    public void openView(String selected) {
-        switch (selected.toLowerCase()) {
-            case "view":
-                startActivity(new Intent(this, ViewActivity.class));
-                break;
-            case "buy":
-                startActivity(new Intent(this, BuyActivity.class));
-                break;
-            case "find":
-                startActivity(new Intent(this, FindActivity.class));
-                break;
-            case "read":
-                startActivity(new Intent(this, ReadActivity.class));
-                break;
-            case "chat":
-                startActivity(new Intent(this, ChatActivity.class));
-                break;
-
-        }
-    }
 }

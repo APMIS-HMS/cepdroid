@@ -17,11 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.WelcomeScreenActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
@@ -30,23 +26,25 @@
         <activity
             android:name=".ui.signup.SignupActivity"
             android:theme="@style/BackgroundTheme" />
-        <activity android:name=".ui.dashboard.DashboardActivity" />
+        <activity android:name=".ui.dashboard.DashboardActivity"
+            android:theme="@style/BackgroundTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".data.network.ApmisSyncIntentService"
             android:enabled="true" />
 
         <activity android:name=".onboarding.OnboardingActivity" />
-        <activity android:name=".ui.dashboard.view.ViewActivity" />
-        <activity android:name=".ui.dashboard.buy.BuyActivity" />
-        <activity android:name=".ui.dashboard.find.FindActivity" />
         <activity android:name=".ui.dashboard.profile.ProfileActivity" />
         <activity
             android:name=".ui.dashboard.ScrollingActivity"
             android:label="@string/title_activity_scrolling"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.dashboard.chat.ChatActivity" />
-        <activity android:name=".ui.dashboard.read.ReadActivity" />
         <activity android:name=".ui.login.ForgotPasswordActivity"
             android:theme="@style/BackgroundTheme"/>
     </application>

@@ -122,6 +122,11 @@
     <string name="security_answer">Security Answer</string>
     <string name="sign_out">Sign out</string>
     <string name="loading">Loading ...</string>
+    <string name="view">View</string>
+    <string name="buy">Buy</string>
+    <string name="chat">Chat</string>
+    <string name="read">Read</string>
+    <string name="find">Find</string>
 
     <string-array name="select">
         <item>@string/loading</item>
