@@ -6,27 +6,27 @@
         android:title="@string/view"
         app:showAsAction="always"
         android:enabled="true"
-        android:icon="@drawable/right_arrow" />
+        android:icon="@drawable/ic_view" />
 
     <item android:id="@+id/buy_menu"
         android:title="@string/buy"
         android:enabled="true"
         app:showAsAction="always"
-        android:icon="@drawable/right_arrow" />
+        android:icon="@drawable/ic_buy" />
 
     <item android:id="@+id/chat_menu"
         android:title="@string/chat"
         app:showAsAction="always"
-        android:icon="@drawable/right_arrow" />
+        android:icon="@drawable/ic_chat" />
 
     <item android:id="@+id/read_menu"
         android:title="@string/read"
         app:showAsAction="always"
-        android:icon="@drawable/right_arrow" />
+        android:icon="@drawable/ic_read" />
 
     <item android:id="@+id/find_menu"
         android:title="@string/find"
         app:showAsAction="always"
-        android:icon="@drawable/right_arrow" />
+        android:icon="@drawable/ic_find" />
 
 </menu>

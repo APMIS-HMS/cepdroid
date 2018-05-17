@@ -21,7 +21,7 @@ import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
 public class ViewFragment extends Fragment {
 
     @BindView(R.id.list_items) ListView listItems;
-    private static final String CLASSNAME = "READ";
+    private static final String CLASSNAME = "VIEW";
 
     List<ModuleListModel> optionItems = new ArrayList<>();
 
@@ -35,13 +35,13 @@ public class ViewFragment extends Fragment {
 
         ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
 
-        optionItems.add(new ModuleListModel("MEDICAL RECORD", R.drawable.drugs));
+        optionItems.add(new ModuleListModel("MEDICAL RECORD", R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel("MEDICATION", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("PRESCRIPTION", R.drawable.drugs));
+        optionItems.add(new ModuleListModel("PRESCRIPTION", R.drawable.ic_prescription));
         optionItems.add(new ModuleListModel("HEALTH PROFILE", R.drawable.drugs));
         optionItems.add(new ModuleListModel("APPOINTMENTS", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("DIAGNOSTIC REPORT", R.drawable.drugs));
+        optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
+        optionItems.add(new ModuleListModel("DIAGNOSTIC REPORT", R.drawable.ic_diagnostic_report));
         optionItems.add(new ModuleListModel("REFERRAL", R.drawable.drugs));
         optionItems.add(new ModuleListModel("MENSTRUAL CYCLE", R.drawable.drugs));
         optionItems.add(new ModuleListModel("CARE TEAM", R.drawable.drugs));

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -80,9 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 
         sharedPreferencesManager = new SharedPreferencesManager(this.getApplicationContext());
 
-        submitButton.setOnClickListener((view) -> {
-            checkFields();
-        });
+        submitButton.setOnClickListener((view) -> checkFields());
 
         rememberMe.setOnClickListener((view) -> {
             if (((CheckBox) view).isChecked()) {
@@ -93,6 +92,14 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         createAccount.setOnClickListener( (view) -> startActivity (new Intent(this, SignupActivity.class)) );
+
+        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                checkFields();
+                return true;
+            }
+            return false;
+        });
 
     }
 

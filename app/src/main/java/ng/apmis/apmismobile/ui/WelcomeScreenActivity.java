@@ -58,7 +58,6 @@ public class WelcomeScreenActivity extends AppCompatActivity {
     }
 
     public void launchHomeScreen(boolean isLoggedIn) {
-        Toast.makeText(WelcomeScreenActivity.this, String.valueOf(isLoggedIn), Toast.LENGTH_SHORT).show();
         if (isLoggedIn) {
             prefs.setIsLoggedIn(isLoggedIn);
             startActivity(new Intent(WelcomeScreenActivity.this, DashboardActivity.class));

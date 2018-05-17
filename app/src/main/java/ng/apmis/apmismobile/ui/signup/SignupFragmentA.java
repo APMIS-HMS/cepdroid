@@ -87,9 +87,17 @@ public class SignupFragmentA extends Fragment implements View.OnTouchListener {
         dob.setOnTouchListener(this);
 
         dob.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                mListener.clickContinue(continueBtn);
-                return true;
+            try {
+                if (checkFields()) {
+                    if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                        if (checkFields()) {
+                            mListener.clickContinue(continueBtn);
+                        }
+                        return true;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
             return false;
         });
@@ -162,43 +170,40 @@ public class SignupFragmentA extends Fragment implements View.OnTouchListener {
     boolean checkFields() throws JSONException {
         Pattern p = Pattern.compile("([0-9])");
         Matcher m = p.matcher(firstnameEt.getText().toString());
-        boolean checks = true;
 
         if (titleEt.getText().toString().length() < 2 || m.find()) {
             titleEt.setError(getString(R.string.input_error));
-            checks = false;
+            return false;
         }
         if (firstnameEt.getText().toString().length() < 1 || m.find()) {
             firstnameEt.setError(getString(R.string.input_error));
-            checks = false;
+            return false;
         }
         if (lastnameEt.getText().toString().length() < 1 || m.find()) {
             lastnameEt.setError(getString(R.string.input_error));
-            checks = false;
+            return false;
         }
         if (mothersMaidenEt.getText().toString().length() < 1 || m.find()) {
             mothersMaidenEt.setError(getString(R.string.input_error));
-            checks = false;
+            return false;
         }
         if (phoneNumberEt.getText().toString().length() < 11) {
             phoneNumberEt.setError(getString(R.string.input_error));
         }
         if (TextUtils.isEmpty(dateOfBirth)) {
             dob.setError(getString(R.string.input_error));
-            checks = false;
+            return false;
         }
 
-        if (checks) {
-            ((SignupActivity) getActivity()).personObject.put("title", titleEt.getText().toString());
-            ((SignupActivity) getActivity()).personObject.put("firstName", firstnameEt.getText().toString());
-            ((SignupActivity) getActivity()).personObject.put("lastName", lastnameEt.getText().toString());
-            ((SignupActivity) getActivity()).personObject.put("motherMaidenName", mothersMaidenEt.getText().toString());
-            ((SignupActivity) getActivity()).personObject.put("primaryContactPhoneNo", phoneNumberEt.getText().toString());
-            ((SignupActivity) getActivity()).personObject.put("dateOfBirth", dateOfBirth);
-            return checks;
-        }
+        SignupActivity.personObject.put("title", titleEt.getText().toString());
+        SignupActivity.personObject.put("firstName", firstnameEt.getText().toString());
+        SignupActivity.personObject.put("lastName", lastnameEt.getText().toString());
+        SignupActivity.personObject.put("motherMaidenName", mothersMaidenEt.getText().toString());
+        SignupActivity.personObject.put("primaryContactPhoneNo", phoneNumberEt.getText().toString());
+        SignupActivity.personObject.put("dateOfBirth", dateOfBirth);
 
-        return checks;
+
+        return true;
     }
 
 }

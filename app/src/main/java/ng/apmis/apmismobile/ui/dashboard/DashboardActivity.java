@@ -14,10 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
@@ -39,6 +41,9 @@ public class DashboardActivity extends AppCompatActivity {
     TextView toolBarTitleTv;
     @BindView(R.id.back_btn)
     ImageView backButton;
+    @BindView(R.id.img_profile)
+    CircleImageView profileImage;
+    PopupMenu popupMenu;
 
 
     @Override
@@ -71,21 +76,53 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });*/
 
-     getSupportFragmentManager().beginTransaction()
-             .add(R.id.fragment_container, new DashboardFragment())
-             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-             .commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, new DashboardFragment())
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
+
+        backButton.setOnClickListener((view) -> onBackPressed());
+
+        profileImage.setOnClickListener((view) -> {
+            popupMenu = new PopupMenu(this, view);
+            MenuInflater inflater = popupMenu.getMenuInflater();
+            inflater.inflate(R.menu.option_setttings, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.profile:
+                        startActivity(new Intent(this, ProfileActivity.class));
+                        return true;
+                    case R.id.sign_out:
+                        new SharedPreferencesManager(this).storeLoggedInUserKeys("", "", "", "");
+                        startActivity(new Intent(this, LoginActivity.class));
+                        finish();
+                        return true;
+                }
+                return false;
+            });
+
+            popupMenu.show();
+        });
+
 
 
     }
 
-    public void setToolBarTitle (String title, boolean welcomeScreen) {
+    //TODO Remove default module selection, and set none on back pressed
+
+    public void setToolBarTitle(String title, boolean welcomeScreen) {
         toolBarTitleTv.setText(title);
         if (welcomeScreen) {
             backButton.setVisibility(View.GONE);
         } else {
             backButton.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void selectFragment(MenuItem item) {
@@ -109,7 +146,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
-    private void placeFragment (Fragment fragment) {
+    private void placeFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -117,26 +154,6 @@ public class DashboardActivity extends AppCompatActivity {
                 .addToBackStack("current")
                 .commit();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        new MenuInflater(this).inflate(R.menu.option_setttings, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int menuId = item.getItemId();
-        switch (menuId) {
-            case R.id.profile:
-                startActivity(new Intent(this, ProfileActivity.class));
-                break;
-            case R.id.sign_out:
-                new SharedPreferencesManager(this).storeLoggedInUserKeys("","","","");
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-        }
-        return false;
-    }
+    
 
 }

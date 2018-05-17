@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,8 @@ public class SignupFragmentB extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public SignupFragmentB() {}
+    public SignupFragmentB() {
+    }
 
 
     @Override
@@ -52,28 +54,27 @@ public class SignupFragmentB extends Fragment {
         ButterKnife.bind(this, rootView);
 
         signupBtn.setOnClickListener((view) -> {
-            try {
-                if (checkFields()) {
-                    mListener.clickSignup(view);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if (confirm()) {
+                mListener.clickSignup(view);
             }
+
         });
 
         securityAnswerEt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                mListener.clickSignup(signupBtn);
+                if (confirm()) {
+                    mListener.clickSignup(signupBtn);
+                }
                 return true;
             }
             return false;
         });
 
-        ((SignupActivity)getActivity()).getGenderOrSecurityQuestions(getString(R.string.genders), genderSpinner);
-        ((SignupActivity)getActivity()).getGenderOrSecurityQuestions(getString(R.string.security_questions), securityQuestionSpinner);
+        ((SignupActivity) getActivity()).getGenderOrSecurityQuestions(getString(R.string.genders), genderSpinner);
+        ((SignupActivity) getActivity()).getGenderOrSecurityQuestions(getString(R.string.security_questions), securityQuestionSpinner);
 
-        ((SignupActivity)getActivity()).onSpinnerOptionsSelection(genderSpinner, getString(R.string.genders));
-        ((SignupActivity)getActivity()).onSpinnerOptionsSelection(securityQuestionSpinner, getString(R.string.security_questions));
+        ((SignupActivity) getActivity()).onSpinnerOptionsSelection(genderSpinner, getString(R.string.genders));
+        ((SignupActivity) getActivity()).onSpinnerOptionsSelection(securityQuestionSpinner, getString(R.string.security_questions));
 
         return rootView;
     }
@@ -97,32 +98,32 @@ public class SignupFragmentB extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void clickSignup (View view);
+        void clickSignup(View view);
     }
 
-    boolean checkFields() throws JSONException {
-
-        boolean checks = true;
+    boolean confirm() {
 
         if (TextUtils.isEmpty(securityQuestionString)) {
             Toast.makeText(getActivity(), "Please select security question", Toast.LENGTH_SHORT).show();
-            checks = false;
+            return false;
         }
         if (TextUtils.isEmpty(genderString)) {
             Toast.makeText(getActivity(), "Please select your gender", Toast.LENGTH_SHORT).show();
-            checks = false;
+            return false;
         }
         if (securityAnswerEt.getText().toString().length() < 1) {
             securityAnswerEt.setError(getString(R.string.input_error));
-            checks = false;
+            return false;
         }
 
-        if (checks) {
-            ((SignupActivity)getActivity()).personObject.put("gender", genderString);
-            ((SignupActivity)getActivity()).personObject.put("securityQuestion", securityQuestionString);
-            ((SignupActivity)getActivity()).personObject.put("securityAnswer", securityAnswerEt.getText().toString());
-            return checks;
+        try {
+            SignupActivity.personObject.put("gender", genderString);
+            SignupActivity.personObject.put("securityQuestion", securityQuestionString);
+            SignupActivity.personObject.put("securityAnswer", securityAnswerEt.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return checks;
+
+        return true;
     }
 }

@@ -45,9 +45,9 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
 
     RequestQueue queue;
 
-    static String dateOfBirth = "";
-    static String genderString = "";
-    static String securityQuestionString = "";
+    public static String dateOfBirth = "";
+    public static String genderString = "";
+    public static String securityQuestionString = "";
 
     static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
 
@@ -55,7 +55,7 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
 
     ProgressDialog progressDialog;
 
-    JSONObject personObject;
+    public static JSONObject personObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,17 +119,13 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (spinnerType.equals(getString(R.string.security_questions))) {
                     String selectedString = adapterView.getItemAtPosition(i).toString();
-                    if (TextUtils.isEmpty(selectedString)) {
+                    if (!TextUtils.isEmpty(selectedString) && !selectedString.equals(getString(R.string.loading))) {
                         securityQuestionString = selectedString;
-                    }else {
-                        securityQuestionString = "";
                     }
                 } else {
                     String selectedString = adapterView.getItemAtPosition(i).toString();
-                    if (TextUtils.isEmpty(selectedString)) {
+                    if (!TextUtils.isEmpty(selectedString) && !selectedString.equals(getString(R.string.loading))) {
                         genderString = selectedString;
-                    } else {
-                        genderString = "";
                     }
                 }
             }
@@ -165,7 +161,7 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
                 e.printStackTrace();
             }
         }, error -> {
-            Log.d("Volley Error", String.valueOf(error));
+            Log.d("Volley Error gender sec", String.valueOf(error));
             getGenderOrSecurityQuestions(urlPath, spinner);
         });
 
@@ -181,7 +177,7 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
             finish();
         }, error -> {
             progressDialog.dismiss();
-            Log.v("SIgn up error", String.valueOf(error));
+            Log.v("Sign up error", String.valueOf(error.getMessage()));
             Toast.makeText(SignupActivity.this, "There was an error try again", Toast.LENGTH_SHORT).show();
         });
         queue.add(strRequest);
