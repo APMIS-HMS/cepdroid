@@ -2,12 +2,17 @@ package ng.apmis.apmismobile.ui.dashboard;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 
 /**
@@ -29,6 +34,9 @@ public class DashboardFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    @BindView(R.id.search_box)
+    TextInputEditText searchBox;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -67,6 +75,12 @@ public class DashboardFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         ((DashboardActivity) getActivity()).setToolBarTitle("WELCOME", true);
+
+        ButterKnife.bind(this, rootView);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            searchBox.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_find,0);
+        }
 
         return rootView;
     }

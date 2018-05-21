@@ -4,25 +4,21 @@
     <item
         android:id="@+id/profile"
         android:title="@string/profile"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_view"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/reminders_alerts"
         android:title="@string/reminders"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_chat"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/facilities"
         android:title="@string/facilities"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_view"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/sign_out"
         android:title="@string/sign_out"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_find"/>
+        app:showAsAction="always"/>
 
 </menu>
