@@ -13,7 +13,7 @@ import com.android.volley.toolbox.Volley;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class APMISAPP extends Activity {
+public class APMISAPP {
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -22,11 +22,6 @@ public class APMISAPP extends Activity {
     private final Executor mainThread;
     private final Executor networkIO;
     private RequestQueue queue;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     private APMISAPP(Executor diskIO, Executor networkIO, Executor mainThread) {
         this.diskIO = diskIO;
