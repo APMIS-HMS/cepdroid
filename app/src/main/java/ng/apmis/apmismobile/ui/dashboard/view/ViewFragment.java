@@ -36,7 +36,7 @@ public class ViewFragment extends Fragment {
         ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
 
         optionItems.add(new ModuleListModel("MEDICAL RECORD", R.drawable.ic_medical_records));
-        optionItems.add(new ModuleListModel("MEDICATION", R.drawable.drugs));
+        optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
         optionItems.add(new ModuleListModel("PRESCRIPTION", R.drawable.ic_prescription));
         optionItems.add(new ModuleListModel("HEALTH PROFILE", R.drawable.drugs));
         optionItems.add(new ModuleListModel("APPOINTMENTS", R.drawable.drugs));

@@ -5,6 +5,7 @@
     <string name="prompt_email">Apmis ID</string>
     <string name="prompt_password">Password</string>
     <string name="phone_number">Phone Number</string>
+    <string name="login">LOGIN</string>
     <string name="action_sign_in">Sign Up</string>
     <string name="reset_password">Reset Password</string>
     <string name="action_sign_in_short">Sign in</string>
@@ -130,6 +131,7 @@
     <string name="welcome_header">APMIS CEP</string>
     <string name="reminders">Reminders</string>
     <string name="facilities">Facilities</string>
+    <string name="sign_up">SIGN UP</string>
 
     <string-array name="select">
         <item>@string/loading</item>

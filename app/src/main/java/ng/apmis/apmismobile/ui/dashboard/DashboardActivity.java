@@ -1,13 +1,17 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +34,7 @@ import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -37,14 +42,17 @@ public class DashboardActivity extends AppCompatActivity {
 
     @BindView(R.id.navigation)
     BottomNavigationView mBottomNav;
-    @BindView(R.id.toolbar_title_tv)
-    TextView toolBarTitleTv;
-    @BindView(R.id.back_btn)
-    ImageView backButton;
     @BindView(R.id.img_profile)
     CircleImageView profileImage;
     PopupMenu popupMenu;
 
+    @BindView(R.id.general_toolbar)
+    Toolbar generalToolbar;
+
+    @BindView(R.id.action_bar_title)
+    TextView toolbarTitle;
+
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +60,25 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
         ButterKnife.bind(this);
 
+        toolbarTitle.setText(R.string.login);
+
+        setSupportActionBar(generalToolbar);
+        actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setTitle("");
+        }
+
         mBottomNav.setOnNavigationItemSelectedListener(item -> {
             selectFragment(item);
             return true;
         });
         BottomNavigationViewHelper.disableShiftMode(mBottomNav);
 
-      /*  PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this
+        PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this
         );
         mPersonViewModel = ViewModelProviders.of(this, personFactory).get(PersonViewModel.class);
-*/
-     /*   InjectorUtils.provideNetworkData(this).startPersonDataFetchService();
+        InjectorUtils.provideNetworkData(this).startPersonDataFetchService();
 
         //TODO Setup recycler view list and pass to recycler in observer
 
@@ -74,14 +90,17 @@ public class DashboardActivity extends AppCompatActivity {
                 //TODO continue loading and pull data from server again
                 InjectorUtils.provideRepository(this).getUserData();
             }
-        });*/
+        });
+
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, new DashboardFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
-        backButton.setOnClickListener((view) -> onBackPressed());
+        profileImage.setVisibility(View.VISIBLE);
+
+       // profileImage.setImageResource(R.drawable.drugs);
 
         profileImage.setOnClickListener((view) -> {
             popupMenu = new PopupMenu(this, view);
@@ -106,17 +125,26 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
 
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //TODO Remove default module selection, and set none on back pressed
 
     public void setToolBarTitle(String title, boolean welcomeScreen) {
-        toolBarTitleTv.setText(title);
+        toolbarTitle.setText(title);
         if (welcomeScreen) {
-            backButton.setVisibility(View.GONE);
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(false);
         } else {
-            backButton.setVisibility(View.VISIBLE);
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -154,6 +182,6 @@ public class DashboardActivity extends AppCompatActivity {
                 .addToBackStack("current")
                 .commit();
     }
-    
+
 
 }

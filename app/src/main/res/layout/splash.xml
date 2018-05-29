@@ -4,14 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout_editor_absoluteY="81dp"
     tools:context=".ui.WelcomeScreenActivity">
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srcCompat="@drawable/background"
-        android:scaleType="centerCrop"/>
+        android:layout_height="match_parent"/>
 
     <TextView
         android:layout_width="wrap_content"

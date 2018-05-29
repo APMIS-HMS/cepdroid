@@ -22,7 +22,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="217dp"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:background="#fff">
 
             <TextView
                 android:id="@+id/heading"

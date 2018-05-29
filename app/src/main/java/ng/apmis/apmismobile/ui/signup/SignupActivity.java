@@ -1,40 +1,31 @@
 package ng.apmis.apmismobile.ui.signup;
 
-import android.app.ActionBar;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,14 +48,33 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
 
     public static JSONObject personObject;
 
+    @BindView(R.id.action_bar_title)
+    TextView toolbarTitle;
+
+    @BindView(R.id.general_toolbar)
+    Toolbar generalToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        ButterKnife.bind(this);
+
+        toolbarTitle.setText(R.string.sign_up);
+
+        setSupportActionBar(generalToolbar);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setTitle("");
+            
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
 
         progressDialog = new ProgressDialog(this);
 
-        ButterKnife.bind(this);
         queue = Volley.newRequestQueue(this);
 
 
