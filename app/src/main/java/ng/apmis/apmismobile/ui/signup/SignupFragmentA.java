@@ -148,9 +148,7 @@ public class SignupFragmentA extends Fragment implements View.OnTouchListener {
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datepickerdialog = new DatePickerDialog(getActivity(), this, year, month, day);
-
-            return datepickerdialog;
+            return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
         public void onDateSet(android.widget.DatePicker view, int year, int month, int day) {

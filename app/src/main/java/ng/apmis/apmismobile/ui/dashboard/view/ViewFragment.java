@@ -38,14 +38,14 @@ public class ViewFragment extends Fragment {
         optionItems.add(new ModuleListModel("MEDICAL RECORD", R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
         optionItems.add(new ModuleListModel("PRESCRIPTION", R.drawable.ic_prescription));
-        optionItems.add(new ModuleListModel("HEALTH PROFILE", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("APPOINTMENTS", R.drawable.drugs));
+        optionItems.add(new ModuleListModel("HEALTH PROFILE", R.drawable.ic_health_profile));
+        optionItems.add(new ModuleListModel("APPOINTMENTS", R.drawable.ic_appointents));
         optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
         optionItems.add(new ModuleListModel("DIAGNOSTIC REPORT", R.drawable.ic_diagnostic_report));
-        optionItems.add(new ModuleListModel("REFERRAL", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("MENSTRUAL CYCLE", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("CARE TEAM", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("CARE PROVIDERS", R.drawable.drugs));
+        optionItems.add(new ModuleListModel("REFERRAL", R.drawable.ic_referral));
+        optionItems.add(new ModuleListModel("MENSTRUAL CYCLE", R.drawable.ic_menstrual));
+        optionItems.add(new ModuleListModel("CARE TEAM", R.drawable.ic_care_team));
+        optionItems.add(new ModuleListModel("CARE PROVIDERS", R.drawable.ic_care_providers));
 
         ModuleAdapter moduleAdapter = new ModuleAdapter(getActivity(), optionItems);
 

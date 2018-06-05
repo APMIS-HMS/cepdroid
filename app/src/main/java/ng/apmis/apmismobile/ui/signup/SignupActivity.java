@@ -117,6 +117,7 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
         Log.v("Person Obj", uniquePerson.toString());
         Log.v("Person Starts", "Here");
         progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
         progressDialog.setTitle("Sign Up");
         progressDialog.setMessage("Please wait ...");
         progressDialog.show();

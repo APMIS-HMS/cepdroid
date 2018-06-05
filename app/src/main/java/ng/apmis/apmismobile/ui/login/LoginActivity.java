@@ -148,9 +148,10 @@ public class LoginActivity extends AppCompatActivity {
     private void attemptLogin(String apmisId, String password) {
 
         progressDialog = new ProgressDialog(this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
         progressDialog.setTitle("Signing In");
         progressDialog.setMessage("Please wait");
-        progressDialog.setIndeterminate(true);
         progressDialog.show();
 
         sharedPreferencesManager.storeApmisId(apmisId);

@@ -33,9 +33,9 @@ public class BuyFragment extends android.support.v4.app.Fragment {
 
         ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
 
-        optionItems.add(new ModuleListModel("BUY", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("FUND WALLET", R.drawable.drugs));
-        optionItems.add(new ModuleListModel("PAY BILLS", R.drawable.drugs));
+        optionItems.add(new ModuleListModel("BUY", R.drawable.ic_buy));
+        optionItems.add(new ModuleListModel("FUND WALLET", R.drawable.ic_fund_account));
+        optionItems.add(new ModuleListModel("PAY BILLS", R.drawable.ic_pay_bills));
 
         ModuleAdapter moduleAdapter = new ModuleAdapter(getActivity(), optionItems);
 
