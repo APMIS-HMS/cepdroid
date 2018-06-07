@@ -47,7 +47,22 @@ public class ChatFragment extends Fragment {
 
         listItems.setOnItemClickListener((parent, view, position, id) -> {
             ModuleListModel selectedOption = (ModuleListModel) parent.getItemAtPosition(position);
-            Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
+
+            if (selectedOption.getmOption().equals("MEDICAL BOT")) {
+                Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.fragment_container, new ChatContext())
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.fragment_container, new ChatContext())
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
 
         return rootView;
