@@ -17,6 +17,7 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.ModuleAdapter;
 import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
+import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 
 public class ViewFragment extends Fragment {
 
@@ -54,9 +55,52 @@ public class ViewFragment extends Fragment {
         listItems.setOnItemClickListener((parent, view, position, id) -> {
             ModuleListModel selectedOption = (ModuleListModel) parent.getItemAtPosition(position);
                 Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
+                switch (selectedOption.getmOption()) {
+                    case "MEDICAL RECORD":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "MEDICATION":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "PRESCRIPTION":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "HEALTH PROFILE":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "APPOINTMENTS":
+                        setFragment(new AppointmentFragment());
+                        break;
+                    case "HEALTH INSURANCE":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "DIAGNOSTIC REPORT":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "REFERRAL":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "MENSTRUAL CYCLE":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "CARE TEAM":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                    case "CARE PROVIDERS":
+                        //setFragment(new AppointmentFragment());
+                        break;
+                }
         });
 
         return rootView;
+    }
+
+    void setFragment (Fragment fragment) {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

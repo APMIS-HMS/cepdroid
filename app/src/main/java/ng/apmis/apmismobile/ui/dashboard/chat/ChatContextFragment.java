@@ -23,7 +23,7 @@ import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
  * Created by Thadeus-APMIS on 6/7/2018.
  */
 
-public class ChatContext extends Fragment {
+public class ChatContextFragment extends Fragment {
 
     ChatContextAdapter chatContextAdapter;
 
@@ -38,6 +38,9 @@ public class ChatContext extends Fragment {
         View rootView = inflater.inflate(R.layout.chat_layout, container, false);
 
         chatContextAdapter = new ChatContextAdapter(getActivity());
+
+        ((DashboardActivity)getActivity()).bottomNavVisibility(false);
+        ((DashboardActivity)getActivity()).setToolBarTitle("APMIS CEP", false);
 
         existingChats.add(new Chats("Hi Thadeus.\nWhat do you want today?", "Other", R.drawable.ic_buy, new Date().getTime()));
         existingChats.add(new Chats("I feel feverish and have a runny nose.\nWhat could be wrong with me?", "me", R.drawable.ic_diagnostic_report, new Date().getTime()));
@@ -60,22 +63,24 @@ public class ChatContext extends Fragment {
         chatMessageRecycler.smoothScrollToPosition(existingChats.size());
 
         sendBtn.setOnClickListener((view) -> {
-            Chats oneChat = new Chats(chatMessageEditText.getText().toString(),"me", R.drawable.ic_buy, new Date().getTime());
-            ArrayList<Chats> chats = new ArrayList<>();
-            chats.add(oneChat);
-            chatContextAdapter.addChats(chats);
-            chatMessageRecycler.smoothScrollToPosition(chatContextAdapter.getItemCount());
-            chatMessageEditText.setText("");
+            if (chatMessageEditText.getText().toString().length() > 0) {
+                Chats oneChat = new Chats(chatMessageEditText.getText().toString(), "me", R.drawable.ic_buy, new Date().getTime());
+                ArrayList<Chats> chats = new ArrayList<>();
+                chats.add(oneChat);
+                chatContextAdapter.addChats(chats);
+                chatMessageRecycler.smoothScrollToPosition(chatContextAdapter.getItemCount());
+                chatMessageEditText.setText("");
+            }
         });
 
         return rootView;
     }
 
     @Override
-    public void onResume() {
-        if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
-        }
-        super.onResume();
+    public void onPause() {
+        super.onPause();
+        ((DashboardActivity)getActivity()).bottomNavVisibility(true);
+        ((DashboardActivity)getActivity()).setToolBarTitle("CHAT", false);
     }
+
 }
