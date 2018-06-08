@@ -31,6 +31,10 @@ public class SharedPreferencesManager {
 
     private static final String DB_ID = "dbib";
 
+    private static final String APMIS_ID = "apmisid";
+
+    private static final String USER_PASSWORD = "password";
+
     public SharedPreferencesManager(Context context) {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, _context.MODE_PRIVATE);
@@ -77,5 +81,24 @@ public class SharedPreferencesManager {
         return loggedUser;
 
     }
+
+    public void storeApmisId (String apmisId) {
+        editor.putString(APMIS_ID, apmisId);
+        editor.commit();
+    }
+
+    public String getStoredApmisId () {
+        return pref.getString(APMIS_ID, "");
+    }
+
+    public void storeUserPassword (String password) {
+        editor.putString(USER_PASSWORD, password);
+        editor.commit();
+    }
+
+    public String getStoredUserPassword () {
+        return pref.getString(USER_PASSWORD, "");
+    }
+
 
 }

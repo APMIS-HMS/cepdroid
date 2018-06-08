@@ -1,28 +1,83 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
 
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
+import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
+import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
+import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
+import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
+import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
+import ng.apmis.apmismobile.ui.login.LoginActivity;
+import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class DashboardActivity extends AppCompatActivity {
 
     PersonViewModel mPersonViewModel;
 
+    @BindView(R.id.navigation)
+    BottomNavigationView mBottomNav;
+    @BindView(R.id.img_profile)
+    CircleImageView profileImage;
+    PopupMenu popupMenu;
+
+    @BindView(R.id.general_toolbar)
+    Toolbar generalToolbar;
+
+    @BindView(R.id.action_bar_title)
+    TextView toolbarTitle;
+
+    ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        ButterKnife.bind(this);
+
+        toolbarTitle.setText(R.string.login);
+
+        setSupportActionBar(generalToolbar);
+        actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setTitle("");
+        }
+
+        mBottomNav.setOnNavigationItemSelectedListener(item -> {
+            selectFragment(item);
+            return true;
+        });
+        BottomNavigationViewHelper.disableShiftMode(mBottomNav);
 
         PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this
         );
         mPersonViewModel = ViewModelProviders.of(this, personFactory).get(PersonViewModel.class);
-
         InjectorUtils.provideNetworkData(this).startPersonDataFetchService();
 
         //TODO Setup recycler view list and pass to recycler in observer
@@ -38,5 +93,95 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
 
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, new DashboardFragment())
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
+
+        profileImage.setVisibility(View.VISIBLE);
+
+       // profileImage.setImageResource(R.drawable.drugs);
+
+        profileImage.setOnClickListener((view) -> {
+            popupMenu = new PopupMenu(this, view);
+            MenuInflater inflater = popupMenu.getMenuInflater();
+            inflater.inflate(R.menu.option_setttings, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.profile:
+                        startActivity(new Intent(this, ProfileActivity.class));
+                        return true;
+                    case R.id.sign_out:
+                        new SharedPreferencesManager(this).storeLoggedInUserKeys("", "", "", "");
+                        startActivity(new Intent(this, LoginActivity.class));
+                        finish();
+                        return true;
+                }
+                return false;
+            });
+
+            popupMenu.show();
+        });
+
+
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //TODO Remove default module selection, and set none on back pressed
+
+    public void setToolBarTitle(String title, boolean welcomeScreen) {
+        toolbarTitle.setText(title);
+        if (welcomeScreen) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        } else {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    private void selectFragment(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.view_menu:
+                placeFragment(new ViewFragment());
+                break;
+            case R.id.buy_menu:
+                placeFragment(new BuyFragment());
+                break;
+            case R.id.chat_menu:
+                placeFragment(new ChatFragment());
+                break;
+            case R.id.read_menu:
+                placeFragment(new ReadFragment());
+                break;
+            case R.id.find_menu:
+                placeFragment(new FindFragment());
+                break;
+        }
+    }
+
+    private void placeFragment(Fragment fragment) {
+        getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack("current")
+                .commit();
+    }
+
+
 }
