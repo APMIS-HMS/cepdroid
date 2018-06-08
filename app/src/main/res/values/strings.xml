@@ -132,6 +132,7 @@
     <string name="reminders">Reminders</string>
     <string name="facilities">Facilities</string>
     <string name="sign_up">SIGN UP</string>
+    <string name="user_image">User Image</string>
 
     <string-array name="select">
         <item>@string/loading</item>

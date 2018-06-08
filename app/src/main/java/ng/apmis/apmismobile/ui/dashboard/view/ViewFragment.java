@@ -33,8 +33,6 @@ public class ViewFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_view, container, false);
         ButterKnife.bind(this, rootView);
 
-        ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
-
         optionItems.add(new ModuleListModel("MEDICAL RECORD", R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
         optionItems.add(new ModuleListModel("PRESCRIPTION", R.drawable.ic_prescription));
@@ -61,5 +59,12 @@ public class ViewFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+        }
+        super.onResume();
+    }
 
 }

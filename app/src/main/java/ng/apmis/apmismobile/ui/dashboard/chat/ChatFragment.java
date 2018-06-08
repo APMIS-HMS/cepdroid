@@ -27,14 +27,11 @@ public class ChatFragment extends Fragment {
     List<ModuleListModel> optionItems = new ArrayList<>();
 
     @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container,
-                         Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.bind(this, rootView);
-
-
-        ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
 
         optionItems.add(new ModuleListModel("FORUMS", R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel("MEDICAL BOT", R.drawable.drugs));
@@ -49,24 +46,30 @@ public class ChatFragment extends Fragment {
             ModuleListModel selectedOption = (ModuleListModel) parent.getItemAtPosition(position);
 
             if (selectedOption.getmOption().equals("MEDICAL BOT")) {
-                Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), selectedOption.getmOption(), Toast.LENGTH_SHORT).show();
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .add(R.id.fragment_container, new ChatContext())
                         .addToBackStack(null)
                         .commit();
             } else {
-                Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
-                getActivity().getSupportFragmentManager()
+                Toast.makeText(getActivity(), selectedOption.getmOption(), Toast.LENGTH_SHORT).show();
+                /*getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .add(R.id.fragment_container, new ChatContext())
                         .addToBackStack(null)
-                        .commit();
+                        .commit();*/
             }
         });
 
         return rootView;
     }
 
+    @Override
+    public void onStart() {
 
+        ((DashboardActivity) getActivity()).setToolBarTitle(CLASSNAME, false);
+
+        super.onStart();
+    }
 }

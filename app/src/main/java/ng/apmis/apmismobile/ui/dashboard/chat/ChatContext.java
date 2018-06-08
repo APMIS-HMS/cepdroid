@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.chatModel.Chats;
+import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 
 /**
  * Created by Thadeus-APMIS on 6/7/2018.
@@ -25,6 +27,8 @@ public class ChatContext extends Fragment {
 
     ArrayList<Chats> existingChats = new ArrayList<>();
 
+    private static String CLASSNAME = "APMIS CEP";
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -33,12 +37,12 @@ public class ChatContext extends Fragment {
 
         chatContextAdapter = new ChatContextAdapter(getActivity());
 
-        existingChats.add(new Chats("akjsljfalsdjf;laksdfl;ajskljdf;alsjd;flakjsd;fjas;ldjf;lasjkflkjasdljfa;sjdflajksdfljasl;jkdfasjl;kdfjas;lkjdflajksd;fjasljfdals;jf;ajsdfjas;jd;fjasdjf;asdf", "me", R.drawable.ic_buy));
-        existingChats.add(new Chats("This is Ikeja", "Other", R.drawable.ic_diagnostic_report));
-        existingChats.add(new Chats("This is Agege", "me", R.drawable.ic_pay_bills));
-        existingChats.add(new Chats("This is London", "Other", R.drawable.ic_find));
-        existingChats.add(new Chats("This is Lagos", "me", R.drawable.ic_buy));
-        existingChats.add(new Chats("This is Fausets", "Other", R.drawable.ic_buy));
+        existingChats.add(new Chats("akjsljfalsdjf;laksdfl;ajskljdf;alsjd;flakjsd;fjas;ldjf;lasjkflkjasdljfa;sjdflajksdfljasl;jkdfasjl;kdfjas;lkjdflajksd;fjasljfdals;jf;ajsdfjas;jd;fjasdjf;asdf", "me", R.drawable.ic_buy, new Date().getTime()));
+        existingChats.add(new Chats("This is Ikeja", "me", R.drawable.ic_diagnostic_report, new Date().getTime()));
+        existingChats.add(new Chats("This is Agege", "me", R.drawable.ic_pay_bills, new Date().getTime()));
+        existingChats.add(new Chats("This is London", "Other", R.drawable.ic_find, new Date().getTime()));
+        existingChats.add(new Chats("This is Lagos", "me", R.drawable.ic_buy, new Date().getTime()));
+        existingChats.add(new Chats("This is Fausets", "Other", R.drawable.ic_buy, new Date().getTime()));
 
         RecyclerView chatMessageRecycler = rootView.findViewById(R.id.chat_recycler);
 
@@ -49,5 +53,13 @@ public class ChatContext extends Fragment {
         chatContextAdapter.setAllChats(existingChats);
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+        }
+        super.onResume();
     }
 }

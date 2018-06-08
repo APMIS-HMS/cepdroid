@@ -34,8 +34,6 @@ public class FindFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_find, container, false);
         ButterKnife.bind(this, rootView);
 
-        ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
-
         optionItems.add(new ModuleListModel("DOCTOR", R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel("NURSE", R.drawable.drugs));
         optionItems.add(new ModuleListModel("HOSPITAL", R.drawable.ic_prescription));
@@ -55,6 +53,14 @@ public class FindFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+        }
+        super.onResume();
     }
 
 }

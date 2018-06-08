@@ -8,11 +8,13 @@ public class Chats {
 
     private String chatMessage, userName;
     private int userImage;
+    private long date;
 
-    public Chats(String chatMessage, String userName, int userImage) {
+    public Chats(String chatMessage, String userName, int userImage, long date) {
         this.chatMessage = chatMessage;
         this.userName = userName;
         this.userImage = userImage;
+        this.date = date;
     }
 
     public String getChatMessage() {
@@ -39,12 +41,21 @@ public class Chats {
         this.userImage = userImage;
     }
 
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
         return "Chats{" +
                 "chatMessage='" + chatMessage + '\'' +
                 ", userName='" + userName + '\'' +
                 ", userImage=" + userImage +
+                ", date=" + date +
                 '}';
     }
 }

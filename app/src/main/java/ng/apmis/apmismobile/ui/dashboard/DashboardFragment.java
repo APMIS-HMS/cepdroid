@@ -73,9 +73,6 @@ public class DashboardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
-
-        ((DashboardActivity) getActivity()).setToolBarTitle("WELCOME", true);
-
         ButterKnife.bind(this, rootView);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -105,5 +102,13 @@ public class DashboardFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).setToolBarTitle("WELCOME", false);
+        }
+        super.onResume();
     }
 }

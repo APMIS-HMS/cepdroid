@@ -82,11 +82,13 @@ public class ChatContextAdapter extends RecyclerView.Adapter<ChatContextAdapter.
 
         TextView chatText;
         ImageView userImage;
+        TextView timeText;
 
         ChatContextViewHolder(View itemView) {
             super(itemView);
             chatText = (TextView) itemView.findViewById(R.id.message_text);
             userImage = (ImageView) itemView.findViewById(R.id.user_image);
+            timeText = (TextView) itemView.findViewById(R.id.message_time);
 
         }
     }

@@ -31,8 +31,6 @@ public class ReadFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_read, container, false);
         ButterKnife.bind(this, rootView);
 
-        ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
-
         optionItems.add(new ModuleListModel("HEALTH EDUCATION", R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel("FAMILY PLANNING", R.drawable.drugs));
         optionItems.add(new ModuleListModel("NEWS", R.drawable.ic_prescription));
@@ -49,6 +47,14 @@ public class ReadFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+        }
+        super.onResume();
     }
 
 }

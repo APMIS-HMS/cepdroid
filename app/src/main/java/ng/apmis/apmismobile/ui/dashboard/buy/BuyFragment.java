@@ -31,8 +31,6 @@ public class BuyFragment extends android.support.v4.app.Fragment {
 
         ButterKnife.bind(this, rootView);
 
-        ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
-
         optionItems.add(new ModuleListModel("BUY", R.drawable.ic_buy));
         optionItems.add(new ModuleListModel("FUND WALLET", R.drawable.ic_fund_account));
         optionItems.add(new ModuleListModel("PAY BILLS", R.drawable.ic_pay_bills));
@@ -49,6 +47,14 @@ public class BuyFragment extends android.support.v4.app.Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+        }
+        super.onResume();
     }
 
 }
