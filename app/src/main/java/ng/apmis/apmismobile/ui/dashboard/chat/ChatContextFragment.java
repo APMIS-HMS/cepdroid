@@ -77,10 +77,16 @@ public class ChatContextFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
         ((DashboardActivity)getActivity()).bottomNavVisibility(true);
         ((DashboardActivity)getActivity()).setToolBarTitle("CHAT", false);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((DashboardActivity)getActivity()).bottomNavVisibility(false);
+        ((DashboardActivity)getActivity()).setToolBarTitle("APMIS CEP", false);
+    }
 }

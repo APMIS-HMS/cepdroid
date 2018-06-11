@@ -3,6 +3,7 @@ package ng.apmis.apmismobile.ui.dashboard.appointment;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,16 +25,18 @@ import static android.text.format.DateUtils.FORMAT_SHOW_TIME;
 public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder> {
 
     private Context mContext;
-    public ArrayList<Appointments> appointmentList;
-    int num = 1;
+    private ArrayList<Appointments> appointmentList;
+    private int num = 1;
+    private boolean isRecent = true;
 
     AppointmentAdapter(Context context) {
         mContext = context;
         appointmentList = new ArrayList<Appointments>();
     }
 
-    void setAppointmentList(ArrayList<Appointments> appointmentList) {
+    void setAppointmentList(ArrayList<Appointments> appointmentList, boolean isRecent) {
         this.appointmentList = appointmentList;
+        this.isRecent = isRecent;
         notifyDataSetChanged();
     }
 
@@ -54,8 +57,8 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         Appointments currentAppointment = appointmentList.get(position);
         holder.facilityNameTv.setText(currentAppointment.getFacilityName());
         holder.clinicNameTv.setText(currentAppointment.getClinicName());
-        holder.appointmentDateTv.setText(DateUtils.getRelativeDateTimeString(mContext, currentAppointment.getAppointmentDateTime(),0,0, FORMAT_SHOW_TIME));
-        holder.appointmentTimeTv.setText(DateUtils.getRelativeTimeSpanString(currentAppointment.getAppointmentDateTime()));
+        holder.appointmentDateTv.setText(String.format("%s %s", DateFormat.format("MMM", currentAppointment.getAppointmentDateTime()), DateFormat.format("dd", currentAppointment.getAppointmentDateTime())));
+        holder.appointmentTimeTv.setText(DateUtils.getRelativeTimeSpanString(mContext, currentAppointment.getAppointmentDateTime()));
 
     }
 
@@ -76,13 +79,27 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         return num * 2;
     }
 
+    void showMore() {
+        if ((num * 2) < appointmentList.size()) {
+            num = appointmentList.size();
+            notifyDataSetChanged();
+        }
+    }
+
+    void showLess() {
+        num = 1;
+        notifyDataSetChanged();
+    }
+
     class AppointmentViewHolder extends RecyclerView.ViewHolder {
 
         TextView facilityNameTv, clinicNameTv, appointmentDateTv, appointmentTimeTv;
 
         AppointmentViewHolder(View itemView) {
             super(itemView);
-
+            if (!isRecent) {
+                itemView.setBackgroundColor(mContext.getResources().getColor(R.color.transparent_blue));
+            }
             facilityNameTv = itemView.findViewById(R.id.facility_name_tv);
             clinicNameTv = itemView.findViewById(R.id.clinic_name_tv);
             appointmentDateTv = itemView.findViewById(R.id.appointment_date_tv);

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/appointment_type"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/new_item" />
+
+                <RadioButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/follow_up" />
+
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/appointment_description"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <Spinner
+                android:id="@+id/select_hospital_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_hospital" />
+
+            <Spinner
+                android:id="@+id/select_clinic_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_clinic" />
+
+            <Spinner
+                android:id="@+id/select_service_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_service_category" />
+
+            <Spinner
+                android:id="@+id/whom_to_see_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_whom_to_see" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/appointment_class"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <Spinner
+                android:id="@+id/appointment_class_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_class" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/clinic_schedule"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <Spinner
+                android:id="@+id/clinic_schedule_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_schedule" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/your_schedule"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <Spinner
+                android:id="@+id/your_schedule_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_time" />
+
+            <Switch
+                android:id="@+id/set_reminder_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:checked="true"
+                android:switchTextAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:text="@string/set_reminder"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/book_appointment_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient"
+                android:text="@string/book_appointment"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="#fff" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>

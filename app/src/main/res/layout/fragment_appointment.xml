@@ -1,55 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="#fff">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#fff"
+    android:clickable="true"
+    android:focusable="true"
+    android:padding="4dp">
 
-    <TextView
-        android:text="@string/recently_booked"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:id="@+id/recently_booked_header"/>
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recently_booked_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/recently_booked_header"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/recently_booked_more_less"
+            <TextView
+                android:id="@+id/recently_booked_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/recently_booked"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/black" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recently_booked_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recently_booked_header" />
+
+            <TextView
+                android:id="@+id/recently_booked_more_less"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/recently_booked_recycler"
+                android:layout_alignRight="@id/recently_booked_recycler"
+                android:layout_below="@id/recently_booked_recycler"
+                android:paddingRight="20dp"
+                android:text="@string/more" />
+
+            <TextView
+                android:id="@+id/previous_appointment_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recently_booked_more_less"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/previous_appointments"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/black" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/previous_appointment_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/previous_appointment_header" />
+
+            <TextView
+                android:id="@+id/previous_appointment_more_less"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/previous_appointment_recycler"
+                android:layout_alignRight="@id/previous_appointment_recycler"
+                android:layout_below="@id/previous_appointment_recycler"
+                android:paddingRight="20dp"
+                android:text="@string/more" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/appointment_add_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/more"
-        android:layout_alignEnd="@id/recently_booked_recycler"
-        android:layout_alignRight="@id/recently_booked_recycler"
-        android:layout_below="@id/recently_booked_recycler"
-        android:paddingRight="20dp"/>
-
-    <TextView
-        android:text="@string/previous_appointments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:id="@+id/previous_appointment_header"
-        android:layout_below="@id/recently_booked_more_less"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/previous_appointment_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/previous_appointment_header"/>
-
-    <TextView
-        android:id="@+id/previous_appointment_more_less"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/more"
-        android:layout_alignEnd="@id/previous_appointment_recycler"
-        android:layout_alignRight="@id/previous_appointment_recycler"
-        android:layout_below="@id/previous_appointment_recycler"
-        android:paddingRight="20dp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        app:srcCompat="@drawable/ic_add_black_24dp"/>
 
 </RelativeLayout>

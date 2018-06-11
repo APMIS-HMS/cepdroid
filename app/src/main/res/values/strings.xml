@@ -137,14 +137,53 @@
     <string name="send_button">send button</string>
     <string name="facility_name">Light Hospital</string>
     <string name="clinic_name">Emergency Clinic</string>
-    <string name="appointment_date">January 30</string>
-    <string name="appointment_time">10:00am - 11:30am</string>
+    <string name="appointment_date">Jan 30</string>
+    <string name="appointment_time">10:00am</string>
     <string name="recently_booked">Recently Booked</string>
     <string name="previous_appointments">Previous Appointments</string>
     <string name="more">Show more</string>
+    <string name="appointment_type">Appointment Type:</string>
+    <string name="new_item">New</string>
+    <string name="follow_up">Follow up</string>
+    <string name="appointment_description">Appointment Description:</string>
+    <string name="appointment_class">Appointment Class:</string>
+    <string name="clinic_schedule">Clinic Schedule:</string>
+    <string name="your_schedule">Your Schedule:</string>
+    <string name="set_reminder">Set Reminder:</string>
+    <string name="book_appointment">Book Appointment</string>
+    <string name="show_less">Show less</string>
+    <string name="show_more">Show more</string>
 
     <string-array name="select">
         <item>@string/loading</item>
+    </string-array>
+
+    <string-array name="select_hospital">
+        <item>Select Hospital</item>
+    </string-array>
+
+    <string-array name="select_clinic">
+        <item>Select Clinic</item>
+    </string-array>
+
+    <string-array name="select_service_category">
+        <item>Select Service Category</item>
+    </string-array>
+
+    <string-array name="select_whom_to_see">
+        <item>Select Whom to see</item>
+    </string-array>
+
+    <string-array name="select_class">
+        <item>Select Class</item>
+    </string-array>
+
+    <string-array name="select_schedule">
+        <item>Select Schedule</item>
+    </string-array>
+
+    <string-array name="select_time">
+        <item>Select Time</item>
     </string-array>
 
 </resources>
