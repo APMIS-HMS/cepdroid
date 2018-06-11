@@ -135,6 +135,13 @@
     <string name="user_image">User Image</string>
     <string name="write_message">Write a message...</string>
     <string name="send_button">send button</string>
+    <string name="facility_name">Light Hospital</string>
+    <string name="clinic_name">Emergency Clinic</string>
+    <string name="appointment_date">January 30</string>
+    <string name="appointment_time">10:00am - 11:30am</string>
+    <string name="recently_booked">Recently Booked</string>
+    <string name="previous_appointments">Previous Appointments</string>
+    <string name="more">Show more</string>
 
     <string-array name="select">
         <item>@string/loading</item>

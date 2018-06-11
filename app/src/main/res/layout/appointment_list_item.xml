@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="120dp"
+    android:background="@drawable/edittext_background"
+    android:padding="10dp"
+    android:layout_marginBottom="4dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginLeft="10dp">
+
+    <TextView
+        android:id="@+id/facility_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/facility_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+    <TextView
+        android:id="@+id/clinic_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/clinic_name"
+        android:layout_below="@+id/facility_name_tv"
+        android:layout_marginLeft="10dp"/>
+
+    <TextView
+        android:id="@+id/appointment_date_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/appointment_date"
+        android:layout_above="@+id/appointment_time_tv"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+    <TextView
+        android:id="@+id/appointment_time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/appointment_time"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@id/appointment_date_tv"
+        android:layout_alignLeft="@id/appointment_date_tv" />
+
+</RelativeLayout>
