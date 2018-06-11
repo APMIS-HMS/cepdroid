@@ -107,7 +107,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitle("WELCOME", false);
+            ((DashboardActivity)getActivity()).setToolBarTitle("WELCOME", true);
         }
         super.onResume();
     }
