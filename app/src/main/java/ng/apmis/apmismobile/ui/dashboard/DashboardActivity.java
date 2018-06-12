@@ -64,6 +64,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         setSupportActionBar(generalToolbar);
         actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
         if (actionBar != null) {
             actionBar.setTitle("");
