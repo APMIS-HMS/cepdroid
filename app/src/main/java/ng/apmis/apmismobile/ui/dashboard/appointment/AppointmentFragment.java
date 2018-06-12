@@ -1,9 +1,11 @@
 package ng.apmis.apmismobile.ui.dashboard.appointment;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -99,10 +101,16 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
                     appointmentAdapterForRecent.showMore();
                     showMoreRecent = true;
                     showMoreRecentTv.setText(getResources().getString(R.string.show_less));
+                    Drawable rightDrawable = VectorDrawableCompat
+                            .create(getContext().getResources(), R.drawable.ic_double_up_arrow, null);
+                    showMoreRecentTv.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null);
                 } else {
                     appointmentAdapterForRecent.showLess();
                     showMoreRecent = false;
                     showMoreRecentTv.setText(getResources().getString(R.string.show_more));
+                    Drawable rightDrawable = VectorDrawableCompat
+                            .create(getContext().getResources(), R.drawable.ic_double_down_arrow, null);
+                    showMoreRecentTv.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null);
                 }
                 break;
             case R.id.previous_appointment_more_less:
@@ -110,10 +118,16 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
                     appointmentAdapterForPrevious.showMore();
                     showMorePrevious = true;
                     showMorePreviousTv.setText(getResources().getString(R.string.show_less));
+                    Drawable rightDrawable = VectorDrawableCompat
+                            .create(getContext().getResources(), R.drawable.ic_double_up_arrow, null);
+                    showMorePreviousTv.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null);
                 } else {
                     appointmentAdapterForPrevious.showLess();
                     showMorePrevious = false;
                     showMorePreviousTv.setText(getResources().getString(R.string.show_more));
+                    Drawable rightDrawable = VectorDrawableCompat
+                            .create(getContext().getResources(), R.drawable.ic_double_down_arrow, null);
+                    showMorePreviousTv.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null);
                 }
                 break;
             case R.id.appointment_add_fab:

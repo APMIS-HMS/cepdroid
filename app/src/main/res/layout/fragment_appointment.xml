@@ -36,11 +36,15 @@
                 android:id="@+id/recently_booked_more_less"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/recently_booked_recycler"
-                android:layout_alignRight="@id/recently_booked_recycler"
+                android:layout_centerHorizontal="true"
                 android:layout_below="@id/recently_booked_recycler"
                 android:paddingRight="20dp"
-                android:text="@string/more" />
+                android:text="@string/more"
+                android:textColor="@android:color/black"
+                android:drawablePadding="8dp"
+                android:drawableEnd="@drawable/ic_double_down_arrow"
+                android:drawableRight="@drawable/ic_double_up_arrow"
+                android:layout_marginBottom="5dp"/>
 
             <TextView
                 android:id="@+id/previous_appointment_header"
@@ -63,11 +67,13 @@
                 android:id="@+id/previous_appointment_more_less"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/previous_appointment_recycler"
-                android:layout_alignRight="@id/previous_appointment_recycler"
+                android:layout_centerHorizontal="true"
                 android:layout_below="@id/previous_appointment_recycler"
-                android:paddingRight="20dp"
-                android:text="@string/more" />
+                android:text="@string/more"
+                android:textColor="@android:color/black"
+                android:drawablePadding="8dp"
+                android:drawableEnd="@drawable/ic_double_down_arrow"
+                android:drawableRight="@drawable/ic_double_up_arrow" />
 
         </RelativeLayout>
 
@@ -80,9 +86,9 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginEnd="@dimen/activity_vertical_margin"
-        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         app:srcCompat="@drawable/ic_add_black_24dp"/>
 
 </RelativeLayout>
