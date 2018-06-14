@@ -41,7 +41,7 @@ public class DashboardActivity extends AppCompatActivity {
     PersonViewModel mPersonViewModel;
 
     @BindView(R.id.navigation)
-    BottomNavigationView mBottomNav;
+    public BottomNavigationView mBottomNav;
     @BindView(R.id.img_profile)
     CircleImageView profileImage;
     PopupMenu popupMenu;
@@ -64,6 +64,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         setSupportActionBar(generalToolbar);
         actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
         if (actionBar != null) {
             actionBar.setTitle("");
@@ -148,9 +149,18 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
+    public void bottomNavVisibility (boolean show) {
+        if (show) {
+            mBottomNav.setVisibility(View.VISIBLE);
+            return;
+        }
+        mBottomNav.setVisibility(View.GONE);
+    }
+
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    protected void onResume() {
+        super.onResume();
+        bottomNavVisibility(true);
     }
 
     private void selectFragment(MenuItem item) {

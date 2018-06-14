@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="#fff">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chat_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/message_layout"/>
+
+    <LinearLayout
+        android:id="@+id/message_layout"
+        android:layout_width="match_parent"
+        android:background="@color/user_transparent"
+        android:layout_marginTop="2dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="50dp"
+        android:paddingLeft="50dp"
+        android:paddingRight="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/add_chat"
+            android:background="@drawable/chat_editor"
+            android:layout_width="0dp"
+            android:gravity="center_vertical"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:paddingLeft="12dp"
+            android:paddingStart="12dp"
+            android:hint="@string/write_message"/>
+
+        <ImageView
+            android:id="@+id/send_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/user_transparent"
+            app:srcCompat="@drawable/ic_send_black_24dp"
+            android:tint="@color/transparent_blue"
+            android:layout_marginLeft="8dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/send_button"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
 
 </RelativeLayout>

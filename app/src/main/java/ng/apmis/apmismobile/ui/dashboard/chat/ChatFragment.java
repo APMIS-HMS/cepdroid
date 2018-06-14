@@ -49,14 +49,14 @@ public class ChatFragment extends Fragment {
                 Toast.makeText(getActivity(), selectedOption.getmOption(), Toast.LENGTH_SHORT).show();
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .add(R.id.fragment_container, new ChatContext())
-                        .addToBackStack(null)
+                        .add(R.id.fragment_container, new ChatContextFragment())
+                        .addToBackStack("bot")
                         .commit();
             } else {
                 Toast.makeText(getActivity(), selectedOption.getmOption(), Toast.LENGTH_SHORT).show();
                 /*getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .add(R.id.fragment_container, new ChatContext())
+                        .add(R.id.fragment_container, new ChatContextFragment())
                         .addToBackStack(null)
                         .commit();*/
             }
