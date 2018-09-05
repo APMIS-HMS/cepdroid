@@ -100,5 +100,11 @@ public class SharedPreferencesManager {
         return pref.getString(USER_PASSWORD, "");
     }
 
+    public String getStoredUserAccessToken() {
+        return pref.getString(ACCESS_TOKEN, "");
+    }
 
+    public String getPersonId() {
+        return pref.getString(PERSON_ID, "");
+    }
 }

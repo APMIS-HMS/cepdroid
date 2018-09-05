@@ -7,6 +7,7 @@ import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.ApmisDatabase;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
+import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
 
 
 /**
@@ -45,6 +46,11 @@ public class InjectorUtils {
     public static PersonFactory providePersonFactory (Context context) {
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new PersonFactory(apmisRepository);
+    }
+
+    public static AddAppointmentViewModelFactory provideAppointmentViewModelFactory(Context context){
+        ApmisNetworkDataSource networkDataSource = provideNetworkData(context);
+        return new AddAppointmentViewModelFactory(networkDataSource);
     }
 
 }

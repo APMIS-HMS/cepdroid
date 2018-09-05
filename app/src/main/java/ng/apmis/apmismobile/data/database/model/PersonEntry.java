@@ -11,6 +11,9 @@ import com.google.gson.annotations.Expose;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import ng.apmis.apmismobile.annotations.Exclude;
 
 /**
  * Person model has all details about the person (Patient)
@@ -30,23 +33,24 @@ public class PersonEntry {
     private String securityQuestion;
     private String securityAnswer;
     private String primaryContactPhoneNo;
-    @Expose
+    @Exclude
     private String secondaryContactPhoneNo;
     private String dateOfBirth;
     private String email;
     private String otherNames;
     private String biometric; //Buffer according to web
-    @Expose
+    @Exclude
     private String personProfessions; //[personProfessionsSchema]
     private String nationality;
     private String stateOfOrigin;
     private String lgaOfOrigin;
     private String profileImageObject; //Store Image uri
+    @Exclude
     private String homeAddress;
     private String maritalStatus;
-    @Expose
+    @Exclude
     private String nextOfKin;
-    @Expose
+    @Exclude
     private String wallet;
 
     @Ignore

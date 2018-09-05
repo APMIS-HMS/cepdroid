@@ -113,13 +113,17 @@
                 android:text="@string/your_schedule"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
-            <Spinner
-                android:id="@+id/your_schedule_spinner"
+            <TextView
+                android:id="@+id/your_schedule_textview"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginBottom="@dimen/activity_horizontal_margin"
-                android:background="@drawable/spinner_background_no_background_color"
-                android:entries="@array/select_time" />
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                android:text="@string/select_your_schedule"
+                android:drawableRight="@drawable/ic_schedule_date"
+                android:background="@drawable/textview_background_no_background_color"/>
 
             <Switch
                 android:id="@+id/set_reminder_switch"

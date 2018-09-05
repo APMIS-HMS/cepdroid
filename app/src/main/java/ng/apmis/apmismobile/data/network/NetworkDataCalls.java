@@ -9,19 +9,25 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.data.database.facilityModel.Category;
+import ng.apmis.apmismobile.data.database.facilityModel.ScheduledClinic;
+import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
@@ -35,11 +41,16 @@ final class NetworkDataCalls {
     private static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
 
     JSONObject dataResponse, errorResponse;
+    private Gson gson;
     private Context context;
     RequestQueue queue;
 
     public NetworkDataCalls(Context context) {
         this.context = context;
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setExclusionStrategies(new AnnotationExclusionStrategy());
+        gsonBuilder.setDateFormat("M/d/yy hh:mm a");
+        gson = gsonBuilder.create();
         queue = Volley.newRequestQueue(context);
     }
 
@@ -176,5 +187,187 @@ final class NetworkDataCalls {
     public String[] getSecurityQuestions() {
         return null;
     }
+
+
+    public void fetchPatientDetailsForPerson(Context context, String personId, String accessToken){
+
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "patients?personId=" + personId, null, response -> {
+
+            Log.v("Patient response", String.valueOf(response));
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                if (jsonArray.length()>0) {
+
+                    List<Patient> patientDetails = Arrays.asList(gson.fromJson(jsonArray.toString(), Patient[].class));
+
+                    Log.v("Patient responseEntry", patientDetails.get(0).toString());
+
+                    InjectorUtils.provideNetworkData(context).setPatientDetailsForPerson(patientDetails);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Patient error", String.valueOf(error.getMessage()));
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        queue.add(jsonArrayRequest);
+    }
+
+    public void fetchClinicsForFacility(Context context, String facilityId, String accessToken){
+        Log.d("Clinic response", "Started fetch patient o");
+
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "schedules?facilityId=" + facilityId, null, response -> {
+
+            Log.v("Clinic response", String.valueOf(response));
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                if (jsonArray.length()>0) {
+
+                    List<ScheduledClinic> scheduledClinics = Arrays.asList(gson.fromJson(jsonArray.toString(), ScheduledClinic[].class));
+
+                    Log.v("Clinic responseEntry", scheduledClinics.get(0).toString());
+
+                    InjectorUtils.provideNetworkData(context).setClinicsForFacility(scheduledClinics);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Clinic error", String.valueOf(error.getMessage()));
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        queue.add(jsonArrayRequest);
+    }
+
+    public void fetchCategoriesForFacility(Context context, String facilityId, String accessToken){
+        Log.d("Services response", "Started fetch patient o");
+
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "organisation-services?facilityId=" + facilityId, null, response -> {
+
+            Log.v("Services response", String.valueOf(response));
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+                JSONArray categoryArray = new JSONArray();
+
+                if (jsonArray.length()>0) {
+                    categoryArray = jsonArray.getJSONObject(0).getJSONArray("categories");
+                }
+
+                if (categoryArray.length()>0) {
+
+                    List<Category> categories = Arrays.asList(gson.fromJson(categoryArray.toString(), Category[].class));
+
+                    Log.v("Services responseEntry", categories.get(0).toString());
+
+                    InjectorUtils.provideNetworkData(context).setServicesForFacility(categories);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Services error", String.valueOf(error.getMessage()));
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        queue.add(jsonArrayRequest);
+    }
+
+    public void fetchEmployeesForFacility(Context context, String facilityId, String accessToken){
+        Log.d("Employees response", "Started fetch");
+
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "employees?facilityId=" + facilityId, null, response -> {
+
+            Log.v("Employees response", String.valueOf(response));
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                if (jsonArray.length()>0) {
+
+                    List<Employee> employees = Arrays.asList(gson.fromJson(jsonArray.toString(), Employee[].class));
+
+                    Log.v("Employees responseEntry", employees.get(0).toString());
+
+                    InjectorUtils.provideNetworkData(context).setEmployeesForFacility(employees);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Employees error", String.valueOf(error.getMessage()));
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        queue.add(jsonArrayRequest);
+    }
+
 
 }

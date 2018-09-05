@@ -4,9 +4,12 @@ package ng.apmis.apmismobile.data;
 import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
+import java.util.List;
+
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.ApmisDao;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
 /**
@@ -99,6 +102,8 @@ public class ApmisRepository {
     private void startFetchPersonDataService() {
         mApmisNetworkDataSource.startPersonDataFetchService();
     }
+
+
 
 
 }
