@@ -32,7 +32,7 @@ public class EmployeeAdapter extends ArrayAdapter {
     }
 
     public void clear(){
-        mEmployee = new ArrayList<>();
+        mEmployee.clear();
         notifyDataSetChanged();
     }
 

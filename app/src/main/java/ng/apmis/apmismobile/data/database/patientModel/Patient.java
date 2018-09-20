@@ -13,26 +13,18 @@ public class Patient {
     private String createdAt;
     private String personId;
     private String facilityId;
-    private List<Object> timeLines = null;
-    private List<Object> clientsNo = null;
-    private List<Object> tags = null;
-    private List<Object> orders = null;
     private List<PaymentPlan> paymentPlan = null;
     private Boolean isActive;
     private String age;
     private PersonEntry personDetails;
     private Facility facilityObj;
 
-    public Patient(String _id, String updatedAt, String createdAt, String personId, String facilityId, List<Object> timeLines, List<Object> clientsNo, List<Object> tags, List<Object> orders, List<PaymentPlan> paymentPlan, Boolean isActive, String age, PersonEntry personDetails, Facility facilityObj) {
+    public Patient(String _id, String updatedAt, String createdAt, String personId, String facilityId, List<PaymentPlan> paymentPlan, Boolean isActive, String age, PersonEntry personDetails, Facility facilityObj) {
         this._id = _id;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
         this.personId = personId;
         this.facilityId = facilityId;
-        this.timeLines = timeLines;
-        this.clientsNo = clientsNo;
-        this.tags = tags;
-        this.orders = orders;
         this.paymentPlan = paymentPlan;
         this.isActive = isActive;
         this.age = age;
@@ -78,38 +70,6 @@ public class Patient {
 
     public void setFacilityId(String facilityId) {
         this.facilityId = facilityId;
-    }
-
-    public List<Object> getTimeLines() {
-        return timeLines;
-    }
-
-    public void setTimeLines(List<Object> timeLines) {
-        this.timeLines = timeLines;
-    }
-
-    public List<Object> getClientsNo() {
-        return clientsNo;
-    }
-
-    public void setClientsNo(List<Object> clientsNo) {
-        this.clientsNo = clientsNo;
-    }
-
-    public List<Object> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Object> tags) {
-        this.tags = tags;
-    }
-
-    public List<Object> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Object> orders) {
-        this.orders = orders;
     }
 
     public List<PaymentPlan> getPaymentPlan() {

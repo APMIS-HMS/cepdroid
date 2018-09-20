@@ -8,6 +8,9 @@ import ng.apmis.apmismobile.data.database.ApmisDatabase;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.documentation.RecordsListViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
 
 
 /**
@@ -48,9 +51,25 @@ public class InjectorUtils {
         return new PersonFactory(apmisRepository);
     }
 
-    public static AddAppointmentViewModelFactory provideAppointmentViewModelFactory(Context context){
-        ApmisNetworkDataSource networkDataSource = provideNetworkData(context);
-        return new AddAppointmentViewModelFactory(networkDataSource);
+    public static AddAppointmentViewModelFactory provideAddAppointmentViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new AddAppointmentViewModelFactory(apmisRepository);
     }
+
+    public static AppointmentViewModelFactory provideAppointmentViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new AppointmentViewModelFactory(apmisRepository, context);
+    }
+
+    public static RecordsListViewModelFactory provideRecordsViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new RecordsListViewModelFactory(apmisRepository, context);
+    }
+
+    public static HealthProfileViewModelFactory provideHealthProfileViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new HealthProfileViewModelFactory(apmisRepository, context);
+    }
+
 
 }

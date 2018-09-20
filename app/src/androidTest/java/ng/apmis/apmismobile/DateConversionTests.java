@@ -76,7 +76,7 @@ public class DateConversionTests {
         scheduleItem.setStartTime("2018-02-06T06:00:00.000Z");
         scheduleItem.setEndTime("2018-02-06T20:00:00.000Z");
 
-        Date[] arr = AppUtils.getNextScheduleTimeLimits(scheduleItem, false);
+        Date[] arr = AppUtils.getNextScheduleTimeLimits(scheduleItem, false, null);
 
         Log.i(TAG, arr[0].toString());
         Log.i(TAG, arr[1].toString());

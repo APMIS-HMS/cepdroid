@@ -2,14 +2,15 @@ package ng.apmis.apmismobile.data;
 
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import java.util.List;
 
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.ApmisDao;
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
-import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
 /**
@@ -24,7 +25,7 @@ public class ApmisRepository {
     // For Singleton instantiation
     private static final Object LOCK = new Object();
     private static ApmisRepository sInstance;
-    private final ApmisDao mWeatherDao;
+    private final ApmisDao mApmisDao;
     private final ApmisNetworkDataSource mApmisNetworkDataSource;
     private final APMISAPP mExecutors;
     private boolean mInitialized = false;
@@ -32,7 +33,7 @@ public class ApmisRepository {
     private ApmisRepository(ApmisDao apmisDao,
                                ApmisNetworkDataSource apmisNetworkDataSource,
                                APMISAPP executors) {
-        mWeatherDao = apmisDao;
+        mApmisDao = apmisDao;
         mApmisNetworkDataSource = apmisNetworkDataSource;
         mExecutors = executors;
         LiveData<PersonEntry[]> networkData = mApmisNetworkDataSource.getCurrentPersonData();
@@ -43,7 +44,7 @@ public class ApmisRepository {
                 deleteOldData();
                 Log.d(LOG_TAG, "Old person detail deleted");
                 // Insert our new weather data into Sunshine's database
-                mWeatherDao.insertData(newpersonData);
+                mApmisDao.insertData(newpersonData);
                 Log.d(LOG_TAG, "New values inserted");
             });
         });
@@ -80,9 +81,13 @@ public class ApmisRepository {
         });
     }
 
+    public ApmisNetworkDataSource getNetworkDataSource(){
+        return this.mApmisNetworkDataSource;
+    }
+
     public LiveData<PersonEntry> getUserData () {
         initializeData();
-        return mWeatherDao.getUserData();
+        return mApmisDao.getUserData();
     }
 
 
@@ -90,7 +95,7 @@ public class ApmisRepository {
      * Remove all old person data to allow new update
      */
     private void deleteOldData () {
-        mWeatherDao.deleteOldData();
+        mApmisDao.deleteOldData();
     }
 
     //TODO consider condition to check before fetching data from server
@@ -103,6 +108,35 @@ public class ApmisRepository {
         mApmisNetworkDataSource.startPersonDataFetchService();
     }
 
+    /**
+     *
+     * @param appointment
+     */
+    public void insertAppointment(Appointment appointment){
+        mExecutors.diskIO().execute(() -> {
+            mApmisDao.insertAppointment(appointment);
+        });
+    }
+
+    public void insertAppointmentsForPatient(List<Appointment> appointments){
+        for (Appointment appointment : appointments){
+            appointment.setFacilityName(appointment.getPatientDetails().getFacilityObj().getName());
+            appointment.setPersonId(appointment.getPatientDetails().getPersonId());
+            insertAppointment(appointment);
+        }
+    }
+
+    public LiveData<List<Appointment>> getAppointmentsForPatient(String patientId){
+        return mApmisDao.findAppointmentsForPatient(patientId);
+    }
+
+    public LiveData<Appointment> findAppointmentById(String id){
+        return mApmisDao.findAppointmentById(id);
+    }
+
+    public Appointment getAppointmentById(String id){
+        return mApmisDao.getAppointmentById(id);
+    }
 
 
 

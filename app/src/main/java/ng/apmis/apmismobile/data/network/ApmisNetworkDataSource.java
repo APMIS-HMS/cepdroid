@@ -23,6 +23,10 @@ import java.util.concurrent.TimeUnit;
 
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
+import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
+import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
+import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduledClinic;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
@@ -30,6 +34,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * Provides an api for getting network data
@@ -56,11 +61,16 @@ public class ApmisNetworkDataSource {
     private final MutableLiveData<PersonEntry[]> mDownloadedPersonData;
     private final SharedPreferencesManager sharedPreferencesManager;
 
+    private List<AppointmentType> appointmentTypes;
+    private List<OrderStatus> orderStatuses;
+
     private MutableLiveData<List<Patient>> patientDetails;
     private MutableLiveData<List<ScheduledClinic>> clinics;
     private MutableLiveData<List<ScheduleItem>> schedules;
     private MutableLiveData<List<Employee>> employees;
+    private MutableLiveData<List<Documentation>> documentations;
     private MutableLiveData<List<Service>> services;
+    private MutableLiveData<Appointment> appointment;
 
 
     ApmisNetworkDataSource(Context context, APMISAPP executorThreads) {
@@ -72,6 +82,11 @@ public class ApmisNetworkDataSource {
         schedules = new MutableLiveData<>();
         employees = new MutableLiveData<>();
         services = new MutableLiveData<>();
+        documentations = new MutableLiveData<>();
+        appointment = new MutableLiveData<>();
+
+        appointmentTypes = new ArrayList<>();
+        orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
     }
 
@@ -175,6 +190,26 @@ public class ApmisNetworkDataSource {
     }
 
     /**
+     * Fetch Appointment types
+     */
+    public void fetchAppointmentTypes(){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Appointment Types started");
+            new NetworkDataCalls(mContext).fetchAppointmentTypes(mContext, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch Appointment types
+     */
+    public void fetchOrderStatuses(){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Order Statuses started");
+            new NetworkDataCalls(mContext).fetchOrderStatuses(mContext, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
      * Fetch ClinicSchedule Objects for the facility Id provided
      * @param facilityId Facility Id of the facility
      */
@@ -205,6 +240,66 @@ public class ApmisNetworkDataSource {
             Log.d(LOG_TAG, "Fetch Employees started");
             new NetworkDataCalls(mContext).fetchEmployeesForFacility(mContext, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
         });
+    }
+
+    /**
+     *
+     * @param appointment
+     */
+    public void submitAppointment(Appointment appointment) {
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Submit appointment started");
+            new NetworkDataCalls(mContext).submitAppointment(mContext, appointment, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    public void fetchAppointmentsForPerson(String personId) {
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch appointments started");
+            new NetworkDataCalls(mContext).fetchAppointmentsForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch Employee Array using the facility Id provided
+     * @param personId Person's Id
+     */
+    public void fetchMedicalRecordsForPerson(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Records started");
+            new NetworkDataCalls(mContext).fetchMedicalRecordForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+    //Order Status
+
+    public void setOrderStatuses(List<OrderStatus> orderStatuses){
+        this.orderStatuses = orderStatuses;
+    }
+
+    public List<OrderStatus> getOrderStatuses(){
+        return this.orderStatuses;
+    }
+
+
+    //Appointment Types
+
+    public void setAppointmentTypes(List<AppointmentType> appointmentTypes){
+        this.appointmentTypes = appointmentTypes;
+    }
+
+    public List<AppointmentType> getAppointmentTypes(){
+        return this.appointmentTypes;
     }
 
 
@@ -279,7 +374,6 @@ public class ApmisNetworkDataSource {
     //Patients
 
     public void setPatientDetailsForPerson(List<Patient> patientDetails){
-        //Log.d(LOG_TAG, "set patients started: "+patientDetails.get(0).getPersonDetails().getFirstName());
         this.patientDetails.postValue(patientDetails);
     }
 
@@ -288,5 +382,22 @@ public class ApmisNetworkDataSource {
     }
 
 
+    //Appointment
+    public void setAppointment(Appointment appointment){
+        this.appointment.postValue(appointment);
+    }
+
+    public MutableLiveData<Appointment> getAppointment() {
+        return appointment;
+    }
+
+    //Documentation
+    public void setDocumentationsForPerson(List<Documentation> documentations){
+        this.documentations.postValue(documentations);
+    }
+
+    public MutableLiveData<List<Documentation>> getDocumentationsForPerson(){
+        return this.documentations;
+    }
 
 }

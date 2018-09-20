@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 
@@ -15,6 +14,7 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.onboarding.OnboardingActivity;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
+import ng.apmis.apmismobile.utilities.Constants;
 
 public class WelcomeScreenActivity extends AppCompatActivity {
 
@@ -44,11 +44,7 @@ public class WelcomeScreenActivity extends AppCompatActivity {
                     finish();
 
                 } else {
-                    if (prefs.isLoggedIn()) {
-                        launchHomeScreen(prefs.isLoggedIn());
-                    } else {
-                        launchHomeScreen(false);
-                    }
+                    launchHomeScreen(false);
 
                 }
             }, 2000);
@@ -63,10 +59,18 @@ public class WelcomeScreenActivity extends AppCompatActivity {
             startActivity(new Intent(WelcomeScreenActivity.this, DashboardActivity.class));
             finish();
         } else {
-            startActivity(new Intent(WelcomeScreenActivity.this, LoginActivity.class));
+            Intent intent = new Intent(WelcomeScreenActivity.this, LoginActivity.class);
+            provideNotificationExtras(intent);
+            startActivity(intent);
             finish();
         }
 
+    }
+
+    private void provideNotificationExtras(Intent intent){
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
+            intent.putExtra(Constants.NOTIFICATION_ACTION, Constants.APPOINTMENTS);
+        }
     }
 
 

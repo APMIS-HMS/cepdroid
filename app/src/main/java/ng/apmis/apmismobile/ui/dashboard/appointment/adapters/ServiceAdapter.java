@@ -32,7 +32,7 @@ public class ServiceAdapter extends ArrayAdapter {
     }
 
     public void clear(){
-        mServices = new ArrayList<>();
+        mServices.clear();
         notifyDataSetChanged();
     }
 

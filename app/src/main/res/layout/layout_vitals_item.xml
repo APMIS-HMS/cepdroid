@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/date_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Date: 12 Sep, 2018 00:00:00"/>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="Pulse Rate"/>
+
+            <TextView
+                android:id="@+id/pulse_rate_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pulse Rate Value: 0"/>
+
+            <TextView
+                android:id="@+id/pulse_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location: Body part"/>
+
+            <TextView
+                android:id="@+id/pulse_rhythm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rhythm: Regular"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="Body Mass"/>
+
+            <TextView
+                android:id="@+id/body_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Height: 0"/>
+
+            <TextView
+                android:id="@+id/body_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weight: 0"/>
+
+            <TextView
+                android:id="@+id/body_bmi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BMI: 20"/>
+
+        </LinearLayout>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="Blood Pressure"/>
+
+            <TextView
+                android:id="@+id/systolic_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Systolic: 0"/>
+
+            <TextView
+                android:id="@+id/diastolic_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Diastolic: 0"/>
+
+            <TextView
+                android:id="@+id/location_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location: Body part"/>
+
+            <TextView
+                android:id="@+id/pressure_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Position: Standing part"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="Abdominal Condition"/>
+
+            <TextView
+                android:id="@+id/spo2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="spo2: 10"/>
+
+            <TextView
+                android:id="@+id/girth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="girth: 10"/>
+
+        </LinearLayout>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/resp_rate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="Respiratory Rate: 13"/>
+
+        <TextView
+            android:id="@+id/temperature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="Temperature: 96"/>
+
+
+    </TableRow>
+
+
+
+</LinearLayout>

@@ -31,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
+import ng.apmis.apmismobile.utilities.AlarmManagerSingleton;
 
 public class SignupActivity extends AppCompatActivity implements SignupFragmentA.OnFragmentInteractionListener, SignupFragmentB.OnFragmentInteractionListener {
 

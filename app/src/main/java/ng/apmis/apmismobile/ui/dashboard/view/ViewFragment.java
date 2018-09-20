@@ -18,6 +18,9 @@ import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.ModuleAdapter;
 import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
+import ng.apmis.apmismobile.ui.dashboard.documentation.MedicalRecordsFragment;
+import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileFragment;
+import ng.apmis.apmismobile.utilities.Constants;
 
 public class ViewFragment extends Fragment {
 
@@ -34,9 +37,9 @@ public class ViewFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_view, container, false);
         ButterKnife.bind(this, rootView);
 
-        optionItems.add(new ModuleListModel("APPOINTMENTS", R.drawable.ic_appointents));
+        optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointents));
         optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
-        optionItems.add(new ModuleListModel("MEDICAL RECORD", R.drawable.ic_medical_records));
+        optionItems.add(new ModuleListModel(Constants.MEDICAL_RECORDS, R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel("PRESCRIPTION", R.drawable.ic_prescription));
         optionItems.add(new ModuleListModel("HEALTH PROFILE", R.drawable.ic_health_profile));
         optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
@@ -54,10 +57,13 @@ public class ViewFragment extends Fragment {
 
         listItems.setOnItemClickListener((parent, view, position, id) -> {
             ModuleListModel selectedOption = (ModuleListModel) parent.getItemAtPosition(position);
+
+            if (!selectedOption.getmOption().equalsIgnoreCase(Constants.APPOINTMENTS))
                 Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
+
                 switch (selectedOption.getmOption()) {
-                    case "MEDICAL RECORD":
-                        //setFragment(new AppointmentFragment());
+                    case Constants.MEDICAL_RECORDS:
+                        setFragment(new MedicalRecordsFragment());
                         break;
                     case "MEDICATION":
                         //setFragment(new AppointmentFragment());
@@ -66,9 +72,9 @@ public class ViewFragment extends Fragment {
                         //setFragment(new AppointmentFragment());
                         break;
                     case "HEALTH PROFILE":
-                        //setFragment(new AppointmentFragment());
+                        setFragment(new HealthProfileFragment());
                         break;
-                    case "APPOINTMENTS":
+                    case Constants.APPOINTMENTS:
                         setFragment(new AppointmentFragment());
                         break;
                     case "HEALTH INSURANCE":
@@ -98,7 +104,7 @@ public class ViewFragment extends Fragment {
     void setFragment (Fragment fragment) {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fragment_container, fragment)
+                .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }

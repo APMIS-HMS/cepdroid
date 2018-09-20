@@ -12,12 +12,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -26,6 +23,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
 import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
@@ -34,6 +32,7 @@ import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
+import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class DashboardActivity extends AppCompatActivity {
@@ -125,6 +124,9 @@ public class DashboardActivity extends AppCompatActivity {
             popupMenu.show();
         });
 
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
+            jumpToNotifiedFragment();
+        }
 
     }
 
@@ -161,6 +163,26 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         bottomNavVisibility(true);
+    }
+
+    private void jumpToNotifiedFragment(){
+        Log.i("Appointment", getIntent().getExtras().getString(Constants.NOTIFICATION_ACTION));
+
+
+        if (getIntent().getExtras().getString(Constants.NOTIFICATION_ACTION).equals(Constants.APPOINTMENTS)) {
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new ViewFragment(), "HOME")
+                    .addToBackStack(null)
+                    .setReorderingAllowed(true)
+                    .commit();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new AppointmentFragment(), "APPOINTMENT")
+                    .addToBackStack(null)
+                    .setReorderingAllowed(true)
+                    .commit();
+        }
     }
 
     private void selectFragment(MenuItem item) {

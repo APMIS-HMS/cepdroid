@@ -33,7 +33,7 @@ public class ScheduleAdapter extends ArrayAdapter{
     }
 
     public void clear(){
-        mSchedules = new ArrayList<>();
+        mSchedules.clear();
         notifyDataSetChanged();
     }
 
@@ -75,7 +75,7 @@ public class ScheduleAdapter extends ArrayAdapter{
             schedule = mSchedules.get(position-1);
             startDate = AppUtils.dbStringToLocalDate(schedule.getStartTime());
             endDate = AppUtils.dbStringToLocalDate(schedule.getEndTime());
-            text.setText(String.format("%s, %s - %s", schedule.getDay()+"s", AppUtils.timeToReadableString(startDate), AppUtils.timeToReadableString(endDate)));
+            text.setText(String.format("%s, %s - %s", schedule.getDay()+"s", AppUtils.dateToReadableTimeString(startDate), AppUtils.dateToReadableTimeString(endDate)));
         } else {
             text.setText("Select Schedule");
         }
@@ -104,7 +104,7 @@ public class ScheduleAdapter extends ArrayAdapter{
             startDate = AppUtils.dbStringToLocalDate(schedule.getStartTime());
             endDate = AppUtils.dbStringToLocalDate(schedule.getEndTime());
             text.setTextColor(Color.BLACK);
-            text.setText(String.format("%s, %s - %s", schedule.getDay()+"s", AppUtils.timeToReadableString(startDate), AppUtils.timeToReadableString(endDate)));
+            text.setText(String.format("%s, %s - %s", schedule.getDay()+"s", AppUtils.dateToReadableTimeString(startDate), AppUtils.dateToReadableTimeString(endDate)));
         } else {
             text.setText("Select Schedule");
             text.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryDark));

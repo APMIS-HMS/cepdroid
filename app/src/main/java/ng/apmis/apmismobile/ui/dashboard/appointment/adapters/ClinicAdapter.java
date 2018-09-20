@@ -32,7 +32,7 @@ public class ClinicAdapter extends ArrayAdapter {
     }
 
     public void clear(){
-        mClinics = new ArrayList<>();
+        mClinics.clear();
         notifyDataSetChanged();
     }
 
