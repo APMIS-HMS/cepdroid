@@ -1,9 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
     tools:context=".ui.dashboard.profile.ProfileActivity">
+    
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+        <View
+            android:id="@+id/spacer_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:background="@drawable/profile_options_background">
+
+        </LinearLayout>
+        
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/spacer_view2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.375"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.25"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_blood_pressure_gauge"
+            app:civ_border_color="@color/colorPrimaryDark"
+            app:civ_border_width="6dp" />
+
+        <LinearLayout
+            android:id="@+id/details_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3.5"
+            android:paddingTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/username_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="@string/dr_mofe_ejegi"/>
+
+            <TextView
+                android:id="@+id/apmis_id_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:text="EA-27242"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</FrameLayout>
