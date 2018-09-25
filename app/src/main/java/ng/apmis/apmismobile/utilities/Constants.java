@@ -9,5 +9,6 @@ public class Constants {
     public final static String APPOINTMENTS = "APPOINTMENTS";
     public final static String MEDICAL_RECORDS = "MEDICAL RECORDS";
     public final static String HEALTH_PROFILE = "HEALTH PROFILE";
+    public final static String PRESCRIPTION = "PRESCRIPTIONS";
 
 }

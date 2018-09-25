@@ -200,5 +200,6 @@
     <string name="body_mass_index">BMI</string>
     <string name="temp_label">Temp (&#176;C) .</string>
     <string name="dr_mofe_ejegi">Dr. Mofe Ejegi</string>
+    <string name="cart">Cart</string>
 
 </resources>

@@ -3,37 +3,115 @@ package ng.apmis.apmismobile.data.database.facilityModel;
 
 import java.util.List;
 
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * Base object representing any organization.
+ */
 public class Facility {
 
     private String _id;
-    private String website;
-    private String shortName;
-    private String facilityTypeId;
-    private String facilityClassId;
-    private String facilityOwnershipId;
-    private String street;
-    private String city;
-    private String state;
-    private String country;
-    private Address address;
-    private String primaryContactPhoneNo;
-    private String cacNo;
-    private String email;
-    private String name;
     private String updatedAt;
     private String createdAt;
+
+    /**
+     * Registered name of the Facility
+     */
+    private String name;
+
+    /**
+     * URL of the Facility's Website
+     */
+    private String website;
+
+    /**
+     * Abbreviated name of the Facility, if available
+     */
+    private String shortName;
+
+    /**
+     * Readable String Id representing the type of facility
+     * Usually could be "Hospital"
+     */
+    private String facilityTypeId;
+
+    /**
+     * Readable String Id representing the Class of this facility
+     * Usually either "National" or "International"
+     */
+    private String facilityClassId;
+
+    /**
+     * Readable String Id representing the type of ownership
+     * in which this Facility is owned
+     */
+    private String facilityOwnershipId;
+
+    /**
+     * Street level address of this Facility
+     */
+    private String street;
+
+    /**
+     * City in which the Facility is Located
+     */
+    private String city;
+
+    /**
+     * State/Province in which this Facility is located
+     */
+    private String state;
+
+    /**
+     * Country in which this Facility is located
+     */
+    private String country;
+
+    /**
+     * {@link Address} component of the Facility
+     */
+    private Address address;
+
+    /**
+     * The major phone number of this Facility
+     */
+    private String primaryContactPhoneNo;
+
+    /**
+     * Working e-mail address of the Facility
+     */
+    private String email;
+
+    /**
+     * Corporate Affairs Commission Registration
+     * Number of this Facility or any other legal equivalent
+     */
+    private String cacNo;
+
+    /**
+     * Accessible {@link Department}s in the Facility
+     */
+    private List<Department> departments = null;
+
+    /**
+     * Facility Id(s) in which this Facility is a sub-facility of
+     */
+    private List<String> memberof = null;
+
+    /**
+     * Ids of the sub-facilities of this parent Facility
+     */
+    private List<String> memberFacilities = null;
+
     private List<Object> invitees = null;
     private boolean isValidRegistration;
     private boolean status;
     private boolean isTokenVerified;
     private List<MinorLocation> minorLocations = null;
     private List<Object> facilitymoduleId = null;
-    private List<Department> departments = null;
     private List<Object> secondaryContactPhoneNo = null;
-    private List<Object> memberof = null;
-    private List<String> memberFacilities = null;
     private boolean isHostFacility;
     private boolean isNetworkFacility;
+
 
     public Facility(String _id, String website, String shortName, String facilityTypeId,
                     String facilityClassId, String facilityOwnershipId, String street, String city,
@@ -42,7 +120,7 @@ public class Facility {
                     List<Object> invitees, boolean isValidRegistration, boolean status,
                     boolean isTokenVerified, List<MinorLocation> minorLocations,
                     List<Object> facilitymoduleId, List<Department> departments,
-                    List<Object> secondaryContactPhoneNo, List<Object> memberof,
+                    List<Object> secondaryContactPhoneNo, List<String> memberof,
                     List<String> memberFacilities, boolean isHostFacility, boolean isNetworkFacility) {
         this._id = _id;
         this.website = website;
@@ -275,11 +353,11 @@ public class Facility {
         this.secondaryContactPhoneNo = secondaryContactPhoneNo;
     }
 
-    public List<Object> getMemberof() {
+    public List<String> getMemberof() {
         return memberof;
     }
 
-    public void setMemberof(List<Object> memberof) {
+    public void setMemberof(List<String> memberof) {
         this.memberof = memberof;
     }
 

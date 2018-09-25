@@ -6,17 +6,51 @@ import com.google.gson.annotations.SerializedName;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 
+/**
+ * A {@link PersonEntry} becomes a Patient when enrolled in a {@link Facility}
+ * The Patient object has extra fields alongside the underlying PersonEntry
+ */
 public class Patient {
 
     private String _id;
     private String updatedAt;
     private String createdAt;
+
+    /**
+     * Unique Person id
+     */
     private String personId;
+
+    /**
+     * Unique facility Id of the Facility in which this Patient is enrolled in
+     */
     private String facilityId;
+
+    /**
+     * PaymentPlan of the Patient
+     */
     private List<PaymentPlan> paymentPlan = null;
     private Boolean isActive;
     private String age;
+
+    /**
+     * Underlying Person Object of the Patient
+     */
     private PersonEntry personDetails;
+
+    /**
+     * Facility in which the Patient is enrolled in. <br/>
+     * <b>NOTE: Facility Object here refers to only metadata and should
+     * not be used for calling deep data</b><br/>
+     * Only the following fields can be called from here
+     * <ul>
+     *     <li>{@link Facility#_id}</li>
+     *     <li>{@link Facility#name}</li>
+     *     <li>{@link Facility#email}</li>
+     *     <li>{@link Facility#shortName}</li>
+     *     <li>{@link Facility#primaryContactPhoneNo}</li>
+     * </ul>
+     */
     private Facility facilityObj;
 
     public Patient(String _id, String updatedAt, String createdAt, String personId, String facilityId, List<PaymentPlan> paymentPlan, Boolean isActive, String age, PersonEntry personDetails, Facility facilityObj) {

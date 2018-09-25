@@ -1,11 +1,23 @@
 package ng.apmis.apmismobile.data.database.facilityModel;
 
+/**
+ * Created by mofeejegi.<br/>
+ * Class representing medical services offered by a <code>Clinic</code>
+ */
 public class Service {
 
     private String _id;
     private String createdAt;
     private String updatedAt;
+
+    /**
+     * Name/title of the Service
+     */
     private String name;
+
+    /**
+     * Code name (short representation) of the Service
+     */
     private String code;
 
     public String getId() {

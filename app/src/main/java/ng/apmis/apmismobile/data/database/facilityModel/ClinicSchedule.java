@@ -4,7 +4,14 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ScheduledClinic {
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * <code>ClinicSchedule</code> body class containing a list of individual
+ * <code>ScheduleItem</code>s alongside other meta-data.
+ * A <code>ClinicSchedule</code> represents the available <code>Appointment</code> times
+ * rolled out by every <code>Clinic</code> within a <code>Facility</code>
+ */
+public class ClinicSchedule {
 
     private String _id;
     private String updatedAt;

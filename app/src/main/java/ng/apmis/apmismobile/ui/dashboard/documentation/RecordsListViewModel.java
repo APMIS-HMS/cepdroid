@@ -28,6 +28,4 @@ public class RecordsListViewModel extends ViewModel {
         return mDocumentations;
     }
 
-
-
 }

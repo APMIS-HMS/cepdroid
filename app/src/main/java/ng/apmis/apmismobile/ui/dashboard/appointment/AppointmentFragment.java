@@ -153,6 +153,7 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
         ((DashboardActivity)getActivity()).bottomNavVisibility(false);
+        ((DashboardActivity)getActivity()).profileImage.setVisibility(View.GONE);
         ((DashboardActivity)getActivity()).setToolBarTitle("APPOINTMENTS", false);
     }
 

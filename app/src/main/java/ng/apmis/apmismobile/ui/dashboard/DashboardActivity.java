@@ -42,7 +42,7 @@ public class DashboardActivity extends AppCompatActivity {
     @BindView(R.id.navigation)
     public BottomNavigationView mBottomNav;
     @BindView(R.id.img_profile)
-    CircleImageView profileImage;
+    public CircleImageView profileImage;
     PopupMenu popupMenu;
 
     @BindView(R.id.general_toolbar)
@@ -113,7 +113,7 @@ public class DashboardActivity extends AppCompatActivity {
                         startActivity(new Intent(this, ProfileActivity.class));
                         return true;
                     case R.id.sign_out:
-                        new SharedPreferencesManager(this).storeLoggedInUserKeys("", "", "", "");
+                        new SharedPreferencesManager(this).storeLoggedInUserDetails("", "", "", "");
                         startActivity(new Intent(this, LoginActivity.class));
                         finish();
                         return true;
@@ -178,7 +178,7 @@ public class DashboardActivity extends AppCompatActivity {
                     .commit();
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new AppointmentFragment(), "APPOINTMENT")
+                    .replace(R.id.fragment_container, new AppointmentFragment(), Constants.APPOINTMENTS)
                     .addToBackStack(null)
                     .setReorderingAllowed(true)
                     .commit();

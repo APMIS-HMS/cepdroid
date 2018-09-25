@@ -2,13 +2,25 @@ package ng.apmis.apmismobile.data.database.facilityModel;
 
 import java.util.List;
 
+/**
+ * A Category represents a group of {@link Service}s
+ * rendered/offered by a Clinic
+ */
 public class Category {
 
     private String _id;
-    private List<Service> services = null;
-    private Boolean canRemove;
     private String createdAt;
     private String updatedAt;
+
+    /**
+     * List of all Services in the Category
+     */
+    private List<Service> services = null;
+    private Boolean canRemove;
+
+    /**
+     * The name of the Category, as decided by the Clinic/Facility
+     */
     private String name;
 
     public String getId() {

@@ -1,26 +1,28 @@
 package ng.apmis.apmismobile.data.database.facilityModel;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import ng.apmis.apmismobile.utilities.AppUtils;
-
+/**
+ * Individual schedule rolled out by a <code>Clinic</code>
+ */
 public class ScheduleItem {
 
-
     private String _id;
-    private String endTime;
-    private String startTime;
-    private String day;
     private String updatedAt;
     private String createdAt;
 
+    /**
+     * Start time of the appointment Schedule
+     */
+    private String startTime;
+
+    /**
+     * End time of the appointment Schedule
+     */
+    private String endTime;
+
+    /**
+     * Day of the week in which the appointment is scheduled
+     */
+    private String day;
 
 
     public String getId() {
@@ -71,6 +73,10 @@ public class ScheduleItem {
         this.createdAt = createdAt;
     }
 
+    /**
+     * Assigns an integer for each day of the week
+     * @return the integer assigned for the weekday
+     */
     public int getDayAsInteger(){
 
         switch (getDay()){

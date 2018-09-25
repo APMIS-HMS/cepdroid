@@ -2,16 +2,34 @@ package ng.apmis.apmismobile.data.database.documentationModel;
 
 import android.support.annotation.NonNull;
 
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
-public class Vitals implements Comparable<Vitals>{
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * A special kind of {@link Document} body object which
+ * comprises of {@link Patient} vital signs.
+ */
+public class Vitals implements Comparable<Vitals> {
 
     private PulseRate pulseRate;
+
+    /**
+     * Rate of respiration at time of vitals collection, calculated per minute
+     */
     private Integer respiratoryRate;
+
+    /**
+     * Body temperature at time of vitals collection in &deg;C
+     */
     private Double temperature;
     private BodyMass bodyMass;
     private BloodPressure bloodPressure;
     private AbdominalCondition abdominalCondition;
+
+    /**
+     * Date which vitals were collected
+     */
     private String updatedAt;
 
     public PulseRate getPulseRate() {
@@ -92,6 +110,10 @@ public class Vitals implements Comparable<Vitals>{
         return Long.compare(date1, date2);
     }
 
+    /**
+     * Model Class encapsulating both spo2 and girth from
+     * the Abdominal region
+     */
     public static class AbdominalCondition {
 
         private Integer spo2;
@@ -123,9 +145,20 @@ public class Vitals implements Comparable<Vitals>{
 
     }
 
+    /**
+     * Blood Pressure information, including location
+     * in the body where B.P information was taken
+     */
     public static class BloodPressure {
 
+        /**
+         * Systolic blood pressure, in mmHg
+         */
         private Integer systolic;
+
+        /**
+         * Systolic blood pressure, in mmHg
+         */
         private Integer diastolic;
         private String location;
         private String position;
@@ -174,9 +207,20 @@ public class Vitals implements Comparable<Vitals>{
 
     }
 
+    /**
+     * Simple object encapsulating <code>height</code>, <code>weight</code>
+     * and body mass index as a patient's body mass.
+     */
     public static class BodyMass {
 
+        /**
+         * Patient height, in metres (m)
+         */
         private Double height;
+
+        /**
+         * Patient weight in kilograms (kg)
+         */
         private Double weight;
         private Double bmi;
 
@@ -215,6 +259,9 @@ public class Vitals implements Comparable<Vitals>{
 
     }
 
+    /**
+     * Pulse rate Information
+     */
     public static class PulseRate {
 
         private Integer pulseRateValue;

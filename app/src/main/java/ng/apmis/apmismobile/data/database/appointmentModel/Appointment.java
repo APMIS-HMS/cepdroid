@@ -4,14 +4,24 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.Room;
 
 import java.util.Date;
 
+import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
+import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
+import ng.apmis.apmismobile.data.database.facilityModel.Employee;
+import ng.apmis.apmismobile.data.database.facilityModel.Facility;
+import ng.apmis.apmismobile.data.database.facilityModel.Service;
+import ng.apmis.apmismobile.data.database.model.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
 /**
- * Created by Thadeus-APMIS on 6/11/2018.
+ * Created by Thadeus-APMIS on 6/11/2018. <br/>
+ * Model class representing appointments which
+ * carry details of a schedule between doctor and patient.
+ * Class is also a {@link Room} database entity
  */
 
 @Entity(tableName = "appointments", indices = {@Index(value = {"_id"}, unique = true)})
@@ -19,44 +29,80 @@ public class Appointment {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String facilityName;
-
-    @Ignore
-    private String clinicName;
-    @Ignore
-    private long appointmentDateTime;
-
     private String _id;
-    private String orderStatusId;
-    private String category;
-    private String startDate;
-    private String personId;
-    private String patientId;
-    private String facilityId;
-    private String doctorId;
-    private String clinicId;
-    private String appointmentTypeId;
-    private String appointmentReason;
     @Ignore
     private String createdAt;
     @Ignore
     private String updatedAt;
+
+    /**
+     * Registered Name of the {@link Facility}
+     */
+    private String facilityName;
+    private String orderStatusId;
+
+    /**
+     * The {@link Service} category name offered/rendered by the {@link Clinic}
+     */
+    private String category;
+
+    /**
+     * Start Date of the Scheduled appointment
+     */
+    private String startDate;
+
+    /**
+     * Unique Person Id for the {@link PersonEntry} who created this appointment
+     */
+    private String personId;
+
+    /**
+     * Unique Patient Id for the {@link Patient} who created this appointment
+     */
+    private String patientId;
+
+    /**
+     * Unique Facility Id representing the {@link Facility} in which this appointment was scheduled
+     */
+    private String facilityId;
+
+    /**
+     * Unique Employee (Doctor) Id for the {@link Employee} who the Patient wishes to see
+     * in this appointment
+     */
+    private String doctorId;
+
+    /**
+     * This actually represents the name of the {@link Clinic}
+     */
+    private String clinicId;
+
+    /**
+     * Representing the {@link AppointmentType} name
+     * Usually between "New" or "Follow Up"
+     */
+    private String appointmentTypeId;
+
+    /**
+     * Reason for scheduling appointment, as written by the {@link Patient}
+     */
+    private String appointmentReason;
+
+    /**
+     * Flag to check if this Appointment is still active or not
+     */
     private Boolean isActive;
     private String age;
 
+    /**
+     * The Patient responsible for scheduling this appointment.
+     */
     @Ignore
     private Patient patientDetails;
 
     @Ignore
     public Appointment(){
 
-    }
-
-    @Ignore
-    public Appointment(String facilityName, String clinicName, long appointmentDateTime) {
-        this.facilityName = facilityName;
-        this.clinicName = clinicName;
-        this.appointmentDateTime = appointmentDateTime;
     }
 
     public Appointment(int id, String facilityName, String _id, String orderStatusId, String category, String startDate, String personId, String patientId, String facilityId, String doctorId, String clinicId, String appointmentTypeId, String appointmentReason, Boolean isActive, String age) {
@@ -99,22 +145,6 @@ public class Appointment {
 
     public void setFacilityName(String facilityName) {
         this.facilityName = facilityName;
-    }
-
-    public String getClinicName() {
-        return clinicName;
-    }
-
-    public void setClinicName(String clinicName) {
-        this.clinicName = clinicName;
-    }
-
-    public long getAppointmentDateTime() {
-        return appointmentDateTime;
-    }
-
-    public void setAppointmentDateTime(long appointmentDateTime) {
-        this.appointmentDateTime = appointmentDateTime;
     }
 
     public String getOrderStatusId() {

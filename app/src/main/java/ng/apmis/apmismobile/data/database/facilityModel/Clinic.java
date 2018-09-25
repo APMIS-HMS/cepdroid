@@ -1,12 +1,30 @@
 package ng.apmis.apmismobile.data.database.facilityModel;
 
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * <code>Clinic</code> object representing a sub-set of a
+ * <code>Facility</code> usually handling a particular medical field
+ */
 public class Clinic {
 
     private String _id;
-    private String clinicName;
     private String updatedAt;
     private String createdAt;
+
+    /**
+     * The name of the clinic
+     */
+    private String clinicName;
+
+    /**
+     * Capacity in terms of <code>Patient</code> count, of this clinic
+     */
     private Integer clinicCapacity;
+
+
+
+    // Getters and Setters
+
 
     public String getClinicName() {
         return clinicName;

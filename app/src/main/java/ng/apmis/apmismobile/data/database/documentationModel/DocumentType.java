@@ -6,48 +6,43 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * An object containing meta-data about a particular {@link Document}
+ * record.
+ */
 public class DocumentType implements Serializable{
 
-    @SerializedName("_id")
-    @Expose
-    private String id;
-    @SerializedName("typeOfDocumentId")
-    @Expose
-    private String typeOfDocumentId;
-    @SerializedName("scopeLevelId")
-    @Expose
-    private String scopeLevelId;
-    @SerializedName("title")
-    @Expose
-    private String title;
-    @SerializedName("body")
-    @Expose
-    private String body;
-    @SerializedName("facilityId")
-    @Expose
-    private String facilityId;
-    @SerializedName("updatedAt")
-    @Expose
+    private String _id;
     private String updatedAt;
-    @SerializedName("createdAt")
-    @Expose
     private String createdAt;
-    @SerializedName("isSide")
-    @Expose
-    private Boolean isSide;
-    @SerializedName("moduleIds")
-    @Expose
+
+
+    //Unique Ids
+    private String typeOfDocumentId;
+    private String scopeLevelId;
+    private String facilityId;
     private List<Object> moduleIds = null;
-    @SerializedName("__v")
-    @Expose
-    private Integer v;
+
+    /**
+     * Indicates the {@link Document} title, in the form of a readable string
+     * such as "Vitals" or "Allergies"
+     */
+    private String title;
+
+    /**
+     * Body meta-data for this {@link Document}
+     */
+    private String body;
+
+    private Boolean isSide;
 
     public String getId() {
-        return id;
+        return _id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this._id = id;
     }
 
     public String getTypeOfDocumentId() {
@@ -120,14 +115,6 @@ public class DocumentType implements Serializable{
 
     public void setModuleIds(List<Object> moduleIds) {
         this.moduleIds = moduleIds;
-    }
-
-    public Integer getV() {
-        return v;
-    }
-
-    public void setV(Integer v) {
-        this.v = v;
     }
 
 }

@@ -2,16 +2,38 @@ package ng.apmis.apmismobile.data.database.facilityModel;
 
 import java.util.List;
 
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * Units are subsets of Departments and house the {@link Clinic}s
+ */
 public class Unit {
 
-    private String shortName;
-    private String name;
     private String _id;
     private String updatedAt;
     private String createdAt;
+
+    /**
+     * Abbreviated name of the Unit
+     */
+    private String shortName;
+
+    /**
+     * Name of the Unit
+     */
+    private String name;
+
+    /**
+     * Short description about the Unit and what occurs in it
+     */
+    private String description;
+
+    /**
+     * List of Clinics housed in this Unit
+     */
     private List<Clinic> clinics = null;
     private Boolean isActive;
-    private String description;
+
+
 
     public String getShortName() {
         return shortName;

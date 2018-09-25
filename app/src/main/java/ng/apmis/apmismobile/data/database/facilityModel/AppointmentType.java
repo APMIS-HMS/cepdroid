@@ -1,10 +1,17 @@
 package ng.apmis.apmismobile.data.database.facilityModel;
 
+/**
+ * Class indicating the type of appointment.
+ */
 public class AppointmentType {
 
     private String _id;
     private String updatedAt;
     private String createdAt;
+
+    /**
+     * Name of the appointment type, usually "New" or "Follow Up"
+     */
     private String name;
 
     public String getId() {

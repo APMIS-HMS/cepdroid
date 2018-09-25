@@ -20,6 +20,7 @@ import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.documentation.MedicalRecordsFragment;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileFragment;
+import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionListFragment;
 import ng.apmis.apmismobile.utilities.Constants;
 
 public class ViewFragment extends Fragment {
@@ -40,8 +41,8 @@ public class ViewFragment extends Fragment {
         optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointents));
         optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
         optionItems.add(new ModuleListModel(Constants.MEDICAL_RECORDS, R.drawable.ic_medical_records));
-        optionItems.add(new ModuleListModel("PRESCRIPTION", R.drawable.ic_prescription));
-        optionItems.add(new ModuleListModel("HEALTH PROFILE", R.drawable.ic_health_profile));
+        optionItems.add(new ModuleListModel(Constants.PRESCRIPTION, R.drawable.ic_prescription));
+        optionItems.add(new ModuleListModel(Constants.HEALTH_PROFILE, R.drawable.ic_health_profile));
         optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
         optionItems.add(new ModuleListModel("DIAGNOSTIC REPORT", R.drawable.ic_diagnostic_report));
         optionItems.add(new ModuleListModel("REFERRAL", R.drawable.ic_referral));
@@ -68,10 +69,10 @@ public class ViewFragment extends Fragment {
                     case "MEDICATION":
                         //setFragment(new AppointmentFragment());
                         break;
-                    case "PRESCRIPTION":
-                        //setFragment(new AppointmentFragment());
+                    case Constants.PRESCRIPTION:
+                        setFragment(new PrescriptionListFragment());
                         break;
-                    case "HEALTH PROFILE":
+                    case Constants.HEALTH_PROFILE:
                         setFragment(new HealthProfileFragment());
                         break;
                     case Constants.APPOINTMENTS:
@@ -112,6 +113,7 @@ public class ViewFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).profileImage.setVisibility(View.VISIBLE);
             ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
         }
         super.onResume();

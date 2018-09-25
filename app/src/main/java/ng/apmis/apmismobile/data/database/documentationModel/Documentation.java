@@ -7,29 +7,56 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import ng.apmis.apmismobile.data.database.facilityModel.Facility;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * Documentation object containing medical records for
+ * a {@link Patient} in a {@link Facility}.
+ */
 public class Documentation implements Comparable<Documentation>, Serializable{
-
-    @SerializedName("_id")
-    @Expose
-    private String id;
-    private String createdBy;
-    private String facilityId;
-    private String facilityName;
-    private String patientId;
-    private String patientName;
-    private Document document;
+    
+    private String _id;
     private String updatedAt;
     private String createdAt;
+
+    /**
+     * Practitioner who created this Documentation object
+     */
+    private String createdBy;
+
+    /**
+     * Unique Facility Id representing the {@link Facility} in which this
+     * documentation was created
+     */
+    private String facilityId;
+    private String facilityName;
+
+    /**
+     * Unique Patient Id for the {@link Patient} to whom
+     * this documentation pertains to.
+     */
+    private String patientId;
+    private String patientName;
+
+    /**
+     * Document object for housing the Documentation details
+     */
+    private Document document;
+
+    /**
+     * Status of the current Documentation, usually "Draft"
+     */
     private String documentationStatus;
 
     public String getId() {
-        return id;
+        return _id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String _id) {
+        this._id = _id;
     }
 
     public String getCreatedBy() {

@@ -9,24 +9,23 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.data.database.facilityModel.ScheduledClinic;
+import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 
 public class ClinicAdapter extends ArrayAdapter {
 
     private Context mContext;
-    private List<ScheduledClinic> mClinics;
+    private List<ClinicSchedule> mClinics;
 
-    public ClinicAdapter(@NonNull Context context, int resource, List<ScheduledClinic> clinics) {
+    public ClinicAdapter(@NonNull Context context, int resource, List<ClinicSchedule> clinics) {
         super(context, resource);
         mContext = context;
         mClinics = clinics;
     }
 
-    public void addAllClinics(List<ScheduledClinic> clinics){
+    public void addAllClinics(List<ClinicSchedule> clinics){
         mClinics.addAll(clinics);
         notifyDataSetChanged();
     }

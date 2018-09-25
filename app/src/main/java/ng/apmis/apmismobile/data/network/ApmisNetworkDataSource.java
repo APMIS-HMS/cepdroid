@@ -28,13 +28,13 @@ import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
-import ng.apmis.apmismobile.data.database.facilityModel.ScheduledClinic;
+import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
-import ng.apmis.apmismobile.utilities.InjectorUtils;
+import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 
 /**
  * Provides an api for getting network data
@@ -65,11 +65,12 @@ public class ApmisNetworkDataSource {
     private List<OrderStatus> orderStatuses;
 
     private MutableLiveData<List<Patient>> patientDetails;
-    private MutableLiveData<List<ScheduledClinic>> clinics;
+    private MutableLiveData<List<ClinicSchedule>> clinics;
     private MutableLiveData<List<ScheduleItem>> schedules;
     private MutableLiveData<List<Employee>> employees;
     private MutableLiveData<List<Documentation>> documentations;
     private MutableLiveData<List<Service>> services;
+    private MutableLiveData<List<Prescription>> prescriptions;
     private MutableLiveData<Appointment> appointment;
 
 
@@ -84,6 +85,7 @@ public class ApmisNetworkDataSource {
         services = new MutableLiveData<>();
         documentations = new MutableLiveData<>();
         appointment = new MutableLiveData<>();
+        prescriptions = new MutableLiveData<>();
 
         appointmentTypes = new ArrayList<>();
         orderStatuses = new ArrayList<>();
@@ -107,6 +109,7 @@ public class ApmisNetworkDataSource {
     }
 
     public void setCurrentPersonData(PersonEntry[] personEntries) {
+        //post value for liveData use
         mDownloadedPersonData.postValue(personEntries);
     }
 
@@ -200,7 +203,7 @@ public class ApmisNetworkDataSource {
     }
 
     /**
-     * Fetch Appointment types
+     * Fetch Order status
      */
     public void fetchOrderStatuses(){
         apmisExecutors.networkIO().execute(() -> {
@@ -271,6 +274,17 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    /**
+     * Fetch Prescription Array using the person Id provided
+     * @param personId Person's Id
+     */
+    public void fetchPrescriptionsForPerson(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Prescription started");
+            new NetworkDataCalls(mContext).fetchPrescriptionsForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
 
 
 
@@ -326,7 +340,7 @@ public class ApmisNetworkDataSource {
 
     //Clinics & Schedules
 
-    public void setSchedulesForClinic(ScheduledClinic clinic){
+    public void setSchedulesForClinic(ClinicSchedule clinic){
         this.schedules.postValue(clinic.getSchedules());
     }
 
@@ -338,11 +352,11 @@ public class ApmisNetworkDataSource {
         this.schedules.postValue(new ArrayList<>());
     }
 
-    public void setClinicsForFacility(List<ScheduledClinic> clinics){
+    public void setClinicsForFacility(List<ClinicSchedule> clinics){
         this.clinics.postValue(clinics);
     }
 
-    public MutableLiveData<List<ScheduledClinic>> getClinicsForFacility() {
+    public MutableLiveData<List<ClinicSchedule>> getClinicsForFacility() {
         return clinics;
     }
 
@@ -400,4 +414,14 @@ public class ApmisNetworkDataSource {
         return this.documentations;
     }
 
+
+    //Prescription
+
+    public void setPrescriptionsForPerson(List<Prescription> prescriptions) {
+        this.prescriptions.postValue(prescriptions);
+    }
+
+    public MutableLiveData<List<Prescription>> getPrescriptionsForPerson(){
+        return this.prescriptions;
+    }
 }

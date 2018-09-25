@@ -2,14 +2,29 @@ package ng.apmis.apmismobile.data.database.facilityModel;
 
 import java.util.List;
 
+/**
+ * A representation of the various available Departments in a {@link Facility}
+ */
 public class Department {
 
     private String _id;
-    private String name;
     private String updatedAt;
     private String createdAt;
+
+    /**
+     * The name of the Facility department
+     */
+    private String name;
+
     private Boolean isActive;
+
+    /**
+     * List of Units in the department
+     */
     private List<Unit> units = null;
+
+
+
 
     public String getId() {
         return _id;

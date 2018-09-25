@@ -4,19 +4,44 @@ import java.util.List;
 
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 
+/**
+ * <code>Employee</code> class containing <code>PersonEntry</code>
+ * details alongside other information pertaining to profession and
+ * <code>Facility</code> in which the <code>Employee</code> is working
+ */
 public class Employee {
 
     private String _id;
     private String updatedAt;
     private String createdAt;
+
+    //Unique Ids
     private String facilityId;
     private String departmentId;
     private String minorLocationId;
+
+    /**
+     * Employees work email address assigned
+     */
     private String officialEmailAddress;
+
+    /**
+     * Person Id for the PersonEntry object of this Employee
+     */
     private String personId;
+
+    /**
+     * Readable Profession Id string representing
+     * the Employees role/work in the Clinic/Facility
+     */
     private String professionId;
+
     private List<String> units = null;
     private Boolean isActive;
+
+    /**
+     * The Employee's {@link PersonEntry} details
+     */
     private PersonEntry personDetails;
 
 

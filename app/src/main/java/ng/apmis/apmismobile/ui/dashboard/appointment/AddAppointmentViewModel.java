@@ -9,7 +9,7 @@ import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
-import ng.apmis.apmismobile.data.database.facilityModel.ScheduledClinic;
+import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
@@ -19,7 +19,7 @@ import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 public class AddAppointmentViewModel extends ViewModel {
 
     private MutableLiveData<List<Patient>> mPatients;
-    private MutableLiveData<List<ScheduledClinic>> mClinics;
+    private MutableLiveData<List<ClinicSchedule>> mClinics;
     private MutableLiveData<List<Service>> mServices;
     private MutableLiveData<List<Employee>> mEmployees;
     private MutableLiveData<List<ScheduleItem>> mSchedules;
@@ -61,7 +61,7 @@ public class AddAppointmentViewModel extends ViewModel {
         return mPatients;
     }
 
-    public MutableLiveData<List<ScheduledClinic>> getClinics() {
+    public MutableLiveData<List<ClinicSchedule>> getClinics() {
         return mClinics;
     }
 
@@ -84,7 +84,7 @@ public class AddAppointmentViewModel extends ViewModel {
 
 
 
-    public void setSchedules(ScheduledClinic clinic){
+    public void setSchedules(ClinicSchedule clinic){
         apmisNetworkDataSource.setSchedulesForClinic(clinic);
     }
 

@@ -8,6 +8,10 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * TypeAdapter class used for converting Java Integer objects to and from JSON
+ */
 public class IntegerTypeAdapter extends TypeAdapter<Integer> {
     @Override
     public void write(JsonWriter jsonWriter, Integer integer) throws IOException {

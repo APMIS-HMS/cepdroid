@@ -8,9 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,7 +17,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,10 +28,11 @@ import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
-import ng.apmis.apmismobile.data.database.facilityModel.ScheduledClinic;
+import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -148,18 +146,16 @@ final class NetworkDataCalls {
                     String securityAnswer = response.getString("securityAnswer");
                     String securityQuestion = response.getString("securityQuestion");
                     String title = response.getString("title");
-                    String wallet = response.getString("wallet");
                     String apmisId = response.getString("apmisId");
                     String nextOfKin = response.getString("nextOfKin");
-                    String professions = response.getString("personProfessions");
                     String secondaryContactPhoneNo = response.getString("secondaryContactPhoneNo");
 
-                    PersonEntry responseEntry = new PersonEntry(apmisId,title,firstName,lastName,gender,motherMaidenName,securityQuestion,securityAnswer,primaryContactPhoneNo,secondaryContactPhoneNo,dateOfBirth,"", "", "", professions, "", "", "", "", "", "", nextOfKin, wallet);
+                    PersonEntry responseEntry = new PersonEntry(apmisId,title,firstName,lastName,gender,motherMaidenName,securityQuestion,securityAnswer,primaryContactPhoneNo,secondaryContactPhoneNo,dateOfBirth,"", "", "", "", "", "", "", "", "", nextOfKin);
 
                     Log.v("responseEntry", responseEntry.toString());
-                PersonEntry [] personEntries = {responseEntry};
+                    PersonEntry[] personEntries = {responseEntry};
 
-                InjectorUtils.provideNetworkData(context.getApplicationContext()).setCurrentPersonData(personEntries);
+                    InjectorUtils.provideNetworkData(context.getApplicationContext()).setCurrentPersonData(personEntries);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -254,11 +250,11 @@ final class NetworkDataCalls {
 
                 if (jsonArray.length()>0) {
 
-                    List<ScheduledClinic> scheduledClinics = new ArrayList<>(Arrays.asList(gson.fromJson(jsonArray.toString(), ScheduledClinic[].class)));
+                    List<ClinicSchedule> clinicSchedules = new ArrayList<>(Arrays.asList(gson.fromJson(jsonArray.toString(), ClinicSchedule[].class)));
 
-                    Log.v("Clinic responseEntry", scheduledClinics.get(0).toString());
+                    Log.v("Clinic responseEntry", clinicSchedules.get(0).toString());
 
-                    InjectorUtils.provideNetworkData(context).setClinicsForFacility(scheduledClinics);
+                    InjectorUtils.provideNetworkData(context).setClinicsForFacility(clinicSchedules);
 
                 }
 
@@ -606,6 +602,45 @@ final class NetworkDataCalls {
                 Log.e("Records error", String.valueOf(error.getMessage()));
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        queue.add(jsonArrayRequest);
+    }
+
+    public void fetchPrescriptionsForPerson(Context context, String personId, String accessToken){
+
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-prescriptions/0?personId=" + personId, null, response -> {
+
+            Log.v("Prescription response", String.valueOf(response));
+
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                if (jsonArray.length()>0) {
+
+                    List<Prescription> prescriptions = new ArrayList<>(Arrays.asList(gson.fromJson(jsonArray.toString(), Prescription[].class)));
+
+                    Log.v("Prescriptions R.entry", prescriptions.get(0).toString());
+
+                    InjectorUtils.provideNetworkData(context).setPrescriptionsForPerson(prescriptions);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, error -> Log.e("Records error", String.valueOf(error.getMessage()))) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();

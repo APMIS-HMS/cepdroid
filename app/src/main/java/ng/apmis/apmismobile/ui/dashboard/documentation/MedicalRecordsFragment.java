@@ -35,6 +35,7 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
     @BindView(R.id.records_shimmer)
     ShimmerFrameLayout recordsShimmer;
 
+    @BindView(R.id.records_recycler)
     public RecyclerView recordsRecycler;
     public RecordsAdapter recordsAdapter;
     private SharedPreferencesManager preferencesManager;
@@ -60,13 +61,11 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
         View view = inflater.inflate(R.layout.fragment_medical_records, container, false);
         ButterKnife.bind(this, view);
 
-        Log.i("Called", "Called here");
-
         recordsShimmer.startShimmer();
 
         preferencesManager = new SharedPreferencesManager(getContext());
 
-        recordsRecycler = view.findViewById(R.id.records_recycler);
+        //recordsRecycler = view.findViewById(R.id.records_recycler);
 
         InjectorUtils.provideNetworkData(getActivity()).fetchMedicalRecordsForPerson(preferencesManager.getPersonId());
 
@@ -153,6 +152,7 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
     @Override
     public void onResume() {
         if (getActivity() != null) {
+            ((DashboardActivity)getActivity()).profileImage.setVisibility(View.GONE);
             ((DashboardActivity)getActivity()).setToolBarTitle(Constants.MEDICAL_RECORDS, false);
         }
         super.onResume();

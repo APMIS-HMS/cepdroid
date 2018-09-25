@@ -59,7 +59,7 @@ public class SharedPreferencesManager {
         return pref.getBoolean(IS_LOGGED_IN, false);
     }
 
-    public void storeLoggedInUserKeys (String accessToken, String personId, String email, String dbId) {
+    public void storeLoggedInUserDetails(String accessToken, String personId, String email, String dbId) {
         editor.putString(ACCESS_TOKEN, accessToken);
         editor.putString(PERSON_ID, personId);
         editor.putString(EMAIL, email);
@@ -95,6 +95,8 @@ public class SharedPreferencesManager {
         editor.putString(USER_PASSWORD, password);
         editor.commit();
     }
+
+
 
     public String getStoredUserPassword () {
         return pref.getString(USER_PASSWORD, "");

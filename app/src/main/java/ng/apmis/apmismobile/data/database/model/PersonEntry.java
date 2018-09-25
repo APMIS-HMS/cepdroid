@@ -54,7 +54,7 @@ public class PersonEntry {
     private String wallet;
 
     @Ignore
-    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
+    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin) {
         this.apmisId = apmisId;
         this.title = title;
         this.firstName = firstName;
@@ -69,7 +69,6 @@ public class PersonEntry {
         this.email = email;
         this.otherNames = otherNames;
         this.biometric = biometric;
-        this.personProfessions = personProfessions;
         this.nationality = nationality;
         this.stateOfOrigin = stateOfOrigin;
         this.lgaOfOrigin = lgaOfOrigin;
@@ -77,7 +76,6 @@ public class PersonEntry {
         this.homeAddress = homeAddress;
         this.maritalStatus = maritalStatus;
         this.nextOfKin = nextOfKin;
-        this.wallet = wallet;
     }
 
     public PersonEntry(int id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {

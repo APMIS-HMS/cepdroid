@@ -8,6 +8,10 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
+/**
+ * Created by mofeejegi-apmis.<br/>
+ * TypeAdapter class used for converting Java Double objects to and from JSON
+ */
 public class DoubleTypeAdapter extends TypeAdapter<Double> {
     @Override
     public void write(JsonWriter jsonWriter, Double doubled) throws IOException {

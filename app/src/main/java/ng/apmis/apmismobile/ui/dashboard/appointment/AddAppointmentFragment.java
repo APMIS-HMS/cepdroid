@@ -37,7 +37,7 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
-import ng.apmis.apmismobile.data.database.facilityModel.ScheduledClinic;
+import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
@@ -106,16 +106,16 @@ public class AddAppointmentFragment extends Fragment {
 
     private List<Patient> mPatients;
     private List<Facility> mFacilities;
-    private List<ScheduledClinic> mClinics;
+    private List<ClinicSchedule> mClinics;
     private List<Service> mServices;
     private List<Employee> mEmployees;
-    private List<ScheduleItem> mSchedules;
+    private List<ScheduleItem> mScheduleItems;
 
     private AppointmentType mAppointmentType;
     private OrderStatus mOrderStatus;
     private Patient mPatient;
     private Facility mSelectedFacility;
-    private ScheduledClinic mSelectedClinic;
+    private ClinicSchedule mSelectedClinic;
     private Service mSelectedService;
     private Employee mSelectedDoctor;
     private ScheduleItem mSelectedSchedule;
@@ -171,7 +171,7 @@ public class AddAppointmentFragment extends Fragment {
         appointmentViewModel.getPatientsForPerson().observe(getActivity(), patientsObserver);
 
 
-        final Observer<List<ScheduledClinic>> clinicsObserver = clinics -> {
+        final Observer<List<ClinicSchedule>> clinicsObserver = clinics -> {
             mClinics = clinics;
 
             if (clinicAdapter == null) {
@@ -223,14 +223,14 @@ public class AddAppointmentFragment extends Fragment {
 
 
         final Observer<List<ScheduleItem>> scheduleObserver = schedules -> {
-            mSchedules = schedules;
+            mScheduleItems = schedules;
 
             if (scheduleAdapter == null) {
-                scheduleAdapter = new ScheduleAdapter(getContext(), 0, mSchedules);
+                scheduleAdapter = new ScheduleAdapter(getContext(), 0, mScheduleItems);
                 clinicScheduleSpinner.setAdapter(scheduleAdapter);
             } else {
                 scheduleAdapter.clear();
-                scheduleAdapter.addAllSchedules(mSchedules);
+                scheduleAdapter.addAllSchedules(mScheduleItems);
                 scheduleAdapter.notifyDataSetChanged();
                 clinicScheduleSpinner.setSelection(0);
             }
@@ -411,7 +411,7 @@ public class AddAppointmentFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //Get the correct schedule by reducing position by 1
                 if (position > 0) {
-                    mSelectedSchedule = mSchedules.get(position-1);
+                    mSelectedSchedule = mScheduleItems.get(position-1);
 
                 } else {
                     mSelectedSchedule = null;
@@ -585,6 +585,12 @@ public class AddAppointmentFragment extends Fragment {
         super.onStop();
         ((DashboardActivity)getActivity()).bottomNavVisibility(false);
         ((DashboardActivity)getActivity()).setToolBarTitle("APPOINTMENTS", false);
+        appointmentViewModel.getAppointment().removeObservers(getActivity());
+        appointmentViewModel.getSchedules().removeObservers(getActivity());
+        appointmentViewModel.getServices().removeObservers(getActivity());
+        appointmentViewModel.getClinics().removeObservers(getActivity());
+        appointmentViewModel.getPatientsForPerson().removeObservers(getActivity());
+        appointmentViewModel.getEmployees().removeObservers(getActivity());
     }
 
     @Override

@@ -6,6 +6,11 @@ import java.util.List;
 
 import ng.apmis.apmismobile.data.database.reviewModel.Review;
 
+/**
+ * Model class representing the address/location of a Facility,
+ * and all other address data associated with this Facility including
+ * but not limited to work hours, reviews and description
+ */
 public class Address {
 
     @SerializedName("id")

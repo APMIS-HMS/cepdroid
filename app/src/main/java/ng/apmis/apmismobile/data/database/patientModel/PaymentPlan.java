@@ -2,8 +2,8 @@ package ng.apmis.apmismobile.data.database.patientModel;
 
 public class PaymentPlan {
 
-    private String planType;
     private String _id;
+    private String planType;
     private Boolean isDefault;
     private Boolean planDetails;
 
