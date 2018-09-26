@@ -32,7 +32,6 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.signup.SignupActivity;
-import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
 /**
@@ -181,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     sharedPreferencesManager.storeLoggedInUserDetails(token, personId, email, dbId);
 
-                    Log.v("sharedPRef", String.valueOf(sharedPreferencesManager.storedLoggedInUser()));
+                    Log.v("sharedPRef", String.valueOf(sharedPreferencesManager.getStoredLoggedInUser()));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

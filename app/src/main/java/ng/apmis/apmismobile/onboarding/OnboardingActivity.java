@@ -22,6 +22,9 @@ import ng.apmis.apmismobile.ui.signup.SignupActivity;
 
 import static android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE;
 
+/**
+ * Activity shown to user on first time launch of the app on the device
+ */
 public class OnboardingActivity extends AppCompatActivity {
 
     private static final int NUM_PAGES = 3;

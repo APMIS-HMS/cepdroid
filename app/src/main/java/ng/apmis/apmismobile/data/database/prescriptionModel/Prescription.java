@@ -62,7 +62,7 @@ public class Prescription implements Comparable<Prescription> {
     /**
      * Details of the employee (Prescriber of the items)
      */
-    private Employee employeeDetails;
+    private PersonEntry employeeDetails;
 
     /**
      * Person Details of the patient for whom the items are prescribed for
@@ -160,11 +160,11 @@ public class Prescription implements Comparable<Prescription> {
         this.prescriptionItems = prescriptionItems;
     }
 
-    public Employee getEmployeeDetails() {
+    public PersonEntry getEmployeeDetails() {
         return employeeDetails;
     }
 
-    public void setEmployeeDetails(Employee employeeDetails) {
+    public void setEmployeeDetails(PersonEntry employeeDetails) {
         this.employeeDetails = employeeDetails;
     }
 

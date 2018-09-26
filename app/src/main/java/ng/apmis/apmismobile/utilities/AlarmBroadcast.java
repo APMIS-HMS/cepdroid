@@ -8,6 +8,9 @@ import android.util.Log;
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 
+/**
+ * Class for receiving Alarm broadcasts
+ */
 public class AlarmBroadcast extends BroadcastReceiver {
 
     @Override
@@ -21,6 +24,7 @@ public class AlarmBroadcast extends BroadcastReceiver {
 
             String appointmentId = intent.getExtras().getString("appointment_reminder_id");
 
+            //run in background thread
             APMISAPP.getInstance().diskIO().execute(() -> {
                 Appointment appointment = InjectorUtils.provideRepository(context).getAppointmentById(appointmentId);
                 NotificationUtils.buildAppointmentNotification(context, appointment);

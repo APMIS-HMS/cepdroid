@@ -109,8 +109,9 @@ public class ApmisRepository {
     }
 
     /**
-     *
-     * @param appointment
+     * Inserts the {@link Appointment} object from the server into the
+     * Appointment Room Database
+     * @param appointment The Appointment object fetched
      */
     public void insertAppointment(Appointment appointment){
         mExecutors.diskIO().execute(() -> {
@@ -118,22 +119,44 @@ public class ApmisRepository {
         });
     }
 
+    /**
+     * Batch procedure for inserting Appointments into Room database
+     * @param appointments The list of Appointments to insert
+     */
     public void insertAppointmentsForPatient(List<Appointment> appointments){
         for (Appointment appointment : appointments){
+            //Always pre-fill the facilityName and PersonId into the top level of the Appointment object
+            //for easy Room database storage
             appointment.setFacilityName(appointment.getPatientDetails().getFacilityObj().getName());
             appointment.setPersonId(appointment.getPatientDetails().getPersonId());
             insertAppointment(appointment);
         }
     }
 
+    /**
+     * Get Appointment LiveData from room database
+     * @param patientId PatientId to query the Appointment
+     * @return The list of {@link Appointment}s wrapped in a LiveData object
+     */
     public LiveData<List<Appointment>> getAppointmentsForPatient(String patientId){
         return mApmisDao.findAppointmentsForPatient(patientId);
     }
 
+    /**
+     * Get a Single Appointment LiveData object from room db
+     * @param id the Appointment Id for the query
+     * @return The Appointment wrapped in a LiveData object
+     */
     public LiveData<Appointment> findAppointmentById(String id){
         return mApmisDao.findAppointmentById(id);
     }
 
+    /**
+     * Get Appointment from room database. <br/>
+     * <b>Note: This method must be called in a background thread</b>
+     * @param id the Appointment id for the query
+     * @return The Appointment object
+     */
     public Appointment getAppointmentById(String id){
         return mApmisDao.getAppointmentById(id);
     }

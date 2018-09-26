@@ -9,12 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 
+/**
+ * Adapter to conveniently handle data for {@link Service} items,
+ * displaying their names
+ */
 public class ServiceAdapter extends ArrayAdapter {
 
     private Context mContext;
@@ -46,7 +49,10 @@ public class ServiceAdapter extends ArrayAdapter {
     @Override
     public Object getItem(int position) {
         //adjust -1 to skip first null item
-        return mServices.get(position-1);
+        if (position > 0)
+            return mServices.get(position-1);
+        else
+            return null;
     }
 
     @Override
@@ -79,6 +85,8 @@ public class ServiceAdapter extends ArrayAdapter {
         }
 
         TextView text = convertView.findViewById(android.R.id.text1);
+
+        //Always sets the first item in the dropdown list to "Select Service Category"
         text.setText(position > 0? mServices.get(position-1).getName() : "Select Service Category");
         text.setTextColor(position > 0? Color.BLACK : mContext.getResources().getColor(R.color.colorPrimaryDark));
 

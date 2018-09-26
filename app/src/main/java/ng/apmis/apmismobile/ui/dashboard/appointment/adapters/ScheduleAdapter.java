@@ -17,6 +17,10 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
+/**
+ * Adapter to conveniently handle data for {@link ScheduleItem}s,
+ * displaying their day of the week and time periods
+ */
 public class ScheduleAdapter extends ArrayAdapter{
     private Context mContext;
     private List<ScheduleItem> mSchedules;
@@ -40,11 +44,13 @@ public class ScheduleAdapter extends ArrayAdapter{
 
     @Override
     public int getCount() {
+        //adjust +1 for a first null item
         return mSchedules.size()+1;
     }
 
     @Override
     public Object getItem(int position) {
+        //adjust -1 to skip first null item
         if (position > 0)
             return mSchedules.get(position-1);
         else
@@ -53,6 +59,7 @@ public class ScheduleAdapter extends ArrayAdapter{
 
     @Override
     public long getItemId(int position) {
+        //adjust -1 to skip first null item
         return position-1;
     }
 
@@ -106,6 +113,7 @@ public class ScheduleAdapter extends ArrayAdapter{
             text.setTextColor(Color.BLACK);
             text.setText(String.format("%s, %s - %s", schedule.getDay()+"s", AppUtils.dateToReadableTimeString(startDate), AppUtils.dateToReadableTimeString(endDate)));
         } else {
+            //Always sets the first item in the dropdown list to "Select Schedule"
             text.setText("Select Schedule");
             text.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryDark));
         }

@@ -14,7 +14,12 @@ import java.util.List;
 
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
+import ng.apmis.apmismobile.data.database.model.PersonEntry;
 
+/**
+ * Adapter to conveniently handle data for {@link Employee} items,
+ * displaying their {@link PersonEntry#firstName} and {@link PersonEntry#lastName}
+ */
 public class EmployeeAdapter extends ArrayAdapter {
 
     private Context mContext;
@@ -39,11 +44,13 @@ public class EmployeeAdapter extends ArrayAdapter {
 
     @Override
     public int getCount() {
+        //adjust +1 for a first null item
         return mEmployee.size()+1;
     }
 
     @Override
     public Object getItem(int position) {
+        //adjust -1 to skip first null item
         if (position > 0)
             return mEmployee.get(position-1);
         else
@@ -52,6 +59,7 @@ public class EmployeeAdapter extends ArrayAdapter {
 
     @Override
     public long getItemId(int position) {
+        //adjust -1 to skip first null item
         return position-1;
     }
 
@@ -82,6 +90,8 @@ public class EmployeeAdapter extends ArrayAdapter {
         }
 
         TextView text = convertView.findViewById(android.R.id.text1);
+
+        //Always sets the first item in the dropdown list to "Select whom to see"
         text.setText(position > 0? "Dr. " +
                 mEmployee.get(position-1).getPersonDetails().getFirstName() + " " +
                 mEmployee.get(position-1).getPersonDetails().getLastName()

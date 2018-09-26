@@ -28,6 +28,7 @@ import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
+import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
@@ -65,10 +66,9 @@ final class NetworkDataCalls {
 
     /**
      * Logs user into the application with user name and password and returns success or failure as JSONObject
-     *
-     * @param apmisId
-     * @param password
-     * @return
+     * @param apmisId Unique User Id given to every APMIS user
+     * @param password Secret Password
+     * @return JSONObject containing login details of the user
      */
     public JSONObject login(String apmisId, String password) {
 
@@ -126,6 +126,12 @@ final class NetworkDataCalls {
         queue.add(strRequest);
     }
 
+    /**
+     * Fetch the data contained in the {@link PersonEntry} object from the server
+     * @param context The current context
+     * @param personId The person Id obtained from login
+     * @param accessToken The security access token obtained from login
+     */
     public void getPersonData(Context context, String personId, String accessToken) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "people/" + personId, new JSONObject(), new Response.Listener<JSONObject>() {
             @Override
@@ -181,10 +187,10 @@ final class NetworkDataCalls {
         queue.add(jsonObjectRequest);
     }
 
-
     public void resetPassword() {
 
     }
+
 
     public String[] getGenders() {
         return null;
@@ -194,7 +200,12 @@ final class NetworkDataCalls {
         return null;
     }
 
-
+    /**
+     * Fetch {@link Patient} details list for every facility the Person is enrolled into
+     * @param context The current calling context
+     * @param personId The person Id obtained from login
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchPatientDetailsForPerson(Context context, String personId, String accessToken){
 
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "patients?personId=" + personId, null, response -> {
@@ -238,6 +249,13 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Fetch {@link Clinic}s list within the provided facility.
+     * These clinics are those that have set out schedules in their data
+     * @param context The calling context
+     * @param facilityId The id of the facility which the clinic is located
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchClinicsForFacility(Context context, String facilityId, String accessToken){
         Log.d("Clinic response", "Started fetch patient o");
 
@@ -282,6 +300,12 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Fetch the {@link Category} list which the Facility renders/offers
+     * @param context The calling context
+     * @param facilityId The id of the facility rendering these service Categories
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchCategoriesForFacility(Context context, String facilityId, String accessToken){
         Log.d("Services response", "Started fetch patient o");
 
@@ -331,6 +355,12 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Fetch the list of {@link Employee}s in a Facility
+     * @param context The calling context
+     * @param facilityId The id of the facility that employed these Employees
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchEmployeesForFacility(Context context, String facilityId, String accessToken){
         Log.d("Employees response", "Started fetch");
 
@@ -375,6 +405,11 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Fetch the types of appointments {@link AppointmentType} available
+     * @param context The calling context
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchAppointmentTypes(Context context, String accessToken){
         Log.d("Appointment response", "Started fetch");
 
@@ -419,6 +454,11 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Fetches the available types of {@link OrderStatus}es from the server
+     * @param context The calling context
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchOrderStatuses(Context context, String accessToken) {
         Log.d("Order response", "Started fetch");
 
@@ -463,6 +503,12 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Submit an appointment to the server
+     * @param context The calling context
+     * @param appointment The Appointment just created
+     * @param accessToken The security access token obtained from login
+     */
     public void submitAppointment(Context context, Appointment appointment, String accessToken){
         Log.d("Submit appoint response", "Started submit");
 
@@ -512,6 +558,12 @@ final class NetworkDataCalls {
         queue.add(appointmentRequest);
     }
 
+    /**
+     * Fetch every {@link Appointment} that a patient has scheduled
+     * @param context The calling context
+     * @param personId The personId of the Patient
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchAppointmentsForPerson(Context context, String personId, String accessToken){
         Log.d("Fetch appoints", "Started submit");
 
@@ -557,6 +609,12 @@ final class NetworkDataCalls {
         queue.add(appointmentRequest);
     }
 
+    /**
+     * Fetch all {@link Documentation} regarding a Person(Patient)
+     * @param context The calling context
+     * @param personId The personId of the Patient
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchMedicalRecordForPerson(Context context, String personId, String accessToken){
 
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "documentations?personId=" + personId, null, response -> {
@@ -616,6 +674,12 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Fetch all {@link Prescription}s that have been given to a Patient
+     * @param context The calling context
+     * @param personId The personId of the Patient
+     * @param accessToken The security access token obtained from login
+     */
     public void fetchPrescriptionsForPerson(Context context, String personId, String accessToken){
 
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-prescriptions/0?personId=" + personId, null, response -> {

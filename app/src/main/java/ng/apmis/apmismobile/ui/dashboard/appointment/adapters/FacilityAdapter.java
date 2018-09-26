@@ -14,6 +14,10 @@ import java.util.List;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 
+/**
+ * Adapter to conveniently handle data for {@link Facility} items,
+ * displaying their names
+ */
 public class FacilityAdapter extends ArrayAdapter {
 
     private Context mContext;
@@ -35,7 +39,10 @@ public class FacilityAdapter extends ArrayAdapter {
     @Override
     public Object getItem(int position) {
         //adjust -1 to skip first null item
-        return mFacilities.get(position-1);
+        if (position > 0)
+            return mFacilities.get(position-1);
+        else
+            return null;
     }
 
     @Override
@@ -68,6 +75,8 @@ public class FacilityAdapter extends ArrayAdapter {
         }
 
         TextView text = convertView.findViewById(android.R.id.text1);
+
+        //Always sets the first item in the dropdown list to "Select Hospital"
         text.setText(position > 0? mFacilities.get(position-1).getName() : "Select Hospital");
         text.setTextColor(position > 0? Color.BLACK : mContext.getResources().getColor(R.color.colorPrimaryDark));
 

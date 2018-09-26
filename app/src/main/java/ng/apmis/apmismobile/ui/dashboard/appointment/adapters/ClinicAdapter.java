@@ -14,6 +14,10 @@ import java.util.List;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 
+/**
+ * Adapter to conveniently handle data for {@link ClinicSchedule} items,
+ * displaying their Clinic names
+ */
 public class ClinicAdapter extends ArrayAdapter {
 
     private Context mContext;
@@ -38,11 +42,13 @@ public class ClinicAdapter extends ArrayAdapter {
 
     @Override
     public int getCount() {
+        //adjust +1 for a first null item
         return mClinics.size()+1;
     }
 
     @Override
     public Object getItem(int position) {
+        //adjust -1 to skip first null item
         if (position > 0)
             return mClinics.get(position-1);
         else
@@ -51,6 +57,7 @@ public class ClinicAdapter extends ArrayAdapter {
 
     @Override
     public long getItemId(int position) {
+        //adjust -1 to skip first null item
         return position-1;
     }
 
@@ -78,6 +85,8 @@ public class ClinicAdapter extends ArrayAdapter {
         }
 
         TextView text = convertView.findViewById(android.R.id.text1);
+
+        //Always sets the first item in the dropdown list to "Select Clinic"
         text.setText(position > 0? mClinics.get(position-1).getClinic() : "Select Clinic");
         text.setTextColor(position > 0? Color.BLACK : mContext.getResources().getColor(R.color.colorPrimaryDark));
 

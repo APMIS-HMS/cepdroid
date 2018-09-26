@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * A Category represents a group of {@link Service}s
- * rendered/offered by a Clinic
+ * rendered/offered by a Facility
  */
 public class Category {
 

@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.Room;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
@@ -17,21 +18,61 @@ import ng.apmis.apmismobile.annotations.Exclude;
 
 /**
  * Person model has all details about the person (Patient)
+ * Class is also a {@link Room} database entity
  */
 
 @Entity(tableName = "person", indices = {@Index(value = "apmisId", unique = true)})
 public class PersonEntry {
 
+    /**
+     * Id for saving in Room Database
+     */
     @PrimaryKey(autoGenerate = true)
     private int id;
+
+    /**
+     * APMIS Id of the Person received upon online registration
+     */
     private String apmisId;
+
+    /**
+     * Person's title "Mr, Mrs, Miss, etc"
+     */
     private String title;
+
+    /**
+     * Person's first name
+     */
     private String firstName;
+
+    /**
+     * Person's last name
+     */
     private String lastName;
+
+    /**
+     * There are only two genders, yes. Male and Female
+     */
     private String gender;
+
+    /**
+     * Mother's maiden name, used for security purposes
+     */
     private String motherMaidenName;
+
+    /**
+     * Security Question chosen for extra verification
+     */
     private String securityQuestion;
+
+    /**
+     * Answer to Security question
+     */
     private String securityAnswer;
+
+    /**
+     *
+     */
     private String primaryContactPhoneNo;
     @Exclude
     private String secondaryContactPhoneNo;

@@ -55,7 +55,8 @@ import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
- * Created by Thadeus-APMIS on 6/11/2018.
+ * Created by Thadeus-APMIS on 6/11/2018.<br/>
+ * Fragment view where Appointments are created
  */
 
 public class AddAppointmentFragment extends Fragment {
@@ -95,7 +96,7 @@ public class AddAppointmentFragment extends Fragment {
         showDatePicker();
     }
 
-
+    //Adapters for drop down lists
     FacilityAdapter hospitalAdapter;
     ClinicAdapter clinicAdapter;
     ServiceAdapter serviceAdapter;
@@ -103,7 +104,7 @@ public class AddAppointmentFragment extends Fragment {
     ScheduleAdapter scheduleAdapter;
     AddAppointmentViewModel appointmentViewModel;
 
-
+    //Selectable data lists
     private List<Patient> mPatients;
     private List<Facility> mFacilities;
     private List<ClinicSchedule> mClinics;
@@ -111,6 +112,7 @@ public class AddAppointmentFragment extends Fragment {
     private List<Employee> mEmployees;
     private List<ScheduleItem> mScheduleItems;
 
+    //Selectable data items
     private AppointmentType mAppointmentType;
     private OrderStatus mOrderStatus;
     private Patient mPatient;
@@ -129,10 +131,13 @@ public class AddAppointmentFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.new_appointment_form, container, false);
         ButterKnife.bind(this, rootView);
 
+        //instantiate loader
         progressDialog = new ProgressDialog(getContext());
 
+        //initialize the AppointmentViewModel
         initViewModel();
 
+        //TODO switch to LiveData
         //Fetch the available appointment types and order statuses
         if (appointmentViewModel.getAppointmentTypes().isEmpty())
             InjectorUtils.provideNetworkData(getContext()).fetchAppointmentTypes();
@@ -140,6 +145,7 @@ public class AddAppointmentFragment extends Fragment {
         if (appointmentViewModel.getOrderStatuses().isEmpty())
             InjectorUtils.provideNetworkData(getContext()).fetchOrderStatuses();
 
+        //set up item select spinners
         setSpinnerItemSelectListeners();
 
         bookAppointmentButton.setOnClickListener((view) -> {
@@ -152,6 +158,9 @@ public class AddAppointmentFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Initialized the AppointmentViewModel and set up all the observers
+     */
     private void initViewModel(){
         AddAppointmentViewModelFactory factory = InjectorUtils.provideAddAppointmentViewModelFactory(getActivity().getApplicationContext());
         appointmentViewModel = ViewModelProviders.of(this, factory).get(AddAppointmentViewModel.class);
@@ -245,6 +254,8 @@ public class AddAppointmentFragment extends Fragment {
 
                 if (appointment != null) {
                     //Save to room here
+                    //Always pre-fill the facilityName and PersonId into the top level of the Appointment object
+                    //for easy Room database storage
                     appointment.setFacilityName(appointment.getPatientDetails().getFacilityObj().getName());
                     appointment.setPersonId(appointment.getPatientDetails().getPersonId());
                     appointmentViewModel.insertAppointment(appointment);
@@ -262,6 +273,11 @@ public class AddAppointmentFragment extends Fragment {
 
     }
 
+    /**
+     * Populates the Facility List from the lists Patients observed upon app login
+     * @param patients list of the patients
+     * @return List of all facilities that the Person is currently part of
+     */
     private List<Facility> getFacilitiesFromPatients(List<Patient> patients){
 
         List<Facility> facilities = new ArrayList<>();
@@ -273,6 +289,9 @@ public class AddAppointmentFragment extends Fragment {
         return facilities;
     }
 
+    /**
+     * Reset all selectable fields to null
+     */
     private void resetAllSelectedFields(){
         mPatient = null;
         mSelectedFacility = null;
@@ -348,6 +367,9 @@ public class AddAppointmentFragment extends Fragment {
         dialogStart.show();
     }
 
+    /**
+     * Set {@link AdapterView.OnItemSelectedListener}s on the spinners
+     */
     private void setSpinnerItemSelectListeners(){
 
         selectHospitalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -464,6 +486,10 @@ public class AddAppointmentFragment extends Fragment {
         });
     }
 
+    /**
+     * Perform Validation
+     * @return true if all fields are filled and correct
+     */
     private boolean validateAppointmentBody(){
 
         if (mPatient == null)
@@ -585,6 +611,8 @@ public class AddAppointmentFragment extends Fragment {
         super.onStop();
         ((DashboardActivity)getActivity()).bottomNavVisibility(false);
         ((DashboardActivity)getActivity()).setToolBarTitle("APPOINTMENTS", false);
+
+        //remove the observers now to avoid double observers when popped from back stack
         appointmentViewModel.getAppointment().removeObservers(getActivity());
         appointmentViewModel.getSchedules().removeObservers(getActivity());
         appointmentViewModel.getServices().removeObservers(getActivity());

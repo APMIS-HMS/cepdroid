@@ -145,8 +145,8 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
                 //Also indicate the position
                 prescriptionItem.setPositionInPrescriptionList(positionInPrescription);
                 //And the prescriber of the drug
-                prescriptionItem.setPrescriberName(prescription.getEmployeeDetails().getPersonDetails().getFirstName() +
-                        " "+prescription.getEmployeeDetails().getPersonDetails().getLastName());
+                prescriptionItem.setPrescriberName(prescription.getEmployeeDetails().getFirstName() +
+                            " " + prescription.getEmployeeDetails().getLastName());
 
                 prescriptionItems.add(prescriptionItem);
                 ++positionInPrescription;

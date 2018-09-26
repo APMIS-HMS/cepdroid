@@ -56,14 +56,14 @@ public class ApmisNetworkDataSource {
     private static ApmisNetworkDataSource sInstance;
     private final Context mContext;
 
+    //Reference to the app ex
     private final APMISAPP apmisExecutors;
 
-    private final MutableLiveData<PersonEntry[]> mDownloadedPersonData;
+    //SharedPref Manager
     private final SharedPreferencesManager sharedPreferencesManager;
 
-    private List<AppointmentType> appointmentTypes;
-    private List<OrderStatus> orderStatuses;
-
+    //LiveData references
+    private final MutableLiveData<PersonEntry[]> mDownloadedPersonData;
     private MutableLiveData<List<Patient>> patientDetails;
     private MutableLiveData<List<ClinicSchedule>> clinics;
     private MutableLiveData<List<ScheduleItem>> schedules;
@@ -72,6 +72,10 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Service>> services;
     private MutableLiveData<List<Prescription>> prescriptions;
     private MutableLiveData<Appointment> appointment;
+
+    //TODO Switch to LiveData later
+    private List<AppointmentType> appointmentTypes;
+    private List<OrderStatus> orderStatuses;
 
 
     ApmisNetworkDataSource(Context context, APMISAPP executorThreads) {
@@ -184,7 +188,7 @@ public class ApmisNetworkDataSource {
         apmisExecutors.networkIO().execute(() -> {
             Log.d(LOG_TAG, "Fetch person details started");
             try {
-                new NetworkDataCalls(mContext).getPersonData(mContext, sharedPreferencesManager.storedLoggedInUser().getString("pid"), sharedPreferencesManager.storedLoggedInUser().getString("token"));
+                new NetworkDataCalls(mContext).getPersonData(mContext, sharedPreferencesManager.getStoredLoggedInUser().getString("pid"), sharedPreferencesManager.getStoredLoggedInUser().getString("token"));
                 new NetworkDataCalls(mContext).fetchPatientDetailsForPerson(mContext, sharedPreferencesManager.getPersonId(),  sharedPreferencesManager.getStoredUserAccessToken());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -246,8 +250,8 @@ public class ApmisNetworkDataSource {
     }
 
     /**
-     *
-     * @param appointment
+     * Submit a scheduled appointment
+     * @param appointment The appointment object
      */
     public void submitAppointment(Appointment appointment) {
         apmisExecutors.networkIO().execute(() -> {
@@ -256,6 +260,10 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    /**
+     * Fetch all appointments for a person, across all facilities
+     * @param personId
+     */
     public void fetchAppointmentsForPerson(String personId) {
         apmisExecutors.networkIO().execute(() -> {
             Log.d(LOG_TAG, "Fetch appointments started");
@@ -264,7 +272,7 @@ public class ApmisNetworkDataSource {
     }
 
     /**
-     * Fetch Employee Array using the facility Id provided
+     * Fetch all Medical records for a person, across all facilities
      * @param personId Person's Id
      */
     public void fetchMedicalRecordsForPerson(String personId){
@@ -284,8 +292,6 @@ public class ApmisNetworkDataSource {
             new NetworkDataCalls(mContext).fetchPrescriptionsForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
-
-
 
 
 
