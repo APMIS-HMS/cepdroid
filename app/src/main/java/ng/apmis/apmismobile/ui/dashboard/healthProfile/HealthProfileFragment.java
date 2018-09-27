@@ -52,7 +52,8 @@ import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Created by mofeejegi-apmis.<br/>
+ * A view for showing hhe Person's health profile
  */
 public class HealthProfileFragment extends Fragment {
 
@@ -65,6 +66,7 @@ public class HealthProfileFragment extends Fragment {
     @BindView(R.id.graph)
     LineChart chart;
 
+    //List of Vitals from which the health profile detail would be based on
     List<Vitals> vitalsList;
 
     private HealthProfileViewModel healthProfileViewModel;
@@ -86,11 +88,11 @@ public class HealthProfileFragment extends Fragment {
 
         preferencesManager = new SharedPreferencesManager(getContext());
 
+        //fetch medical records from server
         InjectorUtils.provideNetworkData(getActivity()).fetchMedicalRecordsForPerson(preferencesManager.getPersonId());
 
+        //and initialize the view model to observe these records
         initViewModel();
-
-
 
         return view;
     }
@@ -111,30 +113,38 @@ public class HealthProfileFragment extends Fragment {
 
             if (!vitalsList.isEmpty()){
 
+                //get the newest (most recent) vitals object and use
+                // it for the main views in the health profile
                 Vitals bodyVitals = vitalsList.get(0);
 
                 bloodPressureTextView.setText(bodyVitals.getBloodPressure().getSystolic() + " mmHg");
                 bmiText.setText(bodyVitals.getBodyMass().getBmi() + "");
                 temperatureTextView.setText(Html.fromHtml(bodyVitals.getTemperature() + "&deg;C" ));
+                //Plot the graph. Vitals are ordered from newest to oldest
                 plotGraph(vitalsList);
 
             }
 
         };
 
-
-
         healthProfileViewModel.getRecordsForPerson().observe(getActivity(), vitalsObserver);
     }
 
+    /**
+     * Plot a graph using the last five vital records taken from this person
+     * @param vitalsList the list containing all the Vital records
+     */
     private void plotGraph(List<Vitals> vitalsList){
+        //Max size is 5 or the size of the list (if less than 5)
         int maxSize = vitalsList.size()>5 ? 5 : vitalsList.size();
-        List<Vitals> graphItems = vitalsList.subList(0, maxSize);
+        List<Vitals> graphItems = vitalsList.subList(0, maxSize); //sublist of recent (maxsize)
+
+        //Reverse the list to show the oldest out of the (maxsize) first
         Collections.reverse(graphItems);
 
+        //Prepare entry lists for the chart
         List<Entry> temperatureEntries = new ArrayList<>();
         List<Entry> bloodPressureEntries = new ArrayList<>();
-        List<Entry> bmiEntries = new ArrayList<>();
         List<Entry> heightEntries = new ArrayList<>();
         List<Entry> weightEntries = new ArrayList<>();
 
@@ -142,12 +152,10 @@ public class HealthProfileFragment extends Fragment {
             Vitals item = graphItems.get(i);
             temperatureEntries.add(new Entry((float) i, (AppUtils.doubleToFloat(item.getTemperature()))));
             bloodPressureEntries.add(new Entry((float) i, (item.getBloodPressure().getSystolic().floatValue())));
-
-            if (item.getBodyMass().getBmi() != null)
-                bmiEntries.add(new Entry((float) i, (AppUtils.doubleToFloat(item.getBodyMass().getBmi()))));
-            else
-                bmiEntries.add(new Entry((float) i, 0f));
-
+//            if (item.getBodyMass().getBmi() != null)
+//                bmiEntries.add(new Entry((float) i, (AppUtils.doubleToFloat(item.getBodyMass().getBmi()))));
+//            else
+//                bmiEntries.add(new Entry((float) i, 0f));
             weightEntries.add(new Entry((float) i, (AppUtils.doubleToFloat(item.getBodyMass().getWeight()))));
             heightEntries.add(new Entry((float) i, (AppUtils.doubleToFloat(item.getBodyMass().getHeight()))));
 
@@ -174,15 +182,6 @@ public class HealthProfileFragment extends Fragment {
         bloodPressureDataSet.setFillColor(Color.GRAY);
         bloodPressureDataSet.setFillAlpha(40);
 
-        LineDataSet bmiDataSet = new LineDataSet(bmiEntries, "BMI "); // add entries to dataSet
-        bmiDataSet.setValueTypeface(appFont);
-        bmiDataSet.setColor(Color.MAGENTA);
-        bmiDataSet.setLineWidth(3f);
-        bmiDataSet.setDrawFilled(true);
-        bmiDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        bmiDataSet.setFillColor(Color.MAGENTA);
-        bmiDataSet.setFillAlpha(40);
-
         LineDataSet heightDataSet = new LineDataSet(heightEntries, "Hgt. (m) ."); // add entries to dataSet
         heightDataSet.setValueTypeface(appFont);
         heightDataSet.setColor(Color.GREEN);
@@ -200,7 +199,6 @@ public class HealthProfileFragment extends Fragment {
         weightDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         weightDataSet.setFillColor(Color.rgb(238, 128, 51));
         weightDataSet.setFillAlpha(40);
-
 
 
         LineData lineData = new LineData(bloodPressureDataSet, temperatureDataSet, heightDataSet, weightDataSet);
@@ -241,18 +239,34 @@ public class HealthProfileFragment extends Fragment {
         chart.invalidate(); // refresh
     }
 
+    /**
+     * Get the Vitals list from the documentation objects
+     * @param documentations The Medical Records
+     * @return The Vitals List
+     * @throws JSONException Exception
+     */
     private List<Vitals> populateVitalsFromDocumentations(List<Documentation> documentations) throws JSONException {
 
+        //Iterate through all documentations
         for (Documentation documentation : documentations) {
+            //attempt parsing the Body Json object for a Vitals list
             List<Vitals> list = parseJSON(documentation.getDocument().getBody());
 
+            //if found, return it
             if (!list.isEmpty())
                 return list;
         }
 
+        //otherwise return an empty list
         return new ArrayList<>();
     }
 
+    /**
+     * Attempt to find a Vitals object and return it's List
+     * @param json The JSONObject containing the data
+     * @return The Vitals list or an empty list if Vitals aren't found
+     * @throws JSONException Exception
+     */
     private List<Vitals> parseJSON(JSONObject json) throws JSONException {
 
         Iterator<String> iter = json.keys();
@@ -270,6 +284,11 @@ public class HealthProfileFragment extends Fragment {
         return new ArrayList<>();
     }
 
+    /**
+     * Parse the {@link Vitals} gotten from the JSONObject and return the list of it
+     * @param json The JSONArray containing the vitals
+     * @return The Vitals List or an empty List if the JSON Array is empty
+     */
     private List<Vitals> parseVitals(JSONArray json){
 
         if (json.length() > 0) {
@@ -280,6 +299,7 @@ public class HealthProfileFragment extends Fragment {
             builder.registerTypeAdapter(Double.class, new DoubleTypeAdapter());
             Gson gson = builder.create();
 
+            //Get the vitals and sort them in descending order from newest to oldest
             List<Vitals> vitals = new ArrayList<>(Arrays.asList(gson.fromJson(json.toString(), Vitals[].class)));
             Comparator<Vitals> comparator = (o1, o2) -> o2.compareTo(o1);
             Collections.sort(vitals, comparator);
@@ -305,6 +325,10 @@ public class HealthProfileFragment extends Fragment {
     }
 
 
+    /**
+     * Axis value formatting for the Date X Axis using converting indices
+     * to dates by getting the {@link Vitals#updatedAt} field from a Vitals list
+     */
     public class DateXAxisValueFormatter implements IAxisValueFormatter {
 
         private List<Vitals> mVitals;

@@ -36,6 +36,10 @@ import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.Constants;
 
+/**
+ * View for displaying details about Patient Medical Records,
+ * like Allergies, Vitals and Doctor's notes
+ */
 public class MedicalRecordsDetailsFragment extends Fragment {
     private static final String DOCUMENTATION_KEY = "documentation_key";
     private Documentation documentation;
@@ -84,6 +88,7 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_medical_records_details, container, false);
         ButterKnife.bind(this, view);
 
+        //Sets the details text on the view after parsing
         try {
             detailsTextView.setText(Html.fromHtml(parseJSON(documentation.getDocument().getBody())));
 
@@ -104,9 +109,17 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         super.onResume();
     }
 
+    /**
+     * Parse the Object to resemble a proper doctor's note or in some cases,
+     * call another function to parse a Vitals object
+     * @param json The JSONObject containing the data
+     * @return The well parsed doctor's note HTML or an empty string,
+     * depending on the nature of information in the JSONObject
+     * @throws JSONException Exception
+     */
     private String parseJSON(JSONObject json) throws JSONException {
 
-        StringBuffer bodyText = new StringBuffer();
+        StringBuilder bodyText = new StringBuilder();
 
         Iterator<String> iter = json.keys();
 
@@ -117,9 +130,11 @@ public class MedicalRecordsDetailsFragment extends Fragment {
             if (key.equalsIgnoreCase("vitals")) {
                 //do some vitals stuff
                 parseVitals(json.getJSONArray(key));
+                //and return an empty string for the details
                 return "";
             }
 
+            //If not a Vitals object, then begin parsing the notes
             bodyText.append("<b><font color=\"#0071bc\">" + key + "</font></b><br/>");
 
             try {
@@ -148,6 +163,10 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         return bodyText.toString();
     }
 
+    /**
+     * Parse the {@link Vitals} gotten from the JSONObject and populate a RecyclerView with the information
+     * @param json The JSONArray containing the vitals
+     */
     private void parseVitals(JSONArray json){
 
         if (json.length() > 0) {

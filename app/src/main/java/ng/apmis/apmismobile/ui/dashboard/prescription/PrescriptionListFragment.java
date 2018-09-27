@@ -35,7 +35,7 @@ import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass showing the list of {@link Prescription}s
  */
 public class PrescriptionListFragment extends Fragment implements PrescriptionAdapter.OnAddToCartListener{
 
@@ -74,6 +74,7 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
 
         preferencesManager = new SharedPreferencesManager(getContext());
 
+        //Fetch prescriptions from the server
         InjectorUtils.provideNetworkData(getActivity()).fetchPrescriptionsForPerson(preferencesManager.getPersonId());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -96,6 +97,7 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
 
         final Observer<List<Prescription>> prescriptionsObserver = prescriptions -> {
 
+            //Populate the prescription item list
             populatePrescriptionItems(prescriptions);
 
             if (prescriptionAdapter == null) {
@@ -121,10 +123,17 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
             }
         };
 
+        //Observe the Prescriptions
         prescriptionsViewModel.getPrescriptionsForPerson().observe(getActivity(), prescriptionsObserver);
 
     }
 
+    /**
+     * Populate the PrescriptionItems list with with prescription items gotten from the
+     * {@link Prescription} bodies. After every Prescription Body, a spacer (empty PrescriptionItem)
+     * is inserted also.
+     * @param prescriptions The {@link Prescription} bodies containing {@link PrescriptionItem}s
+     */
     private void populatePrescriptionItems(List<Prescription> prescriptions){
         prescriptionItems.clear();
 

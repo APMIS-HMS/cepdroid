@@ -5,6 +5,9 @@ import android.content.Context;
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.ApmisDatabase;
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
+import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
+import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
@@ -52,26 +55,51 @@ public class InjectorUtils {
         return new PersonFactory(apmisRepository);
     }
 
+    /**
+     * Injects all dependencies to provide local or network data for {@link Appointment}s
+     * @param context
+     * @return
+     */
     public static AddAppointmentViewModelFactory provideAddAppointmentViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new AddAppointmentViewModelFactory(apmisRepository);
     }
 
+    /**
+     * Injects all dependencies to provide local or network data for {@link Appointment}s
+     * @param context
+     * @return
+     */
     public static AppointmentViewModelFactory provideAppointmentViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new AppointmentViewModelFactory(apmisRepository, context);
     }
 
+    /**
+     * Injects all dependencies to provide local or network data for {@link Documentation}s
+     * @param context
+     * @return
+     */
     public static RecordsListViewModelFactory provideRecordsViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new RecordsListViewModelFactory(apmisRepository, context);
     }
 
+    /**
+     * Injects all dependencies to provide local or network data for {@link Documentation}s
+     * @param context
+     * @return
+     */
     public static HealthProfileViewModelFactory provideHealthProfileViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new HealthProfileViewModelFactory(apmisRepository, context);
     }
 
+    /**
+     * Injects all dependencies to provide network data for {@link Prescription}s
+     * @param context
+     * @return
+     */
     public static PrescriptionViewModelFactory providePrescriptionsViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new PrescriptionViewModelFactory(apmisRepository);

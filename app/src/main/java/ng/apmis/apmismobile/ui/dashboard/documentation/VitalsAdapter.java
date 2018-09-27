@@ -16,6 +16,9 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.documentationModel.Vitals;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
+/**
+ * Adapter class for handling the Vitals List in the Medical Records Details
+ */
 public class VitalsAdapter extends RecyclerView.Adapter<VitalsAdapter.VitalsViewHolder> {
 
     private Context mContext;

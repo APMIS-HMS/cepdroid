@@ -38,10 +38,15 @@ import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
+/**
+ * Adapter responsible for the Data in the medical records list
+ */
 public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String BASE_URL = Constants.BASE_URL;
+    //The View Type Constant for the Date Header
     private static final int TYPE_DATE = 0;
+    //The View Type Constant for the Medical Record
     private static final int TYPE_RECORD = 1;
 
     private Context mContext;
@@ -71,6 +76,10 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
+    /**
+     * Request password on record click to ensure privacy of records
+     * @param documentation The record to open
+     */
     private void onRecordClick(Documentation documentation){
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogMinWidth);
         AlertDialog dialog = builder.create();
@@ -89,6 +98,12 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
+    /**
+     * Send a request to the server to authenticate the current user with a password
+     * @param password The typed in password
+     * @param alertDialog AlertDialog object
+     * @param documentation The record to open
+     */
     private void confirmPasswordAndAccess(String password, AlertDialog alertDialog, Documentation documentation){
         RequestQueue queue = Volley.newRequestQueue(mContext.getApplicationContext());
 
@@ -179,6 +194,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
         DatedDocumentationItem item = datedDocumentationItems.get(position);
 
+        //If the date string in a datedDocumentationItem is not null, then we have a date type
         if (item.date != null){
             return TYPE_DATE;
         } else {
@@ -229,6 +245,11 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+
+    /**
+     * This DatedDocumentationItem class is simply an encapsulation of a DateString and
+     * a Documentation Medical Record
+     */
     public static class DatedDocumentationItem {
 
         private String date;

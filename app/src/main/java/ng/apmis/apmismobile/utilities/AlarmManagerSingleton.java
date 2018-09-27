@@ -3,6 +3,9 @@ package ng.apmis.apmismobile.utilities;
 import android.app.AlarmManager;
 import android.content.Context;
 
+/**
+ * Singleton Class to handle all Alarms
+ */
 public class AlarmManagerSingleton {
 
     private static AlarmManagerSingleton sInstance;

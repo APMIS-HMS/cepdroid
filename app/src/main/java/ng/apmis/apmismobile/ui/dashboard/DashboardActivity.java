@@ -185,6 +185,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
+
     private void selectFragment(MenuItem item) {
 
         switch (item.getItemId()) {
@@ -206,6 +207,10 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Replace the current fragment with another
+     * @param fragment Fragment used to replace
+     */
     private void placeFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()
