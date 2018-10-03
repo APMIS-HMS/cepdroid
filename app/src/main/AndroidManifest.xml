@@ -47,6 +47,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.login.ForgotPasswordActivity"
             android:theme="@style/BackgroundTheme"/>
+
+
+        <receiver android:name=".utilities.AlarmBroadcast"/>
     </application>
 
 </manifest>

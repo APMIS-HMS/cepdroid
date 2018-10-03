@@ -5,10 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#fff"
     android:clickable="true"
-    android:focusable="true"
-    android:padding="4dp">
+    android:focusable="true">
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -20,48 +19,70 @@
                 android:id="@+id/recently_booked_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:text="@string/recently_booked"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/black" />
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:textColor="#777777" />
+
+            <View
+                android:id="@+id/divider_line"
+                style="@style/HorizontalDivider"
+                android:layout_width="match_parent"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@id/recently_booked_header"/>
+
+            <ProgressBar
+                android:id="@+id/recently_booked_loader"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/divider_line" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recently_booked_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/recently_booked_header" />
-
-            <TextView
-                android:id="@+id/recently_booked_more_less"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/recently_booked_recycler"
-                android:paddingRight="20dp"
-                android:text="@string/more"
-                android:textColor="@android:color/black"
-                android:drawablePadding="8dp"
-                android:drawableEnd="@drawable/ic_double_down_arrow"
-                android:drawableRight="@drawable/ic_double_up_arrow"
-                android:layout_marginBottom="5dp"/>
+                android:layout_below="@+id/divider_line" />
 
             <TextView
                 android:id="@+id/previous_appointment_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/recently_booked_more_less"
+                android:layout_below="@id/recently_booked_recycler"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:textStyle="bold"
                 android:text="@string/previous_appointments"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/black" />
+                android:textSize="13sp"
+                android:textAllCaps="true"
+                android:textColor="#777" />
+
+            <View
+                android:id="@+id/divider_line_2"
+                style="@style/HorizontalDivider"
+                android:layout_width="match_parent"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@id/previous_appointment_header"/>
+
+            <ProgressBar
+                android:id="@+id/previous_appointment_loader"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/divider_line_2"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/previous_appointment_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/previous_appointment_header" />
+                android:layout_below="@+id/divider_line_2" />
 
             <TextView
                 android:id="@+id/previous_appointment_more_less"
@@ -72,12 +93,12 @@
                 android:text="@string/more"
                 android:textColor="@android:color/black"
                 android:drawablePadding="8dp"
-                android:drawableEnd="@drawable/ic_double_down_arrow"
-                android:drawableRight="@drawable/ic_double_up_arrow" />
+                android:drawableEnd="@drawable/ic_arrow_drop_down"
+                android:drawableRight="@drawable/ic_arrow_drop_down" />
 
         </RelativeLayout>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/appointment_add_fab"

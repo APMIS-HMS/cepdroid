@@ -29,7 +29,7 @@ public class APMISAPP {
         this.mainThread = mainThread;
     }
 
-    public static APMISAPP getInstance() {
+    public static APMISAPP getInstance(){
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new APMISAPP(Executors.newSingleThreadExecutor(),
@@ -41,7 +41,7 @@ public class APMISAPP {
     }
 
 
-    public Executor diskIO() {
+    public Executor diskIO(){
         return diskIO;
     }
 

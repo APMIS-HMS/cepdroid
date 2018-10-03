@@ -21,6 +21,6 @@ public class ApmisSyncIntentService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         Log.d(LOG_TAG, "Network Intent service started");
         ApmisNetworkDataSource apmisNetworkDataSource = InjectorUtils.provideNetworkData(getApplicationContext());
-        apmisNetworkDataSource.fetchPatientDetails();
+        apmisNetworkDataSource.fetchPersonDetails();
     }
 }

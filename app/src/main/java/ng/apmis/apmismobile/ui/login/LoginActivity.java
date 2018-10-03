@@ -10,11 +10,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -35,6 +32,7 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.signup.SignupActivity;
+import ng.apmis.apmismobile.utilities.Constants;
 
 /**
  * A login screen that offers login via apmisId/password.
@@ -47,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.remember_me) CheckBox rememberMe;
     @BindView(R.id.create_account) TextView createAccount;
 
-    private static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
+    private static final String BASE_URL = Constants.BASE_URL;
     RequestQueue queue;
 
     boolean fieldsOk = false;
@@ -180,17 +178,20 @@ public class LoginActivity extends AppCompatActivity {
                     String email = userObj.getString("email");
                     String dbId = userObj.getString("_id");
 
+                    sharedPreferencesManager.storeLoggedInUserDetails(token, personId, email, dbId);
 
-                    sharedPreferencesManager.storeLoggedInUserKeys(token, personId, email, dbId);
-
-                    Log.v("sharedPRef", String.valueOf(sharedPreferencesManager.storedLoggedInUser()));
+                    Log.v("sharedPRef", String.valueOf(sharedPreferencesManager.getStoredLoggedInUser()));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 progressDialog.dismiss();
-                startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+                Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                provideNotificationExtras(intent);
+                startActivity(intent);
+                sharedPreferencesManager.setIsLoggedIn(true);
                 finish();
+
             }, error -> {
                 Log.d("error", String.valueOf(error.getMessage()) + "Error");
                 progressDialog.dismiss();
@@ -210,10 +211,18 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void provideNotificationExtras(Intent intent){
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
+            intent.putExtra(Constants.NOTIFICATION_ACTION, Constants.APPOINTMENTS);
+            Log.e("Provide", "Provided");
+        }
+    }
+
 
     private boolean checkApmisId(String apmisId) {
+        String id = apmisId.trim();
 
-        if (apmisId.length() < 8 || !apmisId.contains("-") || apmisId.equals("")) {
+        if (id.length() < 8 || !id.contains("-") || id.equals("")) {
             return false;
         }
         return true;

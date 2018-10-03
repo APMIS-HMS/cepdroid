@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="5dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="1dp"
+            android:visibility="gone"
+            android:text="22/05/2019"/>
+
+        <TextView
+            android:id="@+id/generic_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/date_text"
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="bold"
+            android:layout_marginBottom="3dp"
+            android:textSize="18sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="Generic Drug"/>
+
+        <TextView
+            android:id="@+id/instruction_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/generic_name_text"
+            android:layout_marginTop="3dp"
+            android:textSize="12sp"
+            android:text="Instruction" />
+
+        <TextView
+            android:id="@+id/instruction_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/instruction_title"
+            android:layout_marginTop="5dp"
+            android:gravity="start"
+            android:layout_toLeftOf="@+id/add_to_cart_button"
+            android:layout_toStartOf="@+id/add_to_cart_button"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="After a meal only" />
+
+        <Button
+            android:id="@+id/add_to_cart_button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@+id/instruction_text"
+            android:padding="7dp"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:text="Add to cart"
+            android:background="@drawable/buy_button"/>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_below="@+id/instruction_text">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Dosage"/>
+
+                <TextView
+                    android:id="@+id/dosage_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    android:layout_marginTop="15dp"
+                    android:text="2 Tablets"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_alignParentBottom="true"
+                style="@style/VerticalDivider"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Frequency"/>
+
+                <TextView
+                    android:id="@+id/frequency_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    android:layout_marginTop="15dp"
+                    android:text="Once a lifetime"/>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_alignParentBottom="true"
+                style="@style/VerticalDivider"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Prescribed by"/>
+
+                <TextView
+                    android:id="@+id/prescriber_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_marginTop="15dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="Dr(Miss) Omoike Sarah"/>
+
+
+            </LinearLayout>
+
+
+
+        </TableRow>
+
+    </RelativeLayout>
+
+
+
+    <View
+        android:id="@+id/divider_line"
+        android:layout_alignParentBottom="true"
+        style="@style/HorizontalDivider"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="8dp"/>
+
+</android.support.v7.widget.CardView>

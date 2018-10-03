@@ -5,52 +5,97 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.Room;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import ng.apmis.apmismobile.annotations.Exclude;
 
 /**
  * Person model has all details about the person (Patient)
+ * Class is also a {@link Room} database entity
  */
 
 @Entity(tableName = "person", indices = {@Index(value = "apmisId", unique = true)})
 public class PersonEntry {
 
+    /**
+     * Id for saving in Room Database
+     */
     @PrimaryKey(autoGenerate = true)
     private int id;
+
+    /**
+     * APMIS Id of the Person received upon online registration
+     */
     private String apmisId;
+
+    /**
+     * Person's title "Mr, Mrs, Miss, etc"
+     */
     private String title;
+
+    /**
+     * Person's first name
+     */
     private String firstName;
+
+    /**
+     * Person's last name
+     */
     private String lastName;
+
+    /**
+     * There are only two genders, yes. Male and Female
+     */
     private String gender;
+
+    /**
+     * Mother's maiden name, used for security purposes
+     */
     private String motherMaidenName;
+
+    /**
+     * Security Question chosen for extra verification
+     */
     private String securityQuestion;
+
+    /**
+     * Answer to Security question
+     */
     private String securityAnswer;
+
+    /**
+     *
+     */
     private String primaryContactPhoneNo;
-    @Expose
+    @Exclude
     private String secondaryContactPhoneNo;
     private String dateOfBirth;
     private String email;
     private String otherNames;
     private String biometric; //Buffer according to web
-    @Expose
+    @Exclude
     private String personProfessions; //[personProfessionsSchema]
     private String nationality;
     private String stateOfOrigin;
     private String lgaOfOrigin;
     private String profileImageObject; //Store Image uri
+    @Exclude
     private String homeAddress;
     private String maritalStatus;
-    @Expose
+    @Exclude
     private String nextOfKin;
-    @Expose
+    @Exclude
     private String wallet;
 
     @Ignore
-    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
+    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin) {
         this.apmisId = apmisId;
         this.title = title;
         this.firstName = firstName;
@@ -65,7 +110,6 @@ public class PersonEntry {
         this.email = email;
         this.otherNames = otherNames;
         this.biometric = biometric;
-        this.personProfessions = personProfessions;
         this.nationality = nationality;
         this.stateOfOrigin = stateOfOrigin;
         this.lgaOfOrigin = lgaOfOrigin;
@@ -73,7 +117,6 @@ public class PersonEntry {
         this.homeAddress = homeAddress;
         this.maritalStatus = maritalStatus;
         this.nextOfKin = nextOfKin;
-        this.wallet = wallet;
     }
 
     public PersonEntry(int id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {

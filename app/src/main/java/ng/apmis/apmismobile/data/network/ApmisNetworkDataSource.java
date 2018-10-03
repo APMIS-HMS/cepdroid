@@ -14,16 +14,27 @@ import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
-import com.google.gson.Gson;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
+import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
+import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
+import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
+import ng.apmis.apmismobile.data.database.facilityModel.Category;
+import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
+import ng.apmis.apmismobile.data.database.facilityModel.Employee;
+import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
+import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 
 /**
  * Provides an api for getting network data
@@ -45,16 +56,43 @@ public class ApmisNetworkDataSource {
     private static ApmisNetworkDataSource sInstance;
     private final Context mContext;
 
+    //Reference to the app ex
     private final APMISAPP apmisExecutors;
 
-    private final MutableLiveData<PersonEntry[]> mDownloadedPersonData;
+    //SharedPref Manager
     private final SharedPreferencesManager sharedPreferencesManager;
+
+    //LiveData references
+    private final MutableLiveData<PersonEntry[]> mDownloadedPersonData;
+    private MutableLiveData<List<Patient>> patientDetails;
+    private MutableLiveData<List<ClinicSchedule>> clinics;
+    private MutableLiveData<List<ScheduleItem>> schedules;
+    private MutableLiveData<List<Employee>> employees;
+    private MutableLiveData<List<Documentation>> documentations;
+    private MutableLiveData<List<Service>> services;
+    private MutableLiveData<List<Prescription>> prescriptions;
+    private MutableLiveData<Appointment> appointment;
+
+    //TODO Switch to LiveData later
+    private List<AppointmentType> appointmentTypes;
+    private List<OrderStatus> orderStatuses;
 
 
     ApmisNetworkDataSource(Context context, APMISAPP executorThreads) {
         mContext = context;
         apmisExecutors = executorThreads;
         mDownloadedPersonData = new MutableLiveData<>();
+        patientDetails = new MutableLiveData<>();
+        clinics = new MutableLiveData<>();
+        schedules = new MutableLiveData<>();
+        employees = new MutableLiveData<>();
+        services = new MutableLiveData<>();
+        documentations = new MutableLiveData<>();
+        appointment = new MutableLiveData<>();
+        prescriptions = new MutableLiveData<>();
+
+        appointmentTypes = new ArrayList<>();
+        orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
     }
 
@@ -75,9 +113,9 @@ public class ApmisNetworkDataSource {
     }
 
     public void setCurrentPersonData(PersonEntry[] personEntries) {
+        //post value for liveData use
         mDownloadedPersonData.postValue(personEntries);
     }
-
 
     /**
      * Start service to fetch patient details
@@ -143,20 +181,253 @@ public class ApmisNetworkDataSource {
     }
 
     /**
-     * Gets the most recent patient details
+     * Gets the most recent person details
      * This function is only called on a background service
      */
-    void fetchPatientDetails() {
+    void fetchPersonDetails() {
         apmisExecutors.networkIO().execute(() -> {
-            Log.d(LOG_TAG, "Fetch weather started");
+            Log.d(LOG_TAG, "Fetch person details started");
             try {
-                new NetworkDataCalls(mContext).getPersonData(mContext, sharedPreferencesManager.storedLoggedInUser().getString("pid"), sharedPreferencesManager.storedLoggedInUser().getString("token"));
+                new NetworkDataCalls(mContext).getPersonData(mContext, sharedPreferencesManager.getStoredLoggedInUser().getString("pid"), sharedPreferencesManager.getStoredLoggedInUser().getString("token"));
+                new NetworkDataCalls(mContext).fetchPatientDetailsForPerson(mContext, sharedPreferencesManager.getPersonId(),  sharedPreferencesManager.getStoredUserAccessToken());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
         });
     }
 
+    /**
+     * Fetch Appointment types
+     */
+    public void fetchAppointmentTypes(){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Appointment Types started");
+            new NetworkDataCalls(mContext).fetchAppointmentTypes(mContext, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch Order status
+     */
+    public void fetchOrderStatuses(){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Order Statuses started");
+            new NetworkDataCalls(mContext).fetchOrderStatuses(mContext, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch ClinicSchedule Objects for the facility Id provided
+     * @param facilityId Facility Id of the facility
+     */
+    public void fetchClinicSchedulesForFacility(String facilityId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Clinics started");
+            new NetworkDataCalls(mContext).fetchClinicsForFacility(mContext, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch Category Array using the facility Id provided
+     * @param facilityId Facility Id of the facility
+     */
+    public void fetchCategoriesForFacility(String facilityId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Categories started");
+            new NetworkDataCalls(mContext).fetchCategoriesForFacility(mContext, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch Employee Array using the facility Id provided
+     * @param facilityId Facility Id of the facility
+     */
+    public void fetchEmployeesForFacility(String facilityId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Employees started");
+            new NetworkDataCalls(mContext).fetchEmployeesForFacility(mContext, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Submit a scheduled appointment
+     * @param appointment The appointment object
+     */
+    public void submitAppointment(Appointment appointment) {
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Submit appointment started");
+            new NetworkDataCalls(mContext).submitAppointment(mContext, appointment, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch all appointments for a person, across all facilities
+     * @param personId
+     */
+    public void fetchAppointmentsForPerson(String personId) {
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch appointments started");
+            new NetworkDataCalls(mContext).fetchAppointmentsForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch all Medical records for a person, across all facilities
+     * @param personId Person's Id
+     */
+    public void fetchMedicalRecordsForPerson(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Records started");
+            new NetworkDataCalls(mContext).fetchMedicalRecordForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch Prescription Array using the person Id provided
+     * @param personId Person's Id
+     */
+    public void fetchPrescriptionsForPerson(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Prescription started");
+            new NetworkDataCalls(mContext).fetchPrescriptionsForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+
+
+
+
+
+
+
+
+    //Order Status
+
+    public void setOrderStatuses(List<OrderStatus> orderStatuses){
+        this.orderStatuses = orderStatuses;
+    }
+
+    public List<OrderStatus> getOrderStatuses(){
+        return this.orderStatuses;
+    }
+
+
+    //Appointment Types
+
+    public void setAppointmentTypes(List<AppointmentType> appointmentTypes){
+        this.appointmentTypes = appointmentTypes;
+    }
+
+    public List<AppointmentType> getAppointmentTypes(){
+        return this.appointmentTypes;
+    }
+
+
+    //Employees
+
+    public void setEmployeesForFacility(List<Employee> employees){
+        List<Employee> doctors = new ArrayList<>();
+        for (Employee employee : employees){
+            if (employee.getProfessionId().equalsIgnoreCase("Doctor"))
+                doctors.add(employee);
+        }
+        this.employees.postValue(doctors);
+    }
+
+    public MutableLiveData<List<Employee>> getEmployeesForFacility() {
+        return employees;
+    }
+
+    public void refreshEmployees(){
+        this.employees.postValue(new ArrayList<>());
+    }
+
+
+
+    //Clinics & Schedules
+
+    public void setSchedulesForClinic(ClinicSchedule clinic){
+        this.schedules.postValue(clinic.getSchedules());
+    }
+
+    public MutableLiveData<List<ScheduleItem>> getSchedulesForClinic() {
+        return schedules;
+    }
+
+    public void refreshSchedules(){
+        this.schedules.postValue(new ArrayList<>());
+    }
+
+    public void setClinicsForFacility(List<ClinicSchedule> clinics){
+        this.clinics.postValue(clinics);
+    }
+
+    public MutableLiveData<List<ClinicSchedule>> getClinicsForFacility() {
+        return clinics;
+    }
+
+    public void refreshClinics(){
+        this.clinics.postValue(new ArrayList<>());
+    }
+
+
+    //Services
+
+    public void setServicesForFacility(List<Category> categories){
+        for (Category category : categories){
+            if (category.getName().equalsIgnoreCase("Appointment")) {
+                this.services.postValue(category.getServices());
+                break;
+            }
+        }
+    }
+
+    public MutableLiveData<List<Service>> getServicesForFacility() {
+        return services;
+    }
+
+    public void refreshServices(){
+        this.services.postValue(new ArrayList<>());
+    }
+
+
+    //Patients
+
+    public void setPatientDetailsForPerson(List<Patient> patientDetails){
+        this.patientDetails.postValue(patientDetails);
+    }
+
+    public MutableLiveData<List<Patient>> getPatientDetailsForPerson(){
+        return patientDetails;
+    }
+
+
+    //Appointment
+    public void setAppointment(Appointment appointment){
+        this.appointment.postValue(appointment);
+    }
+
+    public MutableLiveData<Appointment> getAppointment() {
+        return appointment;
+    }
+
+    //Documentation
+    public void setDocumentationsForPerson(List<Documentation> documentations){
+        this.documentations.postValue(documentations);
+    }
+
+    public MutableLiveData<List<Documentation>> getDocumentationsForPerson(){
+        return this.documentations;
+    }
+
+
+    //Prescription
+
+    public void setPrescriptionsForPerson(List<Prescription> prescriptions) {
+        this.prescriptions.postValue(prescriptions);
+    }
+
+    public MutableLiveData<List<Prescription>> getPrescriptionsForPerson(){
+        return this.prescriptions;
+    }
 }

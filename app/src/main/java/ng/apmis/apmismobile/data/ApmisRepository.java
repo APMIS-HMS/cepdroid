@@ -2,10 +2,14 @@ package ng.apmis.apmismobile.data;
 
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
+
+import java.util.List;
 
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.ApmisDao;
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
@@ -21,7 +25,7 @@ public class ApmisRepository {
     // For Singleton instantiation
     private static final Object LOCK = new Object();
     private static ApmisRepository sInstance;
-    private final ApmisDao mWeatherDao;
+    private final ApmisDao mApmisDao;
     private final ApmisNetworkDataSource mApmisNetworkDataSource;
     private final APMISAPP mExecutors;
     private boolean mInitialized = false;
@@ -29,7 +33,7 @@ public class ApmisRepository {
     private ApmisRepository(ApmisDao apmisDao,
                                ApmisNetworkDataSource apmisNetworkDataSource,
                                APMISAPP executors) {
-        mWeatherDao = apmisDao;
+        mApmisDao = apmisDao;
         mApmisNetworkDataSource = apmisNetworkDataSource;
         mExecutors = executors;
         LiveData<PersonEntry[]> networkData = mApmisNetworkDataSource.getCurrentPersonData();
@@ -40,7 +44,7 @@ public class ApmisRepository {
                 deleteOldData();
                 Log.d(LOG_TAG, "Old person detail deleted");
                 // Insert our new weather data into Sunshine's database
-                mWeatherDao.insertData(newpersonData);
+                mApmisDao.insertData(newpersonData);
                 Log.d(LOG_TAG, "New values inserted");
             });
         });
@@ -77,9 +81,13 @@ public class ApmisRepository {
         });
     }
 
+    public ApmisNetworkDataSource getNetworkDataSource(){
+        return this.mApmisNetworkDataSource;
+    }
+
     public LiveData<PersonEntry> getUserData () {
         initializeData();
-        return mWeatherDao.getUserData();
+        return mApmisDao.getUserData();
     }
 
 
@@ -87,7 +95,7 @@ public class ApmisRepository {
      * Remove all old person data to allow new update
      */
     private void deleteOldData () {
-        mWeatherDao.deleteOldData();
+        mApmisDao.deleteOldData();
     }
 
     //TODO consider condition to check before fetching data from server
@@ -99,6 +107,60 @@ public class ApmisRepository {
     private void startFetchPersonDataService() {
         mApmisNetworkDataSource.startPersonDataFetchService();
     }
+
+    /**
+     * Inserts the {@link Appointment} object from the server into the
+     * Appointment Room Database
+     * @param appointment The Appointment object fetched
+     */
+    public void insertAppointment(Appointment appointment){
+        mExecutors.diskIO().execute(() -> {
+            mApmisDao.insertAppointment(appointment);
+        });
+    }
+
+    /**
+     * Batch procedure for inserting Appointments into Room database
+     * @param appointments The list of Appointments to insert
+     */
+    public void insertAppointmentsForPatient(List<Appointment> appointments){
+        for (Appointment appointment : appointments){
+            //Always pre-fill the facilityName and PersonId into the top level of the Appointment object
+            //for easy Room database storage
+            appointment.setFacilityName(appointment.getPatientDetails().getFacilityObj().getName());
+            appointment.setPersonId(appointment.getPatientDetails().getPersonId());
+            insertAppointment(appointment);
+        }
+    }
+
+    /**
+     * Get Appointment LiveData from room database
+     * @param patientId PatientId to query the Appointment
+     * @return The list of {@link Appointment}s wrapped in a LiveData object
+     */
+    public LiveData<List<Appointment>> getAppointmentsForPatient(String patientId){
+        return mApmisDao.findAppointmentsForPatient(patientId);
+    }
+
+    /**
+     * Get a Single Appointment LiveData object from room db
+     * @param id the Appointment Id for the query
+     * @return The Appointment wrapped in a LiveData object
+     */
+    public LiveData<Appointment> findAppointmentById(String id){
+        return mApmisDao.findAppointmentById(id);
+    }
+
+    /**
+     * Get Appointment from room database. <br/>
+     * <b>Note: This method must be called in a background thread</b>
+     * @param id the Appointment id for the query
+     * @return The Appointment object
+     */
+    public Appointment getAppointmentById(String id){
+        return mApmisDao.getAppointmentById(id);
+    }
+
 
 
 }

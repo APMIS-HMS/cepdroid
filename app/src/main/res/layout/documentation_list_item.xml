@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_record_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="3dp">
+
+    <RelativeLayout
+        android:id="@+id/relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@drawable/medical_record_background"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/apmis_doc_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            app:srcCompat="@drawable/ic_apmis_file"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/apmis_doc_image"
+            android:layout_toEndOf="@+id/apmis_doc_image"
+            android:layout_toLeftOf="@+id/more_options_image"
+            android:layout_toStartOf="@+id/more_options_image"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/facility_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tomal clinic"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                />
+
+            <TextView
+                android:id="@+id/clinic_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="General"/>
+
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:text="20/08/2018"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/doctor_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="12sp"
+            android:text="Dr. Mofe Ejegi"/>
+
+        <ImageView
+            android:id="@+id/more_options_image"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_margin="3dp"
+            android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_more_options"/>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

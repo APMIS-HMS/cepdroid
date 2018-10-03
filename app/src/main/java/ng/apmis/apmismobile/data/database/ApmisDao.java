@@ -7,6 +7,9 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
+import java.util.List;
+
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 
 
@@ -27,4 +30,17 @@ public interface ApmisDao {
 
     @Query("DELETE FROM person")
     void deleteOldData();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAppointment(Appointment appointment);
+
+    @Query("SELECT * FROM appointments WHERE personId = :patientId ORDER BY startDate DESC")
+    LiveData<List<Appointment>> findAppointmentsForPatient(String patientId);
+
+    @Query("SELECT * FROM appointments WHERE _id = :appointment_id")
+    LiveData<Appointment> findAppointmentById(String appointment_id);
+
+    @Query("SELECT * FROM appointments WHERE _id = :appointment_id")
+    Appointment getAppointmentById(String appointment_id);
+
 }

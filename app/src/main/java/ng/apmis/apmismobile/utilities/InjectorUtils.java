@@ -7,6 +7,11 @@ import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.ApmisDatabase;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
+import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.documentation.RecordsListViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionViewModelFactory;
 
 
 /**
@@ -46,5 +51,31 @@ public class InjectorUtils {
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new PersonFactory(apmisRepository);
     }
+
+    public static AddAppointmentViewModelFactory provideAddAppointmentViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new AddAppointmentViewModelFactory(apmisRepository);
+    }
+
+    public static AppointmentViewModelFactory provideAppointmentViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new AppointmentViewModelFactory(apmisRepository, context);
+    }
+
+    public static RecordsListViewModelFactory provideRecordsViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new RecordsListViewModelFactory(apmisRepository, context);
+    }
+
+    public static HealthProfileViewModelFactory provideHealthProfileViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new HealthProfileViewModelFactory(apmisRepository, context);
+    }
+
+    public static PrescriptionViewModelFactory providePrescriptionsViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new PrescriptionViewModelFactory(apmisRepository);
+    }
+
 
 }
