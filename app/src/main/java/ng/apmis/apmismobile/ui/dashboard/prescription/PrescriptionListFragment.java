@@ -79,8 +79,11 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         prescriptionsRecycler.setLayoutManager(layoutManager);
 
-        if (prescriptionAdapter != null)
+        if (prescriptionAdapter != null) {
             prescriptionsRecycler.setAdapter(prescriptionAdapter);
+            prescriptionsShimmer.setVisibility(View.GONE);
+            prescriptionsShimmer.stopShimmer();
+        }
 
         initViewModel();
 

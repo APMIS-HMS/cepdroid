@@ -32,8 +32,10 @@ public class InvestigationBody {
 
 
     private String labRequestDate;
-
     private PersonEntry labRequestEmployee;
+    private String labRequestClinicalInformation;
+    private String labRequestNumber;
+    private String labRequestDiagnosis;
 
 
     public Boolean getIsUrgent() {
@@ -137,4 +139,27 @@ public class InvestigationBody {
     }
 
 
+    public String getLabRequestClinicalInformation() {
+        return labRequestClinicalInformation;
+    }
+
+    public void setLabRequestClinicalInformation(String labRequestClinicalInformation) {
+        this.labRequestClinicalInformation = labRequestClinicalInformation;
+    }
+
+    public String getLabRequestNumber() {
+        return labRequestNumber;
+    }
+
+    public void setLabRequestNumber(String labRequestNumber) {
+        this.labRequestNumber = labRequestNumber;
+    }
+
+    public String getLabRequestDiagnosis() {
+        return labRequestDiagnosis;
+    }
+
+    public void setLabRequestDiagnosis(String labRequestDiagnosis) {
+        this.labRequestDiagnosis = labRequestDiagnosis;
+    }
 }

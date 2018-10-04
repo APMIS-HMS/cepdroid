@@ -3,6 +3,7 @@ package ng.apmis.apmismobile.ui.dashboard.diagnoses;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -26,6 +28,7 @@ import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.diagnosesModel.InvestigationBody;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
+import ng.apmis.apmismobile.ui.dashboard.documentation.MedicalRecordsDetailsFragment;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
@@ -33,7 +36,10 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
  * A simple {@link Fragment} subclass displaying the list of investigations
  * made on behalf of the person(patient).
  */
-public class DiagnosisListFragment extends Fragment {
+public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.OnViewReportClickedListener{
+
+    @BindView(R.id.main_background)
+    FrameLayout frameLayout;
 
     @BindView(R.id.diagnosis_recycler)
     RecyclerView diagnosisRecycler;
@@ -69,8 +75,12 @@ public class DiagnosisListFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         diagnosisRecycler.setLayoutManager(layoutManager);
 
-        if (diagnosisAdapter != null)
+        if (diagnosisAdapter != null) {
             diagnosisRecycler.setAdapter(diagnosisAdapter);
+            diagnosisShimmer.setVisibility(View.GONE);
+            diagnosisShimmer.stopShimmer();
+            frameLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.pale_cyan));
+        }
 
         initViewModel();
 
@@ -91,8 +101,10 @@ public class DiagnosisListFragment extends Fragment {
 
                 diagnosisShimmer.setVisibility(View.GONE);
                 diagnosisShimmer.stopShimmer();
+                frameLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.pale_cyan));
 
                 diagnosisAdapter = new DiagnosisAdapter(getActivity(), investigationBodies);
+                diagnosisAdapter.instantiateViewReportListener(this);
                 diagnosisRecycler.setAdapter(diagnosisAdapter);
 
 
@@ -127,9 +139,14 @@ public class DiagnosisListFragment extends Fragment {
 
                 //set the date
                 investigationBody.setLabRequestDate(labRequest.getUpdatedAt());
-
                 //set the employee
                 investigationBody.setLabRequestEmployee(labRequest.getEmployeeDetails());
+                //set the clinic information
+                investigationBody.setLabRequestClinicalInformation(labRequest.getClinicalInformation());
+                //set the diagnosis
+                investigationBody.setLabRequestDiagnosis(labRequest.getDiagnosis());
+                //set the lab number
+                investigationBody.setLabRequestNumber(labRequest.getLabNumber());
 
                 investigationBodies.add(investigationBody);
             }
@@ -151,4 +168,17 @@ public class DiagnosisListFragment extends Fragment {
         super.onStop();
     }
 
+    @Override
+    public void onViewReportClicked(Intent i) {
+        MedicalRecordsDetailsFragment detailsFragment = MedicalRecordsDetailsFragment.newInstance(i);
+        setFragment(detailsFragment);
+    }
+
+    private void setFragment (Fragment fragment) {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
 }

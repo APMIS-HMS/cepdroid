@@ -5,6 +5,9 @@ import android.arch.lifecycle.ViewModelProvider;
 
 import ng.apmis.apmismobile.data.ApmisRepository;
 
+/**
+ * A simple {@link ViewModelProvider.NewInstanceFactory} class
+ */
 public class DiagnosisViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final ApmisRepository apmisRepository;

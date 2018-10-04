@@ -1,6 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard.documentation;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -42,7 +43,10 @@ import ng.apmis.apmismobile.utilities.Constants;
  */
 public class MedicalRecordsDetailsFragment extends Fragment {
     private static final String DOCUMENTATION_KEY = "documentation_key";
+    private static final String INTENT_KEY = "intent_key";
     private Documentation documentation;
+    private Intent intent;
+    private boolean isDocumentationAvailable;
 
     @BindView(R.id.details_scroll)
     ScrollView detailsScroll;
@@ -73,11 +77,29 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         return fragment;
     }
 
+    public static MedicalRecordsDetailsFragment newInstance(Intent intent) {
+        MedicalRecordsDetailsFragment fragment = new MedicalRecordsDetailsFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(INTENT_KEY, intent);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
-            documentation = (Documentation) getArguments().getSerializable(DOCUMENTATION_KEY);
+
+            if (getArguments().getSerializable(DOCUMENTATION_KEY) != null) {
+                documentation = (Documentation) getArguments().getSerializable(DOCUMENTATION_KEY);
+                isDocumentationAvailable = true;
+            }
+
+            else if (getArguments().getParcelable(INTENT_KEY) != null) {
+                intent = getArguments().getParcelable(INTENT_KEY);
+                isDocumentationAvailable = false;
+            }
         }
     }
 
@@ -90,7 +112,11 @@ public class MedicalRecordsDetailsFragment extends Fragment {
 
         //Sets the details text on the view after parsing
         try {
-            detailsTextView.setText(Html.fromHtml(parseJSON(documentation.getDocument().getBody())));
+            if (isDocumentationAvailable)
+                detailsTextView.setText(Html.fromHtml(parseJSON(documentation.getDocument().getBody())));
+            else
+                detailsTextView.setText(Html.fromHtml(parseJSON(convertIntentToJSON(intent))));
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -102,7 +128,14 @@ public class MedicalRecordsDetailsFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            String documentTitle = documentation.getDocument().getDocumentType().getTitle();
+
+            String documentTitle;
+
+            if (isDocumentationAvailable)
+                documentTitle = documentation.getDocument().getDocumentType().getTitle();
+            else
+                documentTitle = "Laboratory Report";
+
             ((DashboardActivity)getActivity()).setToolBarTitle(documentTitle.toUpperCase(), false);
 
         }
@@ -225,4 +258,14 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         return formattedString;
     }
 
+    private JSONObject convertIntentToJSON(Intent intent) throws JSONException {
+
+        JSONObject object = new JSONObject();
+
+        for (String key : intent.getExtras().keySet()){
+            object.put(key, intent.getStringExtra(key));
+        }
+
+        return object;
+    }
 }

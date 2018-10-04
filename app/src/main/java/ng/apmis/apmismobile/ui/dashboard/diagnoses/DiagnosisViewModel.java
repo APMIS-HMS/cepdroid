@@ -9,6 +9,9 @@ import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
+/**
+ * A simple {@link ViewModel} class
+ */
 public class DiagnosisViewModel extends ViewModel {
 
     private MutableLiveData<List<LabRequest>> mLabRequests;

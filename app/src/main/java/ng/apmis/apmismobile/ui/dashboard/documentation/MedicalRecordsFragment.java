@@ -74,8 +74,11 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recordsRecycler.setLayoutManager(layoutManager);
 
-        if (recordsAdapter != null)
+        if (recordsAdapter != null) {
             recordsRecycler.setAdapter(recordsAdapter);
+            recordsShimmer.setVisibility(View.GONE);
+            recordsShimmer.stopShimmer();
+        }
 
         initViewModel();
 
@@ -173,7 +176,7 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
         super.onStop();
     }
 
-    void setFragment (Fragment fragment) {
+    private void setFragment (Fragment fragment) {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)

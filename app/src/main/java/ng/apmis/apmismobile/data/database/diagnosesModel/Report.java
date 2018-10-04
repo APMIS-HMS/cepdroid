@@ -1,5 +1,10 @@
 package ng.apmis.apmismobile.data.database.diagnosesModel;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
 public class Report {
 
     private String employeeId;
@@ -21,6 +26,10 @@ public class Report {
     private String recommendation;
 
     private String publishedById;
+
+    @SerializedName("result")
+    @Expose
+    private List<Result> results = null;
 
 
 
@@ -104,4 +113,25 @@ public class Report {
         this.publishedById = publishedById;
     }
 
+    public List<Result> getResults() {
+        return results;
+    }
+
+    public void setResult(List<Result> results) {
+        this.results = results;
+    }
+
+
+
+    public static class Result {
+        private String result;
+
+        public String getResult() {
+            return result;
+        }
+
+        public void setResult(String result) {
+            this.result = result;
+        }
+    }
 }

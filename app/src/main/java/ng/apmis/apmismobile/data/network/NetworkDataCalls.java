@@ -730,7 +730,7 @@ final class NetworkDataCalls {
     public void fetchLabRequestsForPerson(Context context, String personId, String accessToken){
 
         //TODO readjust to fit person not patient
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "laboratory-requests?patientId=" + "5a8da21470292129407f9bad", null, response -> {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-lab-requests/0?personId=" + personId, null, response -> {
 
             Log.v("Lab Request response", String.valueOf(response));
 
