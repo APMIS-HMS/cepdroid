@@ -69,7 +69,6 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
 
         setHasOptionsMenu(true);
 
-
         prescriptionsShimmer.startShimmer();
 
         preferencesManager = new SharedPreferencesManager(getContext());

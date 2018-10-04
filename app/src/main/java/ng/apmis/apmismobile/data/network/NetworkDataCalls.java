@@ -25,6 +25,8 @@ import java.util.Map;
 
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
+import ng.apmis.apmismobile.data.database.diagnosesModel.InvestigationBody;
+import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
@@ -629,6 +631,7 @@ final class NetworkDataCalls {
                     documentationArray = jsonArray.getJSONObject(0).getJSONArray("documentations");
                 }
 
+                //Iterate through all documentation items gotten
                 if (documentationArray.length()>0) {
 
                     List<Documentation> documentations = new ArrayList<>(Arrays.asList(gson.fromJson(documentationArray.toString(), Documentation[].class)));
@@ -636,11 +639,15 @@ final class NetworkDataCalls {
                     for (int i=0; i < documentations.size(); ++i){
                         JSONObject body = new JSONObject();
                         try {
+                            //get the body from the documentation json array gotten earlier
                             body = documentationArray.getJSONObject(i).getJSONObject("document").getJSONObject("body");
                         } catch (Exception e){
                             Log.e("Document", e.getLocalizedMessage());
                         }
 
+                        //Get every documentation item an set the body JSON Object
+                        //Do this because the structure of the body object varies and cannot be
+                        //parsed using GSON
                         documentations.get(i).getDocument().setBody(body);
                     }
 
@@ -654,12 +661,7 @@ final class NetworkDataCalls {
                 e.printStackTrace();
             }
 
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Records error", String.valueOf(error.getMessage()));
-            }
-        }) {
+        }, error -> Log.e("Records error", String.valueOf(error.getMessage()))) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -719,5 +721,49 @@ final class NetworkDataCalls {
         queue.add(jsonArrayRequest);
     }
 
+    /**
+     * Fetch all {@link LabRequest} investigations that have been made on behalf of a Patient
+     * @param context The calling context
+     * @param personId The personId of the Patient
+     * @param accessToken The security access token obtained from login
+     */
+    public void fetchLabRequestsForPerson(Context context, String personId, String accessToken){
+
+        //TODO readjust to fit person not patient
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "laboratory-requests?patientId=" + "5a8da21470292129407f9bad", null, response -> {
+
+            Log.v("Lab Request response", String.valueOf(response));
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                if (jsonArray.length()>0) {
+
+                    List<LabRequest> requests = new ArrayList<>(Arrays.asList(gson.fromJson(jsonArray.toString(), LabRequest[].class)));
+
+                    Log.v("Lab Request R.entry", requests.get(0).toString());
+
+                    InjectorUtils.provideNetworkData(context).setLabRequestsForPerson(requests);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, error -> Log.e("Lab Request error", String.valueOf(error.getMessage()))) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        queue.add(jsonArrayRequest);
+    }
 
 }

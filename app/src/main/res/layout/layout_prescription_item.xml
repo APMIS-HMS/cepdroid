@@ -76,7 +76,7 @@
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:text="Add to cart"
-            android:background="@drawable/buy_button"/>
+            android:background="@drawable/action_button"/>
 
         <TableRow
             android:layout_width="match_parent"

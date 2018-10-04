@@ -6,12 +6,14 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.ApmisDatabase;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
+import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.diagnoses.DiagnosisViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.documentation.RecordsListViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionViewModelFactory;
@@ -103,6 +105,16 @@ public class InjectorUtils {
     public static PrescriptionViewModelFactory providePrescriptionsViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new PrescriptionViewModelFactory(apmisRepository);
+    }
+
+    /**
+     * Injects all dependencies to provide network data for {@link LabRequest}s
+     * @param context
+     * @return
+     */
+    public static DiagnosisViewModelFactory provideDiagonosisViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new DiagnosisViewModelFactory(apmisRepository);
     }
 
 

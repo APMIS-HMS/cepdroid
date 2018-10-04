@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.prescription.PrescriptionListFragment">
+    android:background="@color/pale_cyan"
+    tools:context=".ui.dashboard.diagnoses.DiagnosisListFragment">
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/prescriptions_shimmer"
+        android:id="@+id/diagnosis_shimmer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,23 +16,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/shimmer_placeholder_2" />
-            <include layout="@layout/shimmer_placeholder_2" />
-            <include layout="@layout/shimmer_placeholder_2" />
-            <include layout="@layout/shimmer_placeholder_2" />
-            <include layout="@layout/shimmer_placeholder_2" />
-            <include layout="@layout/shimmer_placeholder_2" />
-            <include layout="@layout/shimmer_placeholder_2" />
+            <include layout="@layout/shimmer_placeholder_3" />
+            <include layout="@layout/shimmer_placeholder_3" />
+            <include layout="@layout/shimmer_placeholder_3" />
+            <include layout="@layout/shimmer_placeholder_3" />
+            <include layout="@layout/shimmer_placeholder_3" />
+            <include layout="@layout/shimmer_placeholder_3" />
 
         </LinearLayout>
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/prescriptionsRecycler"
+        android:id="@+id/diagnosis_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-
+    </android.support.v7.widget.RecyclerView>
 
 </FrameLayout>

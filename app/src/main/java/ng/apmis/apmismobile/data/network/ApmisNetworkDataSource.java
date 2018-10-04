@@ -25,6 +25,7 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
+import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
@@ -71,6 +72,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Documentation>> documentations;
     private MutableLiveData<List<Service>> services;
     private MutableLiveData<List<Prescription>> prescriptions;
+    private MutableLiveData<List<LabRequest>> labRequests;
     private MutableLiveData<Appointment> appointment;
 
     //TODO Switch to LiveData later
@@ -90,6 +92,7 @@ public class ApmisNetworkDataSource {
         documentations = new MutableLiveData<>();
         appointment = new MutableLiveData<>();
         prescriptions = new MutableLiveData<>();
+        labRequests = new MutableLiveData<>();
 
         appointmentTypes = new ArrayList<>();
         orderStatuses = new ArrayList<>();
@@ -293,6 +296,17 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    /**
+     * Fetch Laboratory Request Array using the person Id provided
+     * @param personId Person's Id
+     */
+    public void fetchLabRequestsForPerson(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Prescription started");
+            new NetworkDataCalls(mContext).fetchLabRequestsForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
 
 
 
@@ -429,5 +443,15 @@ public class ApmisNetworkDataSource {
 
     public MutableLiveData<List<Prescription>> getPrescriptionsForPerson(){
         return this.prescriptions;
+    }
+
+    //Laboratory Requests
+
+    public void setLabRequestsForPerson(List<LabRequest> labRequests) {
+        this.labRequests.postValue(labRequests);
+    }
+
+    public MutableLiveData<List<LabRequest>> getLabRequestsForPerson(){
+        return this.labRequests;
     }
 }

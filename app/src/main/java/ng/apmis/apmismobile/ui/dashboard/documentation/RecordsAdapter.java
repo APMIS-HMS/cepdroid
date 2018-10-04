@@ -3,7 +3,6 @@ package ng.apmis.apmismobile.ui.dashboard.documentation;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -23,7 +22,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -33,8 +31,6 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
-import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
-import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
@@ -178,7 +174,8 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Documentation documentation = datedDocumentationItems.get(position).getDocumentation();
 
             ((RecordsViewHolder) holder).facilityTextView.setText(documentation.getFacilityName());
-            ((RecordsViewHolder) holder).clinicTextView.setText(new String[]{"Ophthalmology Clinic", "Dentistry Clinic"}[new Random().nextInt(2)]);
+            ((RecordsViewHolder) holder).recordTitleTextView.setText(documentation.getDocument().getDocumentType().getTitle());
+            ((RecordsViewHolder) holder).doctorTextView.setText(documentation.getCreatedBy());
             ((RecordsViewHolder) holder).dateTextView.setText(
                     AppUtils.dateToShortDateString(AppUtils.dbStringToLocalDate(documentation.getUpdatedAt()))
             );
@@ -219,8 +216,8 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @BindView(R.id.facility_name)
         TextView facilityTextView;
 
-        @BindView(R.id.clinic_name)
-        TextView clinicTextView;
+        @BindView(R.id.record_title)
+        TextView recordTitleTextView;
 
         @BindView(R.id.date_text)
         TextView dateTextView;

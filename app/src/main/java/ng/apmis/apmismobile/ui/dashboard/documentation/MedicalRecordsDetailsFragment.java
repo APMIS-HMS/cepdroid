@@ -135,7 +135,7 @@ public class MedicalRecordsDetailsFragment extends Fragment {
             }
 
             //If not a Vitals object, then begin parsing the notes
-            bodyText.append("<b><font color=\"#0071bc\">" + key + "</font></b><br/>");
+            bodyText.append("<b><font color=\"#0071bc\">" + formatKeyTitle(key) + "</font></b><br/>");
 
             try {
                 bodyText.append("<p>");
@@ -193,6 +193,36 @@ public class MedicalRecordsDetailsFragment extends Fragment {
             vitalsRecycler.addItemDecoration(divider);
 
         }
+    }
+
+    /**
+     * Format the key title of clinical documentations
+     * to resemble something readable and presentable,
+     * e.h by converting "camelHump" to "Camel Hump".
+     * @param keyTitle the documentation key title
+     */
+    private String formatKeyTitle(String keyTitle) {
+        String formattedString = keyTitle;
+        int offset = 0;
+
+        //Iterate through all the characters in the String
+        for (int count=0; count<keyTitle.length(); ++count) {
+
+            //if the character is an upper case one, then add a space behind it
+            if (Character.isUpperCase(keyTitle.charAt(count))) {
+                formattedString = formattedString.replace("" + formattedString.charAt(count+offset),
+                        " " + formattedString.charAt(count+offset));
+
+                //increase the offset since the string is now longer
+                ++offset;
+            }
+        }
+
+        //Make the first letter upper case too
+        formattedString = formattedString.replaceFirst(formattedString.charAt(0)+"",
+                (formattedString.charAt(0)+"").toUpperCase()  );
+
+        return formattedString;
     }
 
 }
