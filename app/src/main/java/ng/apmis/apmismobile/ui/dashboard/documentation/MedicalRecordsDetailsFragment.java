@@ -46,6 +46,8 @@ public class MedicalRecordsDetailsFragment extends Fragment {
     private static final String INTENT_KEY = "intent_key";
     private Documentation documentation;
     private Intent intent;
+
+    //Flag to check if documentation or intent came in from constructor
     private boolean isDocumentationAvailable;
 
     @BindView(R.id.details_scroll)
@@ -258,6 +260,12 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         return formattedString;
     }
 
+    /**
+     *
+     * @param intent The packaged intent object containing all the keys
+     * @return The JSONObject containing the keys and values
+     * @throws JSONException exception
+     */
     private JSONObject convertIntentToJSON(Intent intent) throws JSONException {
 
         JSONObject object = new JSONObject();

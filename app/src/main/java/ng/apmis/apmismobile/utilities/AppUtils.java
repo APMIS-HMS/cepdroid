@@ -1,8 +1,11 @@
 package ng.apmis.apmismobile.utilities;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -249,6 +252,27 @@ public class AppUtils {
     public static float doubleToFloat(Double d){
         BigDecimal bigDecimal = new BigDecimal(d);
         return bigDecimal.floatValue();
+    }
+
+    /**
+     *
+     * @param bitmap
+     * @return
+     */
+    public static byte[] convertBitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(bitmap.getWidth() * bitmap.getHeight());
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, buffer);
+        return buffer.toByteArray();
+    }
+
+    /**
+     *
+     * @param byteArray
+     * @return
+     */
+    public static Bitmap convertByteArrayToBitmap(byte[] byteArray) {
+        Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        return bmp;
     }
 
 

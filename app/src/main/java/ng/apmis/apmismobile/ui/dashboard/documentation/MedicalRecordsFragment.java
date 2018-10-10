@@ -126,7 +126,12 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
         List<RecordsAdapter.DatedDocumentationItem> datedDocumentationItems = new ArrayList<>();
 
         //Sort the documentations by date in descending order
-        Comparator<Documentation> comparator = (o1, o2) -> o2.compareTo(o1);
+        Comparator<Documentation> comparator = new Comparator<Documentation>() {
+            @Override
+            public int compare(Documentation o1, Documentation o2) {
+                return o2.compareTo(o1);
+            }
+        };
         Collections.sort(documentations, comparator);
 
         Calendar calendar = Calendar.getInstance();

@@ -37,12 +37,15 @@ import ng.apmis.apmismobile.data.database.diagnosesModel.InvestigationBody;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
+/**
+ * Adapter class for handling and displaying {@link InvestigationBody} data
+ */
 public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.DiagnosisViewHolder> {
 
+    private static final String BASE_URL = Constants.BASE_URL;
     private Context mContext;
     private List<InvestigationBody> investigations;
 
-    private static final String BASE_URL = Constants.BASE_URL;
     private ProgressDialog progressDialog;
 
 
@@ -52,11 +55,18 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
         notifyDataSetChanged();
     }
 
+    /**
+     * Clear all investigations from the adapter
+     */
     public void clear() {
         this.investigations.clear();
         notifyDataSetChanged();
     }
 
+    /**
+     * Add all investigations from a List to this adapter
+     * @param investigations The List of investgations to add from
+     */
     public void addAll(List<InvestigationBody> investigations) {
         this.investigations.addAll(investigations);
         notifyDataSetChanged();
@@ -68,7 +78,11 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
         void onViewReportClicked(Intent i);
     }
 
-    public void instantiateViewReportListener(OnViewReportClickedListener listener){
+    /**
+     * Initializes the listener, called from the implementing class
+     * @param listener The Listener implemented class
+     */
+    public void instantiateViewReportClickListener(OnViewReportClickedListener listener){
         this.mListener = listener;
     }
 
@@ -76,7 +90,7 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
      * Request password on record click to ensure privacy of records
      * @param intent The report to open
      */
-    private void onViewReportClick(Intent intent){
+    private void onViewReportClick(Intent intent) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogMinWidth);
         AlertDialog dialog = builder.create();
         View authorizeLayout = LayoutInflater.from(mContext).inflate(R.layout.layout_apmis_authorize, null, false);
@@ -168,6 +182,7 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
         holder.dateTextView.setText(AppUtils.dateToShortDateString(AppUtils.dbStringToLocalDate(body.getLabRequestDate())));
         holder.investigationTextView.setText(body.getInvestigation().getName());
 
+        //On view report clicked, create intent and put necessary fields in the extras
         holder.viewReportButton.setOnClickListener(v -> {
             Intent i = new Intent();
             i.putExtra("conclusion", body.getReport().getConclusion());
@@ -176,9 +191,7 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
             i.putExtra("outcome", body.getReport().getOutcome());
             try {
                 i.putExtra("result", body.getReport().getResults().get(0).getResult());
-            } catch (Exception e){
-
-            }
+            } catch (Exception ignored){}
             i.putExtra("diagnosis", body.getLabRequestDiagnosis());
             i.putExtra("labNumber", body.getLabRequestNumber());
             i.putExtra("investigation", body.getInvestigation().getName());
@@ -186,12 +199,12 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
             onViewReportClick(i);
         });
 
-
+        //Change status text and indicator based on information available in the investigation
         if (body.getIsUploaded()){
             holder.statusTextView.setText("Ready");
             holder.statusTitleTextView.getCompoundDrawables()[2].clearColorFilter();
-            holder.statusTitleTextView.getCompoundDrawables()[2].setColorFilter(mContext.getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.OVERLAY);
-
+            holder.statusTitleTextView.getCompoundDrawables()[2].setColorFilter(
+                    mContext.getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.OVERLAY);
         } else if (body.getSpecimenReceived()) {
             holder.statusTextView.setText("Specimen Received");
             holder.statusTitleTextView.getCompoundDrawables()[2].clearColorFilter();
@@ -207,7 +220,7 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
         }
 
 
-
+        //Show Specimen details if the specimen has been accepted by the laboratory
         if (body.getSpecimenReceived()){
             holder.sampleTextView.setVisibility(View.VISIBLE);
             holder.dividerLine.setVisibility(View.VISIBLE);

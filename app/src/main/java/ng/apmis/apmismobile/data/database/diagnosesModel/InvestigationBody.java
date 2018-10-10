@@ -5,36 +5,89 @@ import com.google.gson.annotations.SerializedName;
 
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 
+/**
+ * Top level Investigation body item which comes as part of the {@link LabRequest}
+ */
 public class InvestigationBody {
 
+    /**
+     * Flag to check whether the investigation is of an urgent or normal priority
+     */
     private Boolean isUrgent = false;
 
+    /**
+     * Check if investigation is carried out by an external facility
+     */
     private Boolean isExternal = false;
 
+    /**
+     * Meta data about the investigation being carried out
+     */
     @SerializedName("investigation")
     @Expose
     private InvestigationData investigation;
 
+    /**
+     * CHeck to see if the test sample has been taken from the Patient
+     */
     private Boolean sampleTaken = false;
 
+    /**
+     * Name of the Employee who took the sample
+     */
     private String sampleTakenBy;
 
+    /**
+     * Check to see if the specimen has been received and accepted by the lab of the facility
+     */
     private Boolean specimenReceived = false;
 
+    /**
+     * Specimen number assigned to each specimen received
+     */
     private String specimenNumber = "";
 
+    /**
+     * A Report object containing observations and results from this investigation
+     */
     private Report report;
 
+    /**
+     * Check if a report for the investigation has been published
+     */
     private Boolean isUploaded = false;
 
+    /**
+     * Check if a report for this investigation has been saved as a draft
+     */
     private Boolean isSaved = false;
 
 
 
+    //Laboratory Request Fields
+    /**
+     * Last Updated date of the LabRequest
+     */
     private String labRequestDate;
+
+    /**
+     * Person details of the Employee who initiated the labRequest
+     */
     private PersonEntry labRequestEmployee;
+
+    /**
+     * Statement issued by Employee concerning this request/investigation
+     */
     private String labRequestClinicalInformation;
+
+    /**
+     * Lab number for identifying the laboratory for this request
+     */
     private String labRequestNumber;
+
+    /**
+     *
+     */
     private String labRequestDiagnosis;
 
 

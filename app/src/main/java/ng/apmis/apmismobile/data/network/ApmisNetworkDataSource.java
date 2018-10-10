@@ -27,7 +27,7 @@ import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
-import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
+import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
@@ -74,9 +74,9 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Prescription>> prescriptions;
     private MutableLiveData<List<LabRequest>> labRequests;
     private MutableLiveData<Appointment> appointment;
+    private MutableLiveData<List<AppointmentType>> appointmentTypes;
 
     //TODO Switch to LiveData later
-    private List<AppointmentType> appointmentTypes;
     private List<OrderStatus> orderStatuses;
 
 
@@ -93,8 +93,8 @@ public class ApmisNetworkDataSource {
         appointment = new MutableLiveData<>();
         prescriptions = new MutableLiveData<>();
         labRequests = new MutableLiveData<>();
+        appointmentTypes = new MutableLiveData<>();
 
-        appointmentTypes = new ArrayList<>();
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
     }
@@ -329,10 +329,10 @@ public class ApmisNetworkDataSource {
     //Appointment Types
 
     public void setAppointmentTypes(List<AppointmentType> appointmentTypes){
-        this.appointmentTypes = appointmentTypes;
+        this.appointmentTypes.postValue(appointmentTypes);
     }
 
-    public List<AppointmentType> getAppointmentTypes(){
+    public MutableLiveData<List<AppointmentType>> getAppointmentTypes(){
         return this.appointmentTypes;
     }
 

@@ -10,30 +10,61 @@ import java.util.List;
 import ng.apmis.apmismobile.data.database.model.PersonEntry;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
-public class LabRequest implements Comparable<LabRequest>{
+/**
+ * A request sent to the laboratory of a facility to investigate and diagnose
+ * the issue with a Patient based on specimens received
+ */
+public class LabRequest implements Comparable<LabRequest> {
 
     private String _id;
     private String updatedAt;
     private String createdAt;
 
+    /**
+     * Id of the Facility in which this LaboratoryRequest was made
+     */
     private String facilityId;
 
+    /**
+     * The id of the Patient being investigated
+     */
     private String patientId;
 
+    /**
+     * Lab number for identifying the laboratory for this request
+     */
     private String labNumber;
 
+    /**
+     * Statement issued by Employee concerning this request/investigation
+     */
     private String clinicalInformation;
 
+    /**
+     * Initial diagnosis issued by Employee concerning this request/investigation
+     */
     private String diagnosis;
 
+    /**
+     * Employee who initiated this laboratory request
+     */
     private String createdBy;
 
+    /**
+     * List of all individual investigations initiated with this LabRequest
+     */
     @SerializedName("investigations")
     @Expose
     private List<InvestigationBody> investigationBodies = null;
 
+    /**
+     * Person details of the Employee
+     */
     private PersonEntry employeeDetails;
 
+    /**
+     * Person details of the Patient
+     */
     private PersonEntry personDetails;
 
 

@@ -1,4 +1,4 @@
-package ng.apmis.apmismobile.data.database.facilityModel;
+package ng.apmis.apmismobile.data.database.appointmentModel;
 
 /**
  * Class indicating the type of appointment.
@@ -46,4 +46,8 @@ public class AppointmentType {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

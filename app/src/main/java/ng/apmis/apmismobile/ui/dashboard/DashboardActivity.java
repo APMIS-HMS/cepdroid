@@ -1,6 +1,5 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -73,6 +72,7 @@ public class DashboardActivity extends AppCompatActivity {
             selectFragment(item);
             return true;
         });
+
         BottomNavigationViewHelper.disableShiftMode(mBottomNav);
 
         PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this

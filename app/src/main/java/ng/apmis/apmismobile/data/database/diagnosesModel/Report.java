@@ -5,28 +5,62 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * Report created containing the results and observations from an investigation
+ */
 public class Report {
 
+    /**
+     * Id of the employee (in the facility) responsible for the investigation
+     */
     private String employeeId;
 
+    /**
+     * Id of the Patient (in the facility) being investigated
+     */
     private String patientId;
 
+    /**
+     * Facility id of the Facility
+     */
     private String facilityId;
 
+    /**
+     * Current action taken on this report
+     */
     private String action;
 
+    /**
+     * ID used to identify the investigation
+     */
     private String investigationId;
 
+    /**
+     * Id used to identify the labRequest
+     */
     private String labRequestId;
 
+    /**
+     * Conclusion of the investigation
+     */
     private String conclusion;
 
+    /**
+     * General outcome of the result: Normal or Abnormal
+     */
     private String outcome;
 
+    /**
+     * Best practices, prescriptions and words of advice to follow, issued by the doctor
+     */
     private String recommendation;
+
 
     private String publishedById;
 
+    /**
+     * Detailed list of results gotten from the tests
+     */
     @SerializedName("result")
     @Expose
     private List<Result> results = null;

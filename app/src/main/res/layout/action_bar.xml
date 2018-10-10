@@ -22,7 +22,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="end"
-        android:src="@drawable/drugs"
+        android:src="@drawable/apmis_profile"
         android:paddingRight="8dp"
         app:civ_border_color="@color/colorPrimary"
         app:civ_border_width="1dp"

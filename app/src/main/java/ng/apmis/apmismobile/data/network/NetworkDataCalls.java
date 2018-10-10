@@ -1,12 +1,18 @@
 package ng.apmis.apmismobile.data.network;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -17,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,10 +32,9 @@ import java.util.Map;
 
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
-import ng.apmis.apmismobile.data.database.diagnosesModel.InvestigationBody;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
-import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
+import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
@@ -37,6 +43,7 @@ import ng.apmis.apmismobile.data.database.model.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
@@ -44,7 +51,7 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
  * This class handles all call to the network for every segment of the application
  */
 
-final class NetworkDataCalls {
+public final class NetworkDataCalls {
 
     private static final String TAG = NetworkDataCalls.class.getSimpleName();
 
@@ -67,6 +74,7 @@ final class NetworkDataCalls {
 
 
     /**
+     * Todo: Not used yet <br/>
      * Logs user into the application with user name and password and returns success or failure as JSONObject
      * @param apmisId Unique User Id given to every APMIS user
      * @param password Secret Password
@@ -729,7 +737,6 @@ final class NetworkDataCalls {
      */
     public void fetchLabRequestsForPerson(Context context, String personId, String accessToken){
 
-        //TODO readjust to fit person not patient
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-lab-requests/0?personId=" + personId, null, response -> {
 
             Log.v("Lab Request response", String.valueOf(response));
@@ -764,6 +771,66 @@ final class NetworkDataCalls {
         };
 
         queue.add(jsonArrayRequest);
+    }
+
+    /**
+     *
+     * @param apmisId
+     * @param personId
+     * @param image
+     * @param image
+     * @return
+     */
+    public void uploadProfilePictureForPerson(String apmisId, String personId, Bitmap image, String accessToken) {
+
+        byte[] imageArr = AppUtils.convertBitmapToByteArray(image);
+        String imageBase64String = Base64.encodeToString(imageArr, Base64.DEFAULT);
+
+        JSONObject job = new JSONObject();
+        try {
+            job.put("base64", imageBase64String);
+            job.put("container", "personfolder");
+            job.put("mimeType", "image/jpeg");
+            job.put("uploadType", "profilePicture");
+            job.put("docName", "me.jpeg");
+            job.put("docType", "Image");
+            job.put("size", 83611);
+            job.put("user", apmisId);
+            job.put("id", personId);
+
+
+            Log.v("Image Profile", String.valueOf(job));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "file-upload-facade", job, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(final JSONObject response) {
+                dataResponse = response;
+                Log.v("Image response", String.valueOf(response));
+            }
+
+        }, error -> {
+            Log.v("Image error", String.valueOf(error));
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        loginRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+
+
+        queue.add(loginRequest);
+
     }
 
 }

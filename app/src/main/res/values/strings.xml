@@ -160,6 +160,10 @@
         <item>@string/loading</item>
     </string-array>
 
+    <string-array name="select_appt_type">
+        <item>Select Appointment type</item>
+    </string-array>
+
     <string-array name="select_hospital">
         <item>Select Hospital</item>
     </string-array>
@@ -201,5 +205,6 @@
     <string name="temp_label">Temp (&#176;C) .</string>
     <string name="dr_mofe_ejegi">Dr. Mofe Ejegi</string>
     <string name="cart">Cart</string>
+    <string name="appointment_hospital">Appointment Hospital</string>
 
 </resources>

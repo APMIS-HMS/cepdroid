@@ -94,7 +94,7 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
 
         final Observer<List<LabRequest>> labRequestObserver = labRequests -> {
 
-            //Populate the prescription item list
+            //Populate the investigation body list
             populateInvestigations(labRequests);
 
             if (diagnosisAdapter == null) {
@@ -104,7 +104,7 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
                 frameLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.pale_cyan));
 
                 diagnosisAdapter = new DiagnosisAdapter(getActivity(), investigationBodies);
-                diagnosisAdapter.instantiateViewReportListener(this);
+                diagnosisAdapter.instantiateViewReportClickListener(this);
                 diagnosisRecycler.setAdapter(diagnosisAdapter);
 
 
@@ -121,11 +121,15 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
             }
         };
 
-        //Observe the Prescriptions
+        //Observe the LabRequests(Investigations)
         diagnosisViewModel.getLabRequestsForPerson().observe(getActivity(), labRequestObserver);
 
     }
 
+    /**
+     * Populate the investigations array by getting individual investigations from each lab request
+     * @param labRequests The List of Lab requests
+     */
     private void populateInvestigations(List<LabRequest> labRequests){
         investigationBodies.clear();
 
@@ -174,6 +178,10 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
         setFragment(detailsFragment);
     }
 
+    /**
+     * Utility method to replace the current fragment with another
+     * @param fragment The Fragment to replace with
+     */
     private void setFragment (Fragment fragment) {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()

@@ -1,24 +1,52 @@
 package ng.apmis.apmismobile.data.database.diagnosesModel;
 
+/**
+ * Meta data pertaining to the {@link InvestigationBody} investigation being carried out
+ * by a Laboratory. It usually contains ongoing information on the process of the
+ * investigation.
+ */
 public class InvestigationData {
 
     private String _id;
     private String updatedAt;
     private String createdAt;
 
+    /**
+     * Id of the facility processing these reports
+     */
     private String facilityId;
 
+    /**
+     * Name used to identify this entire Investigation
+     */
     private String name;
 
+    /**
+     * Measurement unit of the sample taken
+     */
     private String unit;
 
+    /**
+     * The name of the specimen received
+     */
     private String specimen;
 
+    /**
+     * Unique Id used to Identify the service of this investigation
+     */
     private String serviceId;
 
+    /**
+     * Id used to Identify the service of this investigation by the facility
+     */
     private String facilityServiceId;
 
+    /**
+     * Check to see of this investigation contains a Panel of other sub investigations
+     */
     private Boolean isPanel;
+
+
 
 
     public Boolean getIsPanel() {
