@@ -168,7 +168,7 @@ public class AddAppointmentFragment extends Fragment {
             mAppointmentTypes = appointmentTypes;
 
             if (appointmentTypeArrayAdapter == null) {
-                appointmentTypeArrayAdapter  = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, mAppointmentTypes);
+                appointmentTypeArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, mAppointmentTypes);
                 appointmentTypeArrayAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
                 selectAppointmentTypeSpinner.setAdapter(appointmentTypeArrayAdapter);
                 if (appointmentTypes.size() > 0)

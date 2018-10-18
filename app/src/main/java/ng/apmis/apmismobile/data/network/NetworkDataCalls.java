@@ -2,6 +2,7 @@ package ng.apmis.apmismobile.data.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -23,12 +24,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
@@ -46,6 +49,14 @@ import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okio.Buffer;
 
 /**
  * This class handles all call to the network for every segment of the application
@@ -784,19 +795,23 @@ public final class NetworkDataCalls {
     public void uploadProfilePictureForPerson(String apmisId, String personId, Bitmap image, String accessToken) {
 
         byte[] imageArr = AppUtils.convertBitmapToByteArray(image);
-        String imageBase64String = Base64.encodeToString(imageArr, Base64.DEFAULT);
+        String imageBase64String = Base64.encodeToString(imageArr, Base64.NO_WRAP);
+
+        String localURL = "https://wise-mouse-86.localtunnel.me/";
+        String localAuth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1YTRjNTdiNDQ4ZWFhNzRhMDAwNDA5ODgiLCJpYXQiOjE1Mzk3NzkyNDYsImV4cCI6MTUzOTg2NTY0NiwiYXVkIjoiaHR0cDovL3lvdXJkb21haW4uY29tIiwiaXNzIjoiZmVhdGhlcnMiLCJzdWIiOiJhbm9ueW1vdXMiLCJqdGkiOiIyOGE4MjU1MS0yYmYwLTQwMmUtYjQ0YS0wODRkZDQwODliYTcifQ.1ZBTaNcFxHBQOglq8mVUNXWMt9H9w9jz2UnrFnz-4yI";
 
         JSONObject job = new JSONObject();
         try {
-            job.put("base64", imageBase64String);
+            job.put("base64", "data:image/jpeg;base64," +imageBase64String);
             job.put("container", "personfolder");
             job.put("mimeType", "image/jpeg");
             job.put("uploadType", "profilePicture");
             job.put("docName", "me.jpeg");
             job.put("docType", "Image");
-            job.put("size", 83611);
+            job.put("size", 6032);
             job.put("user", apmisId);
             job.put("id", personId);
+            job.put("facilityId", "5a4c581448eaa74a00040989");
 
 
             Log.v("Image Profile", String.valueOf(job));
@@ -805,7 +820,7 @@ public final class NetworkDataCalls {
         }
 
 
-        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "file-upload-facade", job, new Response.Listener<JSONObject>() {
+        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, localURL + "file-upload-facade", job, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(final JSONObject response) {
                 dataResponse = response;
@@ -813,14 +828,14 @@ public final class NetworkDataCalls {
             }
 
         }, error -> {
-            Log.v("Image error", String.valueOf(error));
+            Log.e("Image error", String.valueOf(error));
 
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=utf-8");
-                params.put("Authorization", "Bearer " + accessToken);
+                params.put("Authorization", localAuth);
 
                 return params;
             }
@@ -830,6 +845,63 @@ public final class NetworkDataCalls {
 
 
         queue.add(loginRequest);
+
+
+//        OkHttpClient client = new OkHttpClient.Builder()
+//                .writeTimeout(60, TimeUnit.SECONDS)
+//                .readTimeout(60, TimeUnit.SECONDS)
+//                .connectTimeout(60, TimeUnit.SECONDS)
+//                .build();
+//
+//        RequestBody formBody = new FormBody.Builder()
+//                .add("base64", "data:image/jpeg;base64," +imageBase64String)
+//                .add("container", "personfolder")
+//                .add("mimeType", "image/jpeg")
+//                .add("uploadType", "profilePicture")
+//                .add("docName", "me.jpeg")
+//                .add("docType", "Image")
+//                .add("size", "6032")
+//                .add("user", apmisId)
+//                .add("id", personId)
+//                .build();
+//
+//        RequestBody requestBody = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)
+//                .addFormDataPart("base64", "me.jpeg",
+//                        RequestBody.create(MediaType.parse("image/jpeg"), imageArr))
+//                .addFormDataPart("container", "personfolder")
+//                .addFormDataPart("mimeType", "image/jpeg")
+//                .addFormDataPart("uploadType", "profilePicture")
+//                .addFormDataPart("docName", "me.jpeg")
+//                .addFormDataPart("docType", "Image")
+//                .addFormDataPart("size", "6032")
+//                .addFormDataPart("user", apmisId)
+//                .addFormDataPart("id", personId)
+//                .build();
+//
+//        String testURL = "http://192.168.43.2/polls/public_html/phpwebserviceapi/";
+//
+//
+//        okhttp3.Request request = new okhttp3.Request.Builder()
+//                .url(localURL + "file-upload-facade")
+//                .addHeader("Authorization", localAuth)
+//                .post(formBody)
+//                .build();
+//
+//
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(@NonNull Call call, IOException e) {
+//                Log.e("Image call error", call.request().toString());
+//                Log.e("Image error", e.getLocalizedMessage());
+//            }
+//
+//            @Override
+//            public void onResponse(@NonNull Call call, okhttp3.Response response) throws IOException {
+//                //Log.e("Image call response", bodyToString2(call.request().body()));
+//                Log.v("Image response", response.body().string());
+//            }
+//        });
 
     }
 

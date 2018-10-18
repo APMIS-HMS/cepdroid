@@ -114,8 +114,11 @@ public class ApmisRepository {
      * @param appointment The Appointment object fetched
      */
     public void insertAppointment(Appointment appointment){
-        mExecutors.diskIO().execute(() -> {
-            mApmisDao.insertAppointment(appointment);
+        mExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mApmisDao.insertAppointment(appointment);
+            }
         });
     }
 
