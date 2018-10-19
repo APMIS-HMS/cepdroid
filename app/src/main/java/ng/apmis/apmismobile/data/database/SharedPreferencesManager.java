@@ -5,9 +5,7 @@ import android.content.Context;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 
 public class SharedPreferencesManager {
 

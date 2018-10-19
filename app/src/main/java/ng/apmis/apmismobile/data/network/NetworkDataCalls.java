@@ -2,19 +2,17 @@ package ng.apmis.apmismobile.data.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
@@ -24,39 +22,32 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
+import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
-import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.data.database.personModel.ProfileImageObject;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okio.Buffer;
 
 /**
  * This class handles all call to the network for every segment of the application
@@ -168,6 +159,7 @@ public final class NetworkDataCalls {
                     String firstName = response.getString("firstName");
                     String gender = response.getString("gender");
                     String lastName = response.getString("lastName");
+                    String email = response.getString("email");
                     String motherMaidenName = response.getString("motherMaidenName");
                     String primaryContactPhoneNo = response.getString("primaryContactPhoneNo");
                     String securityAnswer = response.getString("securityAnswer");
@@ -176,8 +168,11 @@ public final class NetworkDataCalls {
                     String apmisId = response.getString("apmisId");
                     String nextOfKin = response.getString("nextOfKin");
                     String secondaryContactPhoneNo = response.getString("secondaryContactPhoneNo");
+                    ProfileImageObject profileImageObject = new Gson().fromJson(response.get("profileImageObject").toString(), ProfileImageObject.class);
 
-                    PersonEntry responseEntry = new PersonEntry(apmisId,title,firstName,lastName,gender,motherMaidenName,securityQuestion,securityAnswer,primaryContactPhoneNo,secondaryContactPhoneNo,dateOfBirth,"", "", "", "", "", "", "", "", "", nextOfKin);
+                    Log.e("Image here", profileImageObject.toString());
+
+                    PersonEntry responseEntry = new PersonEntry(apmisId,title,firstName,lastName,gender,motherMaidenName,securityQuestion,securityAnswer,primaryContactPhoneNo,secondaryContactPhoneNo,dateOfBirth,email, "", "", "", "", "", profileImageObject, "", "", nextOfKin);
 
                     Log.v("responseEntry", responseEntry.toString());
                     PersonEntry[] personEntries = {responseEntry};
@@ -797,9 +792,6 @@ public final class NetworkDataCalls {
         byte[] imageArr = AppUtils.convertBitmapToByteArray(image);
         String imageBase64String = Base64.encodeToString(imageArr, Base64.NO_WRAP);
 
-        String localURL = "https://wise-mouse-86.localtunnel.me/";
-        String localAuth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1YTRjNTdiNDQ4ZWFhNzRhMDAwNDA5ODgiLCJpYXQiOjE1Mzk3NzkyNDYsImV4cCI6MTUzOTg2NTY0NiwiYXVkIjoiaHR0cDovL3lvdXJkb21haW4uY29tIiwiaXNzIjoiZmVhdGhlcnMiLCJzdWIiOiJhbm9ueW1vdXMiLCJqdGkiOiIyOGE4MjU1MS0yYmYwLTQwMmUtYjQ0YS0wODRkZDQwODliYTcifQ.1ZBTaNcFxHBQOglq8mVUNXWMt9H9w9jz2UnrFnz-4yI";
-
         JSONObject job = new JSONObject();
         try {
             job.put("base64", "data:image/jpeg;base64," +imageBase64String);
@@ -820,7 +812,7 @@ public final class NetworkDataCalls {
         }
 
 
-        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, localURL + "file-upload-facade", job, new Response.Listener<JSONObject>() {
+        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "file-upload-facade", job, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(final JSONObject response) {
                 dataResponse = response;
@@ -835,7 +827,7 @@ public final class NetworkDataCalls {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=utf-8");
-                params.put("Authorization", localAuth);
+                params.put("Authorization", "Bearer "+accessToken);
 
                 return params;
             }
@@ -903,6 +895,38 @@ public final class NetworkDataCalls {
 //            }
 //        });
 
+    }
+
+    public void downloadProfilePictureForPerson(Context context, PersonEntry person, File downloadFile){
+        Log.v("Image", "Download image started to "+downloadFile.getAbsolutePath());
+        ImageRequest imageRequest = new ImageRequest(person.getProfileImageUriPath(), response -> {
+            try {
+                FileOutputStream out = new FileOutputStream(downloadFile);
+
+                //compress bitmap and save to file
+                response.compress(Bitmap.CompressFormat.PNG, 100, out);
+                //notify that image has been saved
+                InjectorUtils.provideNetworkData(context).setProfilePhotoPath(downloadFile.getPath());
+
+
+                Log.v("Image reponse", "Download image completed to "+downloadFile.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }, 0, 0, ImageView.ScaleType.CENTER_CROP, null, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                try {
+                    Log.e("TAG", error.getLocalizedMessage());
+                    InjectorUtils.provideNetworkData(context).setProfilePhotoPath("error");
+                } catch (Exception e){
+
+                }
+            }
+        });
+
+        queue.add(imageRequest);
     }
 
 }

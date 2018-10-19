@@ -2,7 +2,6 @@ package ng.apmis.apmismobile.data;
 
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.ApmisDao;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
 /**

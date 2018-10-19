@@ -23,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/Applications/Android%20Studio%203.1.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_shopping_cart_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/Applications/Android%20Studio%203.1.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_edit_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -34,9 +34,9 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_shopping_cart" />
+                            <entry key="outputName" value="ic_edit_white" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="$USER_HOME$/Downloads/notification.svg" />
+                            <entry key="sourceFile" value="$USER_HOME$/Downloads/user  profile.svg" />
                           </map>
                         </option>
                       </PersistentState>

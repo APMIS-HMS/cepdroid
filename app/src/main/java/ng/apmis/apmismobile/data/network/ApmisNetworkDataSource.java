@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -17,6 +18,7 @@ import com.firebase.jobdispatcher.Trigger;
 
 import org.json.JSONException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +35,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 
@@ -74,6 +76,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Prescription>> prescriptions;
     private MutableLiveData<List<LabRequest>> labRequests;
     private MutableLiveData<Appointment> appointment;
+    private MutableLiveData<String> profilePhotoPath;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
 
     //TODO Switch to LiveData later
@@ -93,6 +96,7 @@ public class ApmisNetworkDataSource {
         appointment = new MutableLiveData<>();
         prescriptions = new MutableLiveData<>();
         labRequests = new MutableLiveData<>();
+        profilePhotoPath = new MutableLiveData<>();
         appointmentTypes = new MutableLiveData<>();
 
         orderStatuses = new ArrayList<>();
@@ -110,18 +114,8 @@ public class ApmisNetworkDataSource {
         return sInstance;
     }
 
-
-    public LiveData<PersonEntry[]> getCurrentPersonData() {
-        return mDownloadedPersonData;
-    }
-
-    public void setCurrentPersonData(PersonEntry[] personEntries) {
-        //post value for liveData use
-        mDownloadedPersonData.postValue(personEntries);
-    }
-
     /**
-     * Start service to fetch patient details
+     * Start service to fetch person details
      */
     public void startPersonDataFetchService() {
         Intent intentToFetch = new Intent(mContext, ApmisSyncIntentService.class);
@@ -185,7 +179,6 @@ public class ApmisNetworkDataSource {
 
     /**
      * Gets the most recent person details
-     * This function is only called on a background service
      */
     void fetchPersonDetails() {
         apmisExecutors.networkIO().execute(() -> {
@@ -307,12 +300,34 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    public void fetchAndDownloadPersonProfilePhoto(PersonEntry personEntry, File downloadFile){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Image", "Fetch Image started");
+            new NetworkDataCalls(mContext).downloadProfilePictureForPerson(mContext, personEntry, downloadFile);
+        });
+    }
 
 
 
 
 
+    //Person entry
+    public LiveData<PersonEntry[]> getCurrentPersonData() {
+        return mDownloadedPersonData;
+    }
 
+    public void setCurrentPersonData(PersonEntry[] personEntries) {
+        //post value for liveData use
+        mDownloadedPersonData.postValue(personEntries);
+    }
+
+    public void setProfilePhotoPath(String path){
+        profilePhotoPath.postValue(path);
+    }
+
+    public MutableLiveData<String> getPersonProfilePhotoPath(){
+        return profilePhotoPath;
+    }
 
 
     //Order Status

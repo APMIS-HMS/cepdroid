@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
 /**

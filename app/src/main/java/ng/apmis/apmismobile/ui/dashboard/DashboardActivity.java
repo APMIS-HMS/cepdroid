@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -21,7 +20,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
@@ -29,7 +27,6 @@ import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
-import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -62,6 +59,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         setSupportActionBar(generalToolbar);
         actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
         if (actionBar != null) {
@@ -75,14 +73,13 @@ public class DashboardActivity extends AppCompatActivity {
 
         BottomNavigationViewHelper.disableShiftMode(mBottomNav);
 
-        PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this
-        );
+        PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this);
         mPersonViewModel = ViewModelProviders.of(this, personFactory).get(PersonViewModel.class);
         InjectorUtils.provideNetworkData(this).startPersonDataFetchService();
 
         //TODO Setup recycler view list and pass to recycler in observer
 
-        mPersonViewModel.getmPersonEntry().observe(this, personEntry -> {
+        mPersonViewModel.getPersonEntry().observe(this, personEntry -> {
             if (personEntry != null) {
                 Log.v("personEntry", String.valueOf(personEntry));
                 //TODO stop loading here
@@ -94,34 +91,33 @@ public class DashboardActivity extends AppCompatActivity {
 
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, new DashboardFragment())
+                .replace(R.id.fragment_container, new DashboardFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
         profileImage.setVisibility(View.VISIBLE);
 
-       // profileImage.setImageResource(R.drawable.drugs);
-
         profileImage.setOnClickListener((view) -> {
-            popupMenu = new PopupMenu(this, view);
-            MenuInflater inflater = popupMenu.getMenuInflater();
-            inflater.inflate(R.menu.option_setttings, popupMenu.getMenu());
-
-            popupMenu.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.profile:
-                        startActivity(new Intent(this, ProfileActivity.class));
-                        return true;
-                    case R.id.sign_out:
-                        new SharedPreferencesManager(this).storeLoggedInUserDetails("", "", "", "");
-                        startActivity(new Intent(this, LoginActivity.class));
-                        finish();
-                        return true;
-                }
-                return false;
-            });
-
-            popupMenu.show();
+            startActivity(new Intent(this, ProfileActivity.class));
+//            popupMenu = new PopupMenu(this, view);
+//            MenuInflater inflater = popupMenu.getMenuInflater();
+//            inflater.inflate(R.menu.option_setttings, popupMenu.getMenu());
+//
+//            popupMenu.setOnMenuItemClickListener(item -> {
+//                switch (item.getItemId()) {
+//                    case R.id.profile:
+//                        startActivity(new Intent(this, ProfileActivity.class));
+//                        return true;
+//                    case R.id.sign_out:
+//                        new SharedPreferencesManager(this).storeLoggedInUserDetails("", "", "", "");
+//                        startActivity(new Intent(this, LoginActivity.class));
+//                        finish();
+//                        return true;
+//                }
+//                return false;
+//            });
+//
+//            popupMenu.show();
         });
 
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
@@ -144,9 +140,7 @@ public class DashboardActivity extends AppCompatActivity {
         toolbarTitle.setText(title);
         if (welcomeScreen) {
             actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(false);
         } else {
-            actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }

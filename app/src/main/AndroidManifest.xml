@@ -40,7 +40,9 @@
             android:enabled="true" />
 
         <activity android:name=".onboarding.OnboardingActivity" />
-        <activity android:name=".ui.dashboard.profile.ProfileActivity" />
+        <activity android:name=".ui.dashboard.profile.ProfileActivity"
+            android:theme="@style/BackgroundTheme">
+        </activity>
         <activity
             android:name=".ui.dashboard.ScrollingActivity"
             android:label="@string/title_activity_scrolling"
@@ -48,6 +50,15 @@
         <activity android:name=".ui.login.ForgotPasswordActivity"
             android:theme="@style/BackgroundTheme"/>
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="ng.apmis.apmismobile.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <receiver android:name=".utilities.AlarmBroadcast"/>
     </application>

@@ -1,10 +1,9 @@
 package ng.apmis.apmismobile.data.database.patientModel;
 
 import java.util.List;
-import com.google.gson.annotations.SerializedName;
 
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 
 /**
  * A {@link PersonEntry} becomes a Patient when enrolled in a {@link Facility}

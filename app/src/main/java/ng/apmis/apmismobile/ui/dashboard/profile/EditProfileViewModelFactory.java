@@ -1,4 +1,4 @@
-package ng.apmis.apmismobile.ui.dashboard;
+package ng.apmis.apmismobile.ui.dashboard.profile;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
@@ -7,16 +7,12 @@ import android.support.annotation.NonNull;
 
 import ng.apmis.apmismobile.data.ApmisRepository;
 
-/**
- * This class is a viewModelProvider class
- */
-
-public class PersonFactory extends ViewModelProvider.NewInstanceFactory {
+public class EditProfileViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     Context mContext;
     ApmisRepository mRepository;
 
-    public PersonFactory (Context context, ApmisRepository apmisRepository) {
+    public EditProfileViewModelFactory (Context context, ApmisRepository apmisRepository) {
         this.mContext = context;
         this.mRepository = apmisRepository;
     }
@@ -24,6 +20,6 @@ public class PersonFactory extends ViewModelProvider.NewInstanceFactory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
-        return (T) new PersonViewModel(mContext, mRepository);
+        return (T) new EditProfileViewModel(mContext, mRepository);
     }
 }

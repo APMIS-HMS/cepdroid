@@ -3,7 +3,7 @@ package ng.apmis.apmismobile.data.database.diagnosesModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 
 /**
  * Top level Investigation body item which comes as part of the {@link LabRequest}

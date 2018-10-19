@@ -1,25 +1,21 @@
-package ng.apmis.apmismobile.ui.dashboard;
+package ng.apmis.apmismobile.ui.dashboard.profile;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
-import android.graphics.Bitmap;
 
-import java.io.File;
+import java.util.List;
 
 import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 
-/**
- * This class takes care of view model to manage data lifecycle in activity
- */
-public class PersonViewModel extends ViewModel {
+public class EditProfileViewModel extends ViewModel {
 
-    private LiveData<PersonEntry> mPersonEntry;
     private ApmisRepository apmisRepository;
+    private LiveData<PersonEntry> mPersonEntry;
     private LiveData<String> personPhotoPath;
 
-    PersonViewModel(Context context, ApmisRepository apmisRepository) {
+    EditProfileViewModel(Context context, ApmisRepository apmisRepository) {
         this.apmisRepository = apmisRepository;
         mPersonEntry = apmisRepository.getUserData();
 
@@ -33,4 +29,7 @@ public class PersonViewModel extends ViewModel {
         personPhotoPath = apmisRepository.getNetworkDataSource().getPersonProfilePhotoPath();
         return personPhotoPath;
     }
+
+
+
 }

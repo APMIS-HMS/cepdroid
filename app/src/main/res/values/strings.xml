@@ -117,6 +117,7 @@
 
     <string name="apmis_id_placeholder">APMIS ID</string>
     <string name="password_placeholder">PASSWORD</string>
+    <string name="password_placeholder_lower_case">Password</string>
     <string name="security_questions">security-questions</string>
     <string name="genders">genders</string>
     <string name="input_error">Check field</string>
@@ -206,5 +207,10 @@
     <string name="dr_mofe_ejegi">Dr. Mofe Ejegi</string>
     <string name="cart">Cart</string>
     <string name="appointment_hospital">Appointment Hospital</string>
+    <string name="my_profile">My Profile</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="e_mail">E-mail</string>
+    <string name="apmis_id">APMIS ID</string>
 
 </resources>
