@@ -1,9 +1,10 @@
-package ng.apmis.apmismobile.ui.dashboard.profile;
+package ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
+import java.io.File;
 import java.util.List;
 
 import ng.apmis.apmismobile.data.ApmisRepository;
@@ -25,8 +26,8 @@ public class EditProfileViewModel extends ViewModel {
         return mPersonEntry;
     }
 
-    public LiveData<String> getPersonPhotoPath(){
-        personPhotoPath = apmisRepository.getNetworkDataSource().getPersonProfilePhotoPath();
+    public LiveData<String> getPersonPhotoPath(PersonEntry person, File finalLocalFile){
+        personPhotoPath = apmisRepository.getNetworkDataSource().getPersonProfilePhotoPath(person, finalLocalFile);
         return personPhotoPath;
     }
 

@@ -38,6 +38,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * Provides an api for getting network data
@@ -325,7 +326,8 @@ public class ApmisNetworkDataSource {
         profilePhotoPath.postValue(path);
     }
 
-    public MutableLiveData<String> getPersonProfilePhotoPath(){
+    public MutableLiveData<String> getPersonProfilePhotoPath(PersonEntry person, File finalLocalFile){
+        InjectorUtils.provideNetworkData(mContext).fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
         return profilePhotoPath;
     }
 

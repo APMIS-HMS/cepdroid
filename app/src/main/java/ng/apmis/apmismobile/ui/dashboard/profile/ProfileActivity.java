@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,8 +14,10 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionFragment;
+import ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile.EditProfileFragment;
 
-import static ng.apmis.apmismobile.ui.dashboard.profile.ProfileActionFragment.ACTION_MY_PROFILE;
+import static ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionFragment.ACTION_MY_PROFILE;
 
 public class ProfileActivity extends AppCompatActivity implements ProfileActionFragment.OnProfileActionInteractionListener {
 
@@ -35,7 +36,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
     private OnBackPressedListener mListener = null;
 
     public interface OnBackPressedListener{
-        void onBackPressed();
+        boolean onBackPressed();
     }
 
     @Override
@@ -101,7 +102,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (!(fragment instanceof OnBackPressedListener)) {
+        if (!(fragment instanceof OnBackPressedListener) || ((OnBackPressedListener) fragment).onBackPressed()) {
             super.onBackPressed();
         } else
             mListener.onBackPressed();

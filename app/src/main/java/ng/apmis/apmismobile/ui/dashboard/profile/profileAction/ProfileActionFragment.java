@@ -1,4 +1,4 @@
-package ng.apmis.apmismobile.ui.dashboard.profile;
+package ng.apmis.apmismobile.ui.dashboard.profile.profileAction;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -24,8 +24,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
-import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
-import ng.apmis.apmismobile.ui.dashboard.PersonViewModel;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
@@ -36,7 +34,7 @@ public class ProfileActionFragment extends Fragment {
 
     private SharedPreferencesManager prefs;
 
-    static final String ACTION_MY_PROFILE = "action";
+    public static final String ACTION_MY_PROFILE = "action";
 
     @BindView(R.id.profile_image)
     CircleImageView profileImageView;
@@ -68,7 +66,7 @@ public class ProfileActionFragment extends Fragment {
     @BindView(R.id.logout_button)
     Button logoutButton;
 
-    PersonViewModel mPersonViewModel;
+    ProfileActionViewModel mProfileActionViewModel;
 
     private OnProfileActionInteractionListener mListener;
 
@@ -89,8 +87,6 @@ public class ProfileActionFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         prefs = new SharedPreferencesManager(getContext());
-
-        InjectorUtils.provideNetworkData(getContext()).startPersonDataFetchService();
 
         initViewModel();
 
@@ -113,12 +109,14 @@ public class ProfileActionFragment extends Fragment {
     }
 
     private void initViewModel(){
-        PersonFactory personFactory = InjectorUtils.providePersonFactory(getContext());
-        mPersonViewModel = ViewModelProviders.of(this, personFactory).get(PersonViewModel.class);
+        ProfileActionViewModelFactory profileActionViewModelFactory = InjectorUtils.provideProfileActionViewModelFactory(getContext());
+        mProfileActionViewModel = ViewModelProviders.of(this, profileActionViewModelFactory).get(ProfileActionViewModel.class);
 
         final Observer<PersonEntry> personEntryObserver = new Observer<PersonEntry>() {
             @Override
             public void onChanged(@Nullable PersonEntry personEntry) {
+
+                Log.e("Viewmodel", "was called");
 
                 if (personEntry != null) {
                     usernameText.setText(String.format("%s %s", personEntry.getFirstName(), personEntry.getLastName()));
@@ -129,7 +127,7 @@ public class ProfileActionFragment extends Fragment {
         };
 
         //Observe the Person
-        mPersonViewModel.getPersonEntry().observe(this, personEntryObserver);
+        mProfileActionViewModel.getPersonEntry().observe(this, personEntryObserver);
 
     }
 
@@ -151,14 +149,13 @@ public class ProfileActionFragment extends Fragment {
 
             }
 
-        } else if (localFile != null){
+        } else if (localFile != null) {
             // Download image from web
             //TODO Show a loading progress bar
 
             File finalLocalFile = localFile;
-            InjectorUtils.provideNetworkData(getContext()).fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
 
-            mPersonViewModel.getPersonPhotoPath().observe(this, s -> {
+            mProfileActionViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
                 if (!TextUtils.isEmpty(s)){
                     if (!s.equals("error"))
                         Glide.with(getContext()).load(finalLocalFile).into(profileImageView);

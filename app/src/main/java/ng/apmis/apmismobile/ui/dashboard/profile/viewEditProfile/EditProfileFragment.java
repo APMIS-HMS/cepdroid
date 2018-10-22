@@ -1,27 +1,23 @@
-package ng.apmis.apmismobile.ui.dashboard.profile;
+package ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
+import android.support.transition.ChangeBounds;
 import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,16 +28,18 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
+import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EditProfileFragment extends Fragment implements ProfileActivity.OnBackPressedListener{
+public class EditProfileFragment extends Fragment implements ProfileActivity.OnBackPressedListener {
 
     @BindView(R.id.profile_image)
     CircleImageView profileImageView;
@@ -96,6 +94,11 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
     @BindView(R.id.details_layout)
     LinearLayout detailsLayout;
+
+    @OnClick(R.id.change_image_fab)
+    void selectImage(){
+        selectImageOption();
+    }
 
     boolean isEditing;
 
@@ -205,9 +208,9 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
             //TODO Show a loading progress bar
 
             File finalLocalFile = localFile;
-            InjectorUtils.provideNetworkData(getContext()).fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
+            //InjectorUtils.provideNetworkData(getContext()).fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
 
-            editProfileViewModel.getPersonPhotoPath().observe(this, s -> {
+            editProfileViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
                 if (!TextUtils.isEmpty(s)){
                     if (!s.equals("error"))
                         Glide.with(getContext()).load(finalLocalFile).into(profileImageView);
@@ -224,10 +227,10 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         final BottomSheetDialog builder = new BottomSheetDialog(getContext());
         LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.bottom_dialog_image, null);
+        final View dialogView = inflater.inflate(R.layout.bottom_dialog_photo_upload, null);
 
         builder.setContentView(dialogView);
-        ImageButton btnImage = dialogView.findViewById(R.id.btn_select_image);
+        Button btnImage = dialogView.findViewById(R.id.btn_select_image);
         btnImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,7 +239,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
             }
         });
 
-        ImageButton btnCamera = dialogView.findViewById(R.id.btn_select_camera);
+        Button btnCamera = dialogView.findViewById(R.id.btn_select_camera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,7 +248,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
             }
         });
 
-        ImageButton btnCancel = dialogView.findViewById(R.id.btn_select_camera);
+        Button btnCancel = dialogView.findViewById(R.id.btn_select_camera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -286,20 +289,22 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
     }
 
     @Override
-    public void onBackPressed() {
+    public boolean onBackPressed() {
         if (isEditing){
             isEditing = false;
+
+            TransitionManager.beginDelayedTransition(detailsLayout, new ChangeBounds());
+            saveChangesButton.setVisibility(View.GONE);
+            nameEditLayout.setVisibility(View.GONE);
 
             TransitionManager.beginDelayedTransition(imageActionLayout);
             changeImageFab.setVisibility(View.VISIBLE);
             actionLayout.setVisibility(View.VISIBLE);
 
-            TransitionManager.beginDelayedTransition(detailsLayout);
-            nameEditLayout.setVisibility(View.GONE);
-            saveChangesButton.setVisibility(View.GONE);
+            return false;
 
         } else {
-            getActivity().onBackPressed();
+            return true;
         }
     }
 }
