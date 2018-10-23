@@ -440,7 +440,7 @@ public class AppUtils {
             e.printStackTrace();
         }
 
-        //compress the image if it's above 50KB or if it hasn't compressed a fifth time yet
+        //re-compress the image again if it's above 50KB or if it hasn't compressed a fifth time yet
         long length = new File(imagePath).length()/1024;
         if (length > 50 && compressTries < 4){
             return compressImage(context, filename, compressTries+1);

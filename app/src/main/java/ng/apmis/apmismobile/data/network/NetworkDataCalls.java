@@ -152,37 +152,43 @@ public final class NetworkDataCalls {
 
                 Log.v("response", String.valueOf(response));
 
-                try {
-                    String id = response.getString("_id");
-                    String updatedAt = response.getString("updatedAt");
-                    String createdAt = response.getString("createdAt");
-                    String dateOfBirth = response.getString("dateOfBirth");
-                    String firstName = response.getString("firstName");
-                    String gender = response.getString("gender");
-                    String lastName = response.getString("lastName");
-                    String email = response.getString("email");
-                    String motherMaidenName = response.getString("motherMaidenName");
-                    String primaryContactPhoneNo = response.getString("primaryContactPhoneNo");
-                    String securityAnswer = response.getString("securityAnswer");
-                    String securityQuestion = response.getString("securityQuestion");
-                    String title = response.getString("title");
-                    String apmisId = response.getString("apmisId");
-                    String nextOfKin = response.getString("nextOfKin");
-                    String secondaryContactPhoneNo = response.getString("secondaryContactPhoneNo");
-                    ProfileImageObject profileImageObject = new Gson().fromJson(response.get("profileImageObject").toString(), ProfileImageObject.class);
+//                try {
+//                    String id = response.getString("_id");
+//                    String updatedAt = response.getString("updatedAt");
+//                    String createdAt = response.getString("createdAt");
+//                    String dateOfBirth = response.getString("dateOfBirth");
+//                    String firstName = response.getString("firstName");
+//                    String gender = response.getString("gender");
+//                    String lastName = response.getString("lastName");
+//                    String email = response.getString("email");
+//                    String motherMaidenName = response.getString("motherMaidenName");
+//                    String primaryContactPhoneNo = response.getString("primaryContactPhoneNo");
+//                    String securityAnswer = response.getString("securityAnswer");
+//                    String securityQuestion = response.getString("securityQuestion");
+//                    String title = response.getString("title");
+//                    String apmisId = response.getString("apmisId");
+//                    String nextOfKin = response.getString("nextOfKin");
+//                    String secondaryContactPhoneNo = response.getString("secondaryContactPhoneNo");
+//                    ProfileImageObject profileImageObject = new Gson().fromJson(response.get("profileImageObject").toString(), ProfileImageObject.class);
+//
+//                    Log.e("Image here", profileImageObject.toString());
+//
+//                    PersonEntry responseEntry = new PersonEntry(apmisId,title,firstName,lastName,gender,motherMaidenName,securityQuestion,securityAnswer,primaryContactPhoneNo,secondaryContactPhoneNo,dateOfBirth,email, "", "", "", "", "", profileImageObject, "", "", nextOfKin);
+//
+//                    Log.v("responseEntry", responseEntry.toString());
+//                    PersonEntry[] personEntries = {responseEntry};
+//
+//                    InjectorUtils.provideNetworkData(context.getApplicationContext()).setCurrentPersonData(personEntries);
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
-                    Log.e("Image here", profileImageObject.toString());
+                PersonEntry personEntry = gson.fromJson(response.toString(), PersonEntry.class);
+                Log.v("responseEntry", personEntry.toString());
+                PersonEntry[] personEntries = {personEntry};
 
-                    PersonEntry responseEntry = new PersonEntry(apmisId,title,firstName,lastName,gender,motherMaidenName,securityQuestion,securityAnswer,primaryContactPhoneNo,secondaryContactPhoneNo,dateOfBirth,email, "", "", "", "", "", profileImageObject, "", "", nextOfKin);
-
-                    Log.v("responseEntry", responseEntry.toString());
-                    PersonEntry[] personEntries = {responseEntry};
-
-                    InjectorUtils.provideNetworkData(context.getApplicationContext()).setCurrentPersonData(personEntries);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                InjectorUtils.provideNetworkData(context.getApplicationContext()).setCurrentPersonData(personEntries);
 
             }
         }, new Response.ErrorListener() {

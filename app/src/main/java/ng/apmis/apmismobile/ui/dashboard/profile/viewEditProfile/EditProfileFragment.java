@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
@@ -228,8 +229,6 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         File localFile = null;
 
-        Log.v("Image in edit", person.getProfileImageFileName().toString());
-
         if (!TextUtils.isEmpty(person.getProfileImageFileName()))
             localFile = new File(profilePhotoDir, person.getProfileImageFileName());
 
@@ -328,7 +327,19 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
                 //keep reference to the photoUri
                 this.uri = photoURI;
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+
+                //Check for permissions
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+                } else {
+                    //Save reference to the camera intent
+                    cameraIntent = takePictureIntent;
+                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 9000);
+                    } else {
+                        startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+                    }
+                }
             }
         }
     }
@@ -440,6 +451,16 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         } else {
             return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 9000 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+        } else {
+            Toast.makeText(getActivity(), "You need permission to use camera", Toast.LENGTH_SHORT).show();
         }
     }
 }
