@@ -25,12 +25,25 @@
                 android:layout_height="120dp"
                 android:layout_weight="1">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profile_image"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_user_profile"/>
+                    android:layout_gravity="center_vertical">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_user_profile"/>
+
+                    <ProgressBar
+                        android:id="@+id/image_loader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
+
+                </FrameLayout>
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/change_image_fab"
@@ -39,9 +52,9 @@
                     android:layout_margin="5dp"
                     app:srcCompat="@drawable/ic_edit_white"
                     app:fabSize="mini"
-                    android:layout_alignStart="@+id/profile_image"
-                    android:layout_alignLeft="@+id/profile_image"
-                    android:layout_alignBottom="@+id/profile_image"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"/>
 
             </RelativeLayout>
 

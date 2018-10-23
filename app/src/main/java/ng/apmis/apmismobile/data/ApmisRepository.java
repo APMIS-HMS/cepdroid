@@ -86,7 +86,22 @@ public class ApmisRepository {
 
     public LiveData<PersonEntry> getUserData () {
         initializeData();
+        Log.e("Viewmodel", "fetching user data was called");
         return mApmisDao.getUserData();
+    }
+
+    /**
+     * Update the user data in the db
+     * @param personEntry
+     */
+    public void updateUserData(PersonEntry personEntry){
+        mExecutors.diskIO().execute(() -> {
+            deleteOldData();
+            Log.d(LOG_TAG, "Old person detail deleted");
+            // Insert our new weather data into Sunshine's database
+            mApmisDao.insertData(personEntry);
+            Log.d("Image", "New values inserted "+personEntry.getProfileImageObject().toString());
+        });
     }
 
 

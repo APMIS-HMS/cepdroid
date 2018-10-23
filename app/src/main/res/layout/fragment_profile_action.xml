@@ -44,17 +44,28 @@
             android:layout_weight="0.375"/>
 
         <!-- TODO: work on a landscape version for this-->
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
+        <FrameLayout
             android:layout_width="150dp"
             android:layout_height="0dp"
             android:layout_weight="1.25"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/ic_user_profile"
-            app:civ_border_color="@color/colorPrimary"
-            app:civ_border_width="6dp" />
+            android:layout_gravity="center">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_user_profile"
+                app:civ_border_color="@color/colorPrimary"
+                app:civ_border_width="6dp" />
+
+            <ProgressBar
+                android:id="@+id/image_loader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/details_layout"

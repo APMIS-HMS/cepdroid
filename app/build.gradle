@@ -87,4 +87,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    //for cropping images
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
 }

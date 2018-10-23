@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -787,10 +788,12 @@ public final class NetworkDataCalls {
      * @param image
      * @return
      */
-    public void uploadProfilePictureForPerson(String apmisId, String personId, Bitmap image, String accessToken) {
+    public void uploadProfilePictureForPerson(PersonEntry personEntry, String apmisId, String personId, Bitmap image, String accessToken) {
 
         byte[] imageArr = AppUtils.convertBitmapToByteArray(image);
         String imageBase64String = Base64.encodeToString(imageArr, Base64.NO_WRAP);
+
+        int size = imageArr.length / 1024;
 
         JSONObject job = new JSONObject();
         try {
@@ -800,7 +803,7 @@ public final class NetworkDataCalls {
             job.put("uploadType", "profilePicture");
             job.put("docName", "me.jpeg");
             job.put("docType", "Image");
-            job.put("size", 6032);
+            job.put("size", size);
             job.put("user", apmisId);
             job.put("id", personId);
             job.put("facilityId", "5a4c581448eaa74a00040989");
@@ -812,11 +815,39 @@ public final class NetworkDataCalls {
         }
 
 
-        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "file-upload-facade", job, new Response.Listener<JSONObject>() {
+        JsonObjectRequest uploadRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "file-upload-facade", job, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(final JSONObject response) {
                 dataResponse = response;
                 Log.v("Image response", String.valueOf(response));
+                try {
+                    JSONObject profileImageJsonObject = response.getJSONObject("data")
+                            .getJSONObject("profile").getJSONObject("profileImageObject");
+                    ProfileImageObject profileImageObject = gson.fromJson(profileImageJsonObject.toString(), ProfileImageObject.class);
+
+                    File profilePhotoDir = new File(context.getFilesDir(), "profilePhotos");
+                    profilePhotoDir.mkdir();
+
+                    File profilePhotoFile = new File(profilePhotoDir, profileImageObject.getFilename());
+                    FileOutputStream out = null;
+                    try {
+                        out = new FileOutputStream(profilePhotoFile);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    //compress uploaded image and save to file
+                    image.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+
+                    //Set other data for the person object
+                    personEntry.setProfileImageObject(profileImageObject);
+                    personEntry.setProfileImageFileName(profileImageObject.getFilename());
+                    personEntry.setProfileImageUriPath(profileImageObject.getPath());
+                    InjectorUtils.provideRepository(context).updateUserData(personEntry);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
         }, error -> {
@@ -833,10 +864,9 @@ public final class NetworkDataCalls {
             }
         };
 
-        loginRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        uploadRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
 
-
-        queue.add(loginRequest);
+        queue.add(uploadRequest);
 
 
 //        OkHttpClient client = new OkHttpClient.Builder()

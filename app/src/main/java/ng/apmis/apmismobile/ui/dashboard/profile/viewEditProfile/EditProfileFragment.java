@@ -1,17 +1,28 @@
 package ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile;
 
+import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.transition.ChangeBounds;
 import android.support.transition.TransitionManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,22 +30,35 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
+import ng.apmis.apmismobile.data.network.NetworkDataCalls;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
+
+import static android.app.Activity.RESULT_OK;
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
+import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,6 +119,9 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
     @BindView(R.id.details_layout)
     LinearLayout detailsLayout;
 
+    @BindView(R.id.image_loader)
+    ProgressBar imageProgress;
+
     @OnClick(R.id.change_image_fab)
     void selectImage(){
         selectImageOption();
@@ -103,10 +130,15 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
     boolean isEditing;
 
     private EditProfileViewModel editProfileViewModel;
-
-
+    
     public static final int CAMERA_REQUEST_CODE = 1;
     public static final int GALLERY_REQUEST_CODE = 2;
+
+    private Uri uri;
+
+    String mCurrentPhotoPath;
+
+    private SharedPreferencesManager prefs;
 
     private Intent cameraIntent, galleryIntent;
 
@@ -139,6 +171,8 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         ButterKnife.bind(this, view);
 
+        prefs = new SharedPreferencesManager(getContext());
+
         editProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +194,8 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         return view;
     }
 
+    private PersonEntry person;
+
     private void initViewModel(){
         EditProfileViewModelFactory factory = InjectorUtils.provideEditProfileViewModelFactory(getContext());
         editProfileViewModel = ViewModelProviders.of(this, factory).get(EditProfileViewModel.class);
@@ -168,6 +204,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
             @Override
             public void onChanged(@Nullable PersonEntry personEntry) {
                 if (personEntry != null){
+                    person = personEntry;
                     attemptLoadImage(personEntry);
                     nameTextView.setText(String.format("%s %s", personEntry.getFirstName(), personEntry.getLastName()));
                     apmisIdTextView.setText(personEntry.getApmisId());
@@ -197,6 +234,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
             localFile = new File(profilePhotoDir, person.getProfileImageFileName());
 
         if (localFile != null && localFile.exists()){
+            imageProgress.setVisibility(View.GONE);
             try {
                 Glide.with(getContext()).load(localFile).into(profileImageView);
             } catch (Exception e){
@@ -205,12 +243,13 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         } else if (localFile != null){
             // Download image from web
-            //TODO Show a loading progress bar
+            profileImageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_user_profile));
+            imageProgress.setVisibility(View.VISIBLE);
 
             File finalLocalFile = localFile;
-            //InjectorUtils.provideNetworkData(getContext()).fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
 
             editProfileViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
+                imageProgress.setVisibility(View.GONE);
                 if (!TextUtils.isEmpty(s)){
                     if (!s.equals("error"))
                         Glide.with(getContext()).load(finalLocalFile).into(profileImageView);
@@ -230,26 +269,26 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         final View dialogView = inflater.inflate(R.layout.bottom_dialog_photo_upload, null);
 
         builder.setContentView(dialogView);
-        Button btnImage = dialogView.findViewById(R.id.btn_select_image);
-        btnImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //GetImageFromGallery();
-                builder.dismiss();
-            }
-        });
-
         Button btnCamera = dialogView.findViewById(R.id.btn_select_camera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ClickImageFromCamera();
+                dispatchTakePictureIntent();
+                builder.dismiss();
+            }
+        });
+        
+        Button btnImage = dialogView.findViewById(R.id.btn_select_image);
+        btnImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getImageFromGallery();
                 builder.dismiss();
             }
         });
 
-        Button btnCancel = dialogView.findViewById(R.id.btn_select_camera);
-        btnCamera.setOnClickListener(new View.OnClickListener() {
+        Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 builder.dismiss();
@@ -259,24 +298,120 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         builder.show();
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == android.R.id.home) {
-//            if (isEditing){
-//                isEditing = false;
-//
-//                TransitionManager.beginDelayedTransition(imageActionLayout);
-//                changeImageFab.setVisibility(View.VISIBLE);
-//                actionLayout.setVisibility(View.VISIBLE);
-//
-//                TransitionManager.beginDelayedTransition(detailsLayout);
-//                nameEditLayout.setVisibility(View.GONE);
-//                saveChangesButton.setVisibility(View.GONE);
-//            } else
-//                getActivity().onBackPressed();
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.e("TAG", "Error occurred while creating the File");
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI;
+                //Use file provider for versions lollipop and above
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    photoURI = FileProvider.getUriForFile(getContext(),
+                            getContext().getApplicationContext().getPackageName() + ".fileprovider",
+                            photoFile);
+                    takePictureIntent.setFlags(FLAG_GRANT_WRITE_URI_PERMISSION);
+                    takePictureIntent.setFlags(FLAG_GRANT_READ_URI_PERMISSION);
+                } else {
+                    photoURI = Uri.fromFile(photoFile);
+                }
+
+                //keep reference to the photoUri
+                this.uri = photoURI;
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+            }
+        }
+    }
+
+    public void getImageFromGallery() {
+
+        galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        startActivityForResult(Intent.createChooser(galleryIntent, "Select Image From Gallery"), GALLERY_REQUEST_CODE);
+
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            cropImage();
+
+        } else if (requestCode == GALLERY_REQUEST_CODE) {
+
+            if (data != null) {
+                uri = data.getData();
+                cropImage();
+            }
+
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+
+            if (data != null) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Uri resultUri = result.getUri();
+
+                File auxFile = new File(resultUri.getPath());
+
+                //compress the image if it's above 50KB
+                long length = auxFile.length()/1024;
+                if (length > 50)
+                    AppUtils.compressImage(getContext(), auxFile.getAbsolutePath(), 0);
+
+                Bitmap bitmap = BitmapFactory.decodeFile(auxFile.getAbsolutePath());
+                //userImage.setImageBitmap(bitmap);
+
+                //compressed bitmap quality to 80%
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream);
+
+                new Thread(() -> {
+                    Log.d("Image", "Upload image started");
+                    if (person != null) {
+                        new NetworkDataCalls(getContext()).uploadProfilePictureForPerson(person, prefs.getStoredApmisId(), prefs.getPersonId(), bitmap, prefs.getStoredUserAccessToken());
+                        getActivity().runOnUiThread(() -> imageProgress.setVisibility(View.VISIBLE));
+                    } else
+                        AppUtils.showShortToast(getContext(), "Failed to upload photo");
+                }).start();
+
+            }
+        }
+
+    }
+
+    public void cropImage(){
+        // start cropping activity for pre-acquired image saved on the device
+        CropImage.activity(uri).setFixAspectRatio(true)
+                .start(getContext(), this);
+    }
+
 
     @Override
     public void onAttach(Context context) {
