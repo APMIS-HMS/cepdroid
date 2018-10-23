@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -66,6 +67,9 @@ public class ProfileActionFragment extends Fragment {
     @BindView(R.id.logout_button)
     Button logoutButton;
 
+    @BindView(R.id.image_loader)
+    ProgressBar imageProgress;
+
     ProfileActionViewModel mProfileActionViewModel;
 
     private OnProfileActionInteractionListener mListener;
@@ -87,6 +91,8 @@ public class ProfileActionFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         prefs = new SharedPreferencesManager(getContext());
+
+        //InjectorUtils.provideNetworkData(getContext()).startPersonDataFetchService();
 
         initViewModel();
 
@@ -116,8 +122,6 @@ public class ProfileActionFragment extends Fragment {
             @Override
             public void onChanged(@Nullable PersonEntry personEntry) {
 
-                Log.e("Viewmodel", "was called");
-
                 if (personEntry != null) {
                     usernameText.setText(String.format("%s %s", personEntry.getFirstName(), personEntry.getLastName()));
 
@@ -137,7 +141,7 @@ public class ProfileActionFragment extends Fragment {
 
         File localFile = null;
 
-        Log.v("Image", person.getProfileImageFileName().toString());
+        //Log.v("Image", person.getProfileImageFileName());
 
         if (!TextUtils.isEmpty(person.getProfileImageFileName()))
             localFile = new File(profilePhotoDir, person.getProfileImageFileName());
@@ -151,11 +155,13 @@ public class ProfileActionFragment extends Fragment {
 
         } else if (localFile != null) {
             // Download image from web
-            //TODO Show a loading progress bar
+            profileImageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_user_profile));
+            imageProgress.setVisibility(View.VISIBLE);
 
             File finalLocalFile = localFile;
 
             mProfileActionViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
+                imageProgress.setVisibility(View.GONE);
                 if (!TextUtils.isEmpty(s)){
                     if (!s.equals("error"))
                         Glide.with(getContext()).load(finalLocalFile).into(profileImageView);
