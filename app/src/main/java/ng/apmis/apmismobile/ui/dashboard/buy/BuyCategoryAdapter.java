@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.FundAccountFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.makePurchase.MakePurchaseFragment;
@@ -14,7 +15,7 @@ import ng.apmis.apmismobile.ui.dashboard.buy.payBills.PayBillsFragment;
  * Created by Thadeus-APMIS on 10/23/2018.
  */
 
-public class BuyCategoryAdapter extends FragmentPagerAdapter {
+public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
 
     private Context context;
     private String[] pageTitles = new String[]{"Fund Account", "Pay Bills", "Make Purchase"};

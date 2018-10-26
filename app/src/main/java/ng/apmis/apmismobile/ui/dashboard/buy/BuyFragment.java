@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,8 @@ public class BuyFragment extends android.support.v4.app.Fragment {
     List<ModuleListModel> optionItems = new ArrayList<>();
 
     @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container,
-                         Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_buy, container, false);
         ButterKnife.bind(this, rootView);
 
@@ -46,27 +47,9 @@ public class BuyFragment extends android.support.v4.app.Fragment {
 
         TabLayout tabLayout = rootView.findViewById(R.id.tabview);
         tabLayout.setupWithViewPager(viewPager);
-       /* tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (getString(R.string.pregJournal).equals(tab.getText()))
-                    ((DashboardActivity)getActivity()).fabVisibility(true);
-            }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                if (getString(R.string.pregJournal).equals(tab.getText()))
-                    ((DashboardActivity)getActivity()).fabVisibility(false);
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });*/
-       tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.setTabMode(TabLayout.GRAVITY_CENTER);
         viewPager.setAdapter(adapter);
-
 
 
         return rootView;
@@ -75,7 +58,7 @@ public class BuyFragment extends android.support.v4.app.Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+            ((DashboardActivity) getActivity()).setToolBarTitle("Buy", false);
         }
         super.onResume();
     }
