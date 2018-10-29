@@ -1,54 +1,43 @@
 package ng.apmis.apmismobile.ui.dashboard.profile;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
-import ng.apmis.apmismobile.utilities.AppUtils;
-import ng.apmis.apmismobile.utilities.InjectorUtils;
+import ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionFragment;
+import ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile.EditProfileFragment;
 
-public class ProfileActivity extends AppCompatActivity {
+import static ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionFragment.ACTION_MY_PROFILE;
 
-    @BindView(R.id.username_text)
-    TextView usernameText;
+public class ProfileActivity extends AppCompatActivity implements ProfileActionFragment.OnProfileActionInteractionListener {
 
-    @BindView(R.id.apmis_id_text)
-    TextView apmisIdText;
+    @BindView(R.id.fragment_container)
+    FrameLayout fragmentContainer;
 
-    @BindView(R.id.reminders_button)
-    Button remindersButton;
+    @BindView(R.id.general_toolbar)
+    Toolbar generalToolbar;
 
-    @BindView(R.id.alerts_button)
-    Button alertsButton;
+    @BindView(R.id.action_bar_title)
+    TextView toolbarTitle;
 
-    @BindView(R.id.facilities_button)
-    Button facilitiesButton;
+    Fragment profileActionFragment;
+    EditProfileFragment editProfileFragment;
 
-    @BindView(R.id.settings_button)
-    Button settingsButton;
+    private OnBackPressedListener mListener = null;
 
-    @BindView(R.id.contact_button)
-    Button contactButton;
-
-    @BindView(R.id.logout_button)
-    Button logoutButton;
-
-    private SharedPreferencesManager prefs;
+    public interface OnBackPressedListener{
+        boolean onBackPressed();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,22 +45,67 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        prefs = new SharedPreferencesManager(this);
+        setSupportActionBar(generalToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+        actionBar.setElevation(0);
 
-        LiveData<PersonEntry> entry = InjectorUtils.provideRepository(this).getUserData();
+        toolbarTitle.setText("PROFILE ACTIONS");
 
-        entry.observe(this, personEntry ->
-                usernameText.setText(String.format("%s %s", personEntry.getFirstName(), personEntry.getLastName())));
-        apmisIdText.setText(prefs.getStoredApmisId());
+        profileActionFragment = new ProfileActionFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, profileActionFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
+    }
 
-        ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
-        for (View view : viewGroup.getTouchables()){
-            if (view instanceof Button){
-                view.setOnClickListener(v -> {
-                    AppUtils.showShortToast(this, ((Button) view).getText()+"");
-                });
-            }
+    public void instantiateOnBackPressedListener(OnBackPressedListener listener){
+        this.mListener = listener;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
+        return super.onOptionsItemSelected(item);
+    }
 
+    /**
+     * Replace the current fragment with another
+     * @param fragment Fragment used to replace
+     */
+    private void placeFragment(Fragment fragment) {
+        getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack("current")
+                .commit();
+    }
+
+    @Override
+    public void onProfileAction(String action) {
+        switch (action){
+            case ACTION_MY_PROFILE:
+                editProfileFragment = EditProfileFragment.newInstance();
+                instantiateOnBackPressedListener(editProfileFragment);
+                placeFragment(editProfileFragment);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Allow the EditProfileFragment to override the onBackPressed
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (!(fragment instanceof OnBackPressedListener) || ((OnBackPressedListener) fragment).onBackPressed()) {
+            super.onBackPressed();
+        } else
+            mListener.onBackPressed();//use the EditProfileFragment's onBackPressed
     }
 }

@@ -2,7 +2,7 @@ package ng.apmis.apmismobile.data.database.facilityModel;
 
 import java.util.List;
 
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 
 /**
  * <code>Employee</code> class containing <code>PersonEntry</code>

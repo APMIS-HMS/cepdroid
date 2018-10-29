@@ -1,6 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard.documentation;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -36,9 +37,18 @@ import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.Constants;
 
+/**
+ * View for displaying details about Patient Medical Records,
+ * like Allergies, Vitals and Doctor's notes
+ */
 public class MedicalRecordsDetailsFragment extends Fragment {
     private static final String DOCUMENTATION_KEY = "documentation_key";
+    private static final String INTENT_KEY = "intent_key";
     private Documentation documentation;
+    private Intent intent;
+
+    //Flag to check if documentation or intent came in from constructor
+    private boolean isDocumentationAvailable;
 
     @BindView(R.id.details_scroll)
     ScrollView detailsScroll;
@@ -56,7 +66,7 @@ public class MedicalRecordsDetailsFragment extends Fragment {
 
     /**
      * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * this fragment using the Documentation parameter.
      *
      * @param documentation Documentation Record Object.
      * @return A new instance of fragment MedicalRecordsDetailsFragment.
@@ -69,11 +79,36 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the Intent parameter.
+     *
+     * @param intent Intent object containing documentation params
+     * @return A new instance of fragment MedicalRecordsDetailsFragment.
+     */
+    public static MedicalRecordsDetailsFragment newInstance(Intent intent) {
+        MedicalRecordsDetailsFragment fragment = new MedicalRecordsDetailsFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(INTENT_KEY, intent);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
-            documentation = (Documentation) getArguments().getSerializable(DOCUMENTATION_KEY);
+
+            if (getArguments().getSerializable(DOCUMENTATION_KEY) != null) {
+                documentation = (Documentation) getArguments().getSerializable(DOCUMENTATION_KEY);
+                isDocumentationAvailable = true;
+            }
+
+            else if (getArguments().getParcelable(INTENT_KEY) != null) {
+                intent = getArguments().getParcelable(INTENT_KEY);
+                isDocumentationAvailable = false;
+            }
         }
     }
 
@@ -84,8 +119,13 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_medical_records_details, container, false);
         ButterKnife.bind(this, view);
 
+        //Sets the details text on the view after parsing
         try {
-            detailsTextView.setText(Html.fromHtml(parseJSON(documentation.getDocument().getBody())));
+            if (isDocumentationAvailable)
+                detailsTextView.setText(Html.fromHtml(parseJSON(documentation.getDocument().getBody())));
+            else
+                detailsTextView.setText(Html.fromHtml(parseJSON(convertIntentToJSON(intent))));
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -97,16 +137,31 @@ public class MedicalRecordsDetailsFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            String documentTitle = documentation.getDocument().getDocumentType().getTitle();
+
+            String documentTitle;
+
+            if (isDocumentationAvailable)
+                documentTitle = documentation.getDocument().getDocumentType().getTitle();
+            else
+                documentTitle = "Laboratory Report";
+
             ((DashboardActivity)getActivity()).setToolBarTitle(documentTitle.toUpperCase(), false);
 
         }
         super.onResume();
     }
 
+    /**
+     * Parse the Object to resemble a proper doctor's note or in some cases,
+     * call another function to parse a Vitals object
+     * @param json The JSONObject containing the data
+     * @return The well parsed doctor's note HTML or an empty string,
+     * depending on the nature of information in the JSONObject
+     * @throws JSONException Exception
+     */
     private String parseJSON(JSONObject json) throws JSONException {
 
-        StringBuffer bodyText = new StringBuffer();
+        StringBuilder bodyText = new StringBuilder();
 
         Iterator<String> iter = json.keys();
 
@@ -117,10 +172,12 @@ public class MedicalRecordsDetailsFragment extends Fragment {
             if (key.equalsIgnoreCase("vitals")) {
                 //do some vitals stuff
                 parseVitals(json.getJSONArray(key));
+                //and return an empty string for the details
                 return "";
             }
 
-            bodyText.append("<b><font color=\"#0071bc\">" + key + "</font></b><br/>");
+            //If not a Vitals object, then begin parsing the notes
+            bodyText.append("<b><font color=\"#0071bc\">" + formatKeyTitle(key) + "</font></b><br/>");
 
             try {
                 bodyText.append("<p>");
@@ -148,6 +205,10 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         return bodyText.toString();
     }
 
+    /**
+     * Parse the {@link Vitals} gotten from the JSONObject and populate a RecyclerView with the information
+     * @param json The JSONArray containing the vitals
+     */
     private void parseVitals(JSONArray json){
 
         if (json.length() > 0) {
@@ -176,4 +237,50 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         }
     }
 
+    /**
+     * Format the key title of clinical documentations
+     * to resemble something readable and presentable,
+     * e.h by converting "camelHump" to "Camel Hump".
+     * @param keyTitle the documentation key title
+     */
+    private String formatKeyTitle(String keyTitle) {
+        String formattedString = keyTitle;
+        int offset = 0;
+
+        //Iterate through all the characters in the String
+        for (int count=0; count<keyTitle.length(); ++count) {
+
+            //if the character is an upper case one, then add a space behind it
+            if (Character.isUpperCase(keyTitle.charAt(count))) {
+                formattedString = formattedString.replace("" + formattedString.charAt(count+offset),
+                        " " + formattedString.charAt(count+offset));
+
+                //increase the offset since the string is now longer
+                ++offset;
+            }
+        }
+
+        //Make the first letter upper case too
+        formattedString = formattedString.replaceFirst(formattedString.charAt(0)+"",
+                (formattedString.charAt(0)+"").toUpperCase()  );
+
+        return formattedString;
+    }
+
+    /**
+     *
+     * @param intent The packaged intent object containing all the keys
+     * @return The JSONObject containing the keys and values
+     * @throws JSONException exception
+     */
+    private JSONObject convertIntentToJSON(Intent intent) throws JSONException {
+
+        JSONObject object = new JSONObject();
+
+        for (String key : intent.getExtras().keySet()){
+            object.put(key, intent.getStringExtra(key));
+        }
+
+        return object;
+    }
 }

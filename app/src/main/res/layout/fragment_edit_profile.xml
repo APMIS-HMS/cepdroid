@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ececec">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        tools:context=".ui.dashboard.profile.viewEditProfile.EditProfileFragment">
+
+        <LinearLayout
+            android:id="@+id/image_action_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="15dp">
+
+            <RelativeLayout
+                android:id="@+id/image_layout"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_weight="1">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_user_profile"/>
+
+                    <ProgressBar
+                        android:id="@+id/image_loader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
+
+                </FrameLayout>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/change_image_fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    app:srcCompat="@drawable/ic_edit_white"
+                    app:fabSize="mini"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"/>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/action_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:layout_margin="10dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/name_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:text="Mofe Ejegi"/>
+
+                <TextView
+                    android:id="@+id/apmis_id_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:text="AB-12345"/>
+
+                <Button
+                    android:id="@+id/edit_profile_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:background="@drawable/action_button"
+                    android:textColor="@android:color/white"
+                    android:paddingLeft="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingEnd="10dp"
+                    android:textAllCaps="false"
+                    android:text="Edit Profile"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/details_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="50dp"
+            android:background="@android:color/white">
+
+            <LinearLayout
+                android:id="@+id/name_edit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp"
+                    android:layout_marginTop="20dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/first_name_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:hint="@string/first_name"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp"
+                    android:layout_marginTop="20dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/last_name_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:hint="@string/last_name"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="20dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/email_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:focusable="false"
+                    android:clickable="false"
+                    android:longClickable="false"
+                    android:hint="@string/e_mail"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="20dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/phone_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:clickable="false"
+                    android:hint="@string/phone_number"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="20dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/apmis_id_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:clickable="false"
+                    android:textAllCaps="true"
+                    android:hint="@string/apmis_id_placeholder"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="20dp">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/password_edit_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/password_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:hint="@string/password_placeholder_lower_case"
+                        android:focusable="false"
+                        android:longClickable="false"
+                        android:clickable="false"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/change_password_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBottom="@+id/password_edit_layout"
+                    android:paddingBottom="12dp"
+                    android:textColor="#44c4a1"
+                    android:textSize="12sp"
+                    android:text="Change Password"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/save_changes_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                android:gravity="center">
+
+                <FrameLayout
+                    android:id="@+id/frame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true">
+
+                    <Button
+                        android:id="@+id/save_changes_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="70dp"
+                        android:paddingStart="70dp"
+                        android:paddingRight="70dp"
+                        android:paddingEnd="70dp"
+                        android:background="@drawable/action_button"
+                        android:textColor="@android:color/white"
+                        android:text="Save changes"/>
+
+                </FrameLayout>
+
+
+
+                <ProgressBar
+                    android:id="@+id/save_changes_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:visibility="gone"
+                    style="?android:attr/android:progressBarStyle"
+                    android:theme="@style/AppTheme.WhiteAccent"
+                    android:layout_alignRight="@+id/frame"
+                    android:layout_alignEnd="@+id/frame" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

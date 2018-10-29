@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -36,7 +37,7 @@ import butterknife.OnClick;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
-import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
+import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
@@ -61,11 +62,8 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class AddAppointmentFragment extends Fragment {
 
-    @BindView(R.id.new_radio)
-    RadioButton newRadio;
-
-    @BindView(R.id.follow_up_radio)
-    RadioButton followUpRadio;
+    @BindView(R.id.select_appt_type_spinner)
+    Spinner selectAppointmentTypeSpinner;
 
     @BindView(R.id.book_appointment_button)
     Button bookAppointmentButton;
@@ -97,6 +95,7 @@ public class AddAppointmentFragment extends Fragment {
     }
 
     //Adapters for drop down lists
+    ArrayAdapter appointmentTypeArrayAdapter;
     FacilityAdapter hospitalAdapter;
     ClinicAdapter clinicAdapter;
     ServiceAdapter serviceAdapter;
@@ -105,6 +104,7 @@ public class AddAppointmentFragment extends Fragment {
     AddAppointmentViewModel appointmentViewModel;
 
     //Selectable data lists
+    private List<AppointmentType> mAppointmentTypes;
     private List<Patient> mPatients;
     private List<Facility> mFacilities;
     private List<ClinicSchedule> mClinics;
@@ -137,13 +137,12 @@ public class AddAppointmentFragment extends Fragment {
         //initialize the AppointmentViewModel
         initViewModel();
 
-        //TODO switch to LiveData
-        //Fetch the available appointment types and order statuses
-        if (appointmentViewModel.getAppointmentTypes().isEmpty())
-            InjectorUtils.provideNetworkData(getContext()).fetchAppointmentTypes();
+        //Fetch the available appointment types from the server
+        InjectorUtils.provideNetworkData(getContext()).fetchAppointmentTypes();
 
-        if (appointmentViewModel.getOrderStatuses().isEmpty())
-            InjectorUtils.provideNetworkData(getContext()).fetchOrderStatuses();
+        //TODO switch to LiveData
+        //if (appointmentViewModel.getOrderStatuses().isEmpty())
+        //InjectorUtils.provideNetworkData(getContext()).fetchOrderStatuses();
 
         //set up item select spinners
         setSpinnerItemSelectListeners();
@@ -159,11 +158,29 @@ public class AddAppointmentFragment extends Fragment {
     }
 
     /**
-     * Initialized the AppointmentViewModel and set up all the observers
+     * Initialize the AppointmentViewModel and set up all the observers
      */
     private void initViewModel(){
         AddAppointmentViewModelFactory factory = InjectorUtils.provideAddAppointmentViewModelFactory(getActivity().getApplicationContext());
         appointmentViewModel = ViewModelProviders.of(this, factory).get(AddAppointmentViewModel.class);
+
+        Observer<List<AppointmentType>> appointmentTypesObserver = appointmentTypes -> {
+            mAppointmentTypes = appointmentTypes;
+
+            if (appointmentTypeArrayAdapter == null) {
+                appointmentTypeArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, mAppointmentTypes);
+                appointmentTypeArrayAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
+                selectAppointmentTypeSpinner.setAdapter(appointmentTypeArrayAdapter);
+                if (appointmentTypes.size() > 0)
+                    mAppointmentType = appointmentTypes.get(0);
+            } else {
+                appointmentTypeArrayAdapter.notifyDataSetChanged();
+            }
+
+        };
+
+        appointmentViewModel.getAppointmentTypes().observe(getActivity(), appointmentTypesObserver);
+
 
         final Observer<List<Patient>> patientsObserver = patients -> {
             mPatients = patients;
@@ -372,6 +389,20 @@ public class AddAppointmentFragment extends Fragment {
      */
     private void setSpinnerItemSelectListeners(){
 
+        selectAppointmentTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (mAppointmentTypes != null && mAppointmentTypes.size() > 0) {
+                    mAppointmentType = mAppointmentTypes.get(position);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         selectHospitalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -538,14 +569,6 @@ public class AddAppointmentFragment extends Fragment {
     private void submitAppointment(){
 
         Appointment appointment = new Appointment();
-        AppointmentType type = new AppointmentType();
-
-        if (newRadio.isChecked()){
-            type.setName("New");
-        } else {
-            type.setName("Follow Up");
-        }
-        mAppointmentType = type;
 
         mOrderStatus = new OrderStatus();
         mOrderStatus.setName("Scheduled");
@@ -613,6 +636,7 @@ public class AddAppointmentFragment extends Fragment {
         ((DashboardActivity)getActivity()).setToolBarTitle("APPOINTMENTS", false);
 
         //remove the observers now to avoid double observers when popped from back stack
+        appointmentViewModel.getAppointmentTypes().removeObservers(getActivity());
         appointmentViewModel.getAppointment().removeObservers(getActivity());
         appointmentViewModel.getSchedules().removeObservers(getActivity());
         appointmentViewModel.getServices().removeObservers(getActivity());

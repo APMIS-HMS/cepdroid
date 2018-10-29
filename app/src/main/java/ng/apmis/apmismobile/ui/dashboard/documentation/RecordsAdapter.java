@@ -3,7 +3,6 @@ package ng.apmis.apmismobile.ui.dashboard.documentation;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -23,7 +22,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -33,15 +31,18 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
-import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
-import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
+/**
+ * Adapter responsible for the Data in the medical records list
+ */
 public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String BASE_URL = Constants.BASE_URL;
+    //The View Type Constant for the Date Header
     private static final int TYPE_DATE = 0;
+    //The View Type Constant for the Medical Record
     private static final int TYPE_RECORD = 1;
 
     private Context mContext;
@@ -71,6 +72,10 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
+    /**
+     * Request password on record click to ensure privacy of records
+     * @param documentation The record to open
+     */
     private void onRecordClick(Documentation documentation){
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogMinWidth);
         AlertDialog dialog = builder.create();
@@ -89,6 +94,12 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
+    /**
+     * Send a request to the server to authenticate the current user with a password
+     * @param password The typed in password
+     * @param alertDialog AlertDialog object
+     * @param documentation The record to open
+     */
     private void confirmPasswordAndAccess(String password, AlertDialog alertDialog, Documentation documentation){
         RequestQueue queue = Volley.newRequestQueue(mContext.getApplicationContext());
 
@@ -163,7 +174,8 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Documentation documentation = datedDocumentationItems.get(position).getDocumentation();
 
             ((RecordsViewHolder) holder).facilityTextView.setText(documentation.getFacilityName());
-            ((RecordsViewHolder) holder).clinicTextView.setText(new String[]{"Ophthalmology Clinic", "Dentistry Clinic"}[new Random().nextInt(2)]);
+            ((RecordsViewHolder) holder).recordTitleTextView.setText(documentation.getDocument().getDocumentType().getTitle());
+            ((RecordsViewHolder) holder).doctorTextView.setText(documentation.getCreatedBy());
             ((RecordsViewHolder) holder).dateTextView.setText(
                     AppUtils.dateToShortDateString(AppUtils.dbStringToLocalDate(documentation.getUpdatedAt()))
             );
@@ -179,6 +191,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
         DatedDocumentationItem item = datedDocumentationItems.get(position);
 
+        //If the date string in a datedDocumentationItem is not null, then we have a date type
         if (item.date != null){
             return TYPE_DATE;
         } else {
@@ -203,8 +216,8 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @BindView(R.id.facility_name)
         TextView facilityTextView;
 
-        @BindView(R.id.clinic_name)
-        TextView clinicTextView;
+        @BindView(R.id.record_title)
+        TextView recordTitleTextView;
 
         @BindView(R.id.date_text)
         TextView dateTextView;
@@ -229,6 +242,11 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+
+    /**
+     * This DatedDocumentationItem class is simply an encapsulation of a DateString and
+     * a Documentation Medical Record
+     */
     public static class DatedDocumentationItem {
 
         private String date;

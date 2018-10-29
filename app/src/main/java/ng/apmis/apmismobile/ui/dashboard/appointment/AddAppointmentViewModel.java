@@ -8,7 +8,7 @@ import java.util.List;
 import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
-import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
+import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
@@ -26,7 +26,7 @@ public class AddAppointmentViewModel extends ViewModel {
 
     private MutableLiveData<Appointment> mAppointment;
 
-    private List<AppointmentType> appointmentTypes;
+    private MutableLiveData<List<AppointmentType>> appointmentTypes;
     private List<OrderStatus> orderStatuses;
 
     private ApmisNetworkDataSource apmisNetworkDataSource;
@@ -47,14 +47,14 @@ public class AddAppointmentViewModel extends ViewModel {
         mAppointment = apmisNetworkDataSource.getAppointment();
     }
 
-    //TODO Change to LiveData when ready to make types dynamically added
-    public List<AppointmentType> getAppointmentTypes() {
-        return appointmentTypes;
-    }
 
     //TODO Change to LiveData when ready to make statuses dynamically added
     public List<OrderStatus> getOrderStatuses() {
         return orderStatuses;
+    }
+
+    public MutableLiveData<List<AppointmentType>> getAppointmentTypes() {
+        return appointmentTypes;
     }
 
     public MutableLiveData<List<Patient>> getPatientsForPerson() {

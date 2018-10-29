@@ -17,19 +17,26 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.data.database.prescriptionModel.PrescriptionItem;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
+/**
+ * Adapter class for handling the {@link Prescription}s and
+ * {@link PrescriptionItem}s in the Prescription RecyclerView
+ */
 public class PrescriptionAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private List<PrescriptionItem> mPrescriptionItems;
 
+    //View type constant prescription items
     private final static int TYPE_PRESCRIPTION = 0;
+    //View type constant for spacers between prescription cards
     private final static int TYPE_SPACER = 1;
 
+    //Listener for "add to cart" actions
     private OnAddToCartListener mListener;
-
 
     public interface OnAddToCartListener {
         void onAddedToCart(PrescriptionItem prescriptionItem);
@@ -51,6 +58,10 @@ public class PrescriptionAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
+    /**
+     * Must be called to instantiate the listener object
+     * @param fragment The calling Fragment
+     */
     public void initAddToCartListener(Fragment fragment){
         this.mListener = (OnAddToCartListener) fragment;
     }
@@ -115,6 +126,7 @@ public class PrescriptionAdapter extends RecyclerView.Adapter {
     public int getItemViewType(int position) {
         PrescriptionItem item = mPrescriptionItems.get(position);
 
+        //Prescription item is a null spacer if list size is 0 (which can't be normally)
         if (item.getPrescriptionListSize() == 0) {
             return TYPE_SPACER;
         } else {

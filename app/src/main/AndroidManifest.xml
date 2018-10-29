@@ -8,6 +8,11 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -31,23 +36,37 @@
             android:name=".ui.signup.SignupActivity"
             android:label="@string/sign_up"
             android:theme="@style/BackgroundTheme" />
-        <activity android:name=".ui.dashboard.DashboardActivity"
-            android:theme="@style/BackgroundTheme">
-        </activity>
+        <activity
+            android:name=".ui.dashboard.DashboardActivity"
+            android:theme="@style/BackgroundTheme" />
 
         <service
             android:name=".data.network.ApmisSyncIntentService"
             android:enabled="true" />
 
         <activity android:name=".onboarding.OnboardingActivity" />
-        <activity android:name=".ui.dashboard.profile.ProfileActivity" />
+        <activity
+            android:name=".ui.dashboard.profile.ProfileActivity"
+            android:theme="@style/BackgroundTheme" />
         <activity
             android:name=".ui.dashboard.ScrollingActivity"
             android:label="@string/title_activity_scrolling"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.login.ForgotPasswordActivity"
             android:theme="@style/BackgroundTheme"/>
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="ng.apmis.apmismobile.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <receiver android:name=".utilities.AlarmBroadcast"/>
     </application>

@@ -1,6 +1,5 @@
-package ng.apmis.apmismobile.data.database.model;
+package ng.apmis.apmismobile.data.database.personModel;
 
-import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
@@ -8,11 +7,6 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.Room;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import ng.apmis.apmismobile.annotations.Exclude;
 
@@ -29,6 +23,11 @@ public class PersonEntry {
      */
     @PrimaryKey(autoGenerate = true)
     private int id;
+
+    /**
+     * Unique feathers db id
+     */
+    private String _id;
 
     /**
      * APMIS Id of the Person received upon online registration
@@ -85,7 +84,10 @@ public class PersonEntry {
     private String nationality;
     private String stateOfOrigin;
     private String lgaOfOrigin;
-    private String profileImageObject; //Store Image uri
+    @Ignore
+    private ProfileImageObject profileImageObject;
+    private String profileImageUriPath; //Store Image uri
+    private String profileImageFileName; //Store Image file name
     @Exclude
     private String homeAddress;
     private String maritalStatus;
@@ -95,8 +97,9 @@ public class PersonEntry {
     private String wallet;
 
     @Ignore
-    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin) {
+    public PersonEntry(String apmisId, String _id, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String nationality, String stateOfOrigin, String lgaOfOrigin, ProfileImageObject profileImageObject, String homeAddress, String maritalStatus, String nextOfKin) {
         this.apmisId = apmisId;
+        this._id = _id;
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -114,13 +117,16 @@ public class PersonEntry {
         this.stateOfOrigin = stateOfOrigin;
         this.lgaOfOrigin = lgaOfOrigin;
         this.profileImageObject = profileImageObject;
+        this.profileImageFileName = profileImageObject.getFilename();
+        this.profileImageUriPath = profileImageObject.getPath();
         this.homeAddress = homeAddress;
         this.maritalStatus = maritalStatus;
         this.nextOfKin = nextOfKin;
     }
 
-    public PersonEntry(int id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageObject, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
+    public PersonEntry(int id, String _id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageUriPath, String profileImageFileName, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
         this.id = id;
+        this._id = _id;
         this.apmisId = apmisId;
         this.title = title;
         this.firstName = firstName;
@@ -139,7 +145,8 @@ public class PersonEntry {
         this.nationality = nationality;
         this.stateOfOrigin = stateOfOrigin;
         this.lgaOfOrigin = lgaOfOrigin;
-        this.profileImageObject = profileImageObject;
+        this.profileImageUriPath = profileImageUriPath;
+        this.profileImageFileName = profileImageFileName;
         this.homeAddress = homeAddress;
         this.maritalStatus = maritalStatus;
         this.nextOfKin = nextOfKin;
@@ -298,12 +305,52 @@ public class PersonEntry {
         this.lgaOfOrigin = lgaOfOrigin;
     }
 
-    public String getProfileImageObject() {
+    public ProfileImageObject getProfileImageObject() {
         return profileImageObject;
     }
 
-    public void setProfileImageObject(String profileImageObject) {
+    public void setProfileImageObject(ProfileImageObject profileImageObject) {
         this.profileImageObject = profileImageObject;
+    }
+
+    public String getProfileImageUriPath() {
+        if (profileImageUriPath == null){
+            if (profileImageObject == null){
+                return null;
+            } else {
+                return profileImageObject.getPath();
+            }
+        } else {
+            return profileImageUriPath;
+        }
+    }
+
+    public void setProfileImageUriPath(String profileImageUri) {
+        this.profileImageUriPath = profileImageUri;
+    }
+
+    public String getProfileImageFileName() {
+        if (profileImageFileName == null){
+            if (profileImageObject == null){
+                return null;
+            } else {
+                return profileImageObject.getFilename();
+            }
+        } else {
+            return profileImageFileName;
+        }
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
+
+    public void setProfileImageFileName(String profileImageFileName) {
+        this.profileImageFileName = profileImageFileName;
     }
 
     public String getHomeAddress() {
@@ -360,11 +407,14 @@ public class PersonEntry {
                 ", nationality='" + nationality + '\'' +
                 ", stateOfOrigin='" + stateOfOrigin + '\'' +
                 ", lgaOfOrigin='" + lgaOfOrigin + '\'' +
-                ", profileImageObject='" + profileImageObject + '\'' +
+                ", profileImageUriPath='" + profileImageUriPath + '\'' +
                 ", homeAddress='" + homeAddress + '\'' +
                 ", maritalStatus='" + maritalStatus + '\'' +
                 ", nextOfKin=" + nextOfKin + '\'' +
                 ", wallet=" + wallet +
                 '}';
     }
+
+
+
 }

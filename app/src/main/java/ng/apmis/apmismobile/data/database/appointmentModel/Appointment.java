@@ -5,15 +5,17 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.Room;
+import android.support.annotation.NonNull;
+
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.utilities.AppUtils;
 
@@ -25,7 +27,7 @@ import ng.apmis.apmismobile.utilities.AppUtils;
  */
 
 @Entity(tableName = "appointments", indices = {@Index(value = {"_id"}, unique = true)})
-public class Appointment {
+public class Appointment implements Comparable<Appointment>{
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -99,6 +101,13 @@ public class Appointment {
      */
     @Ignore
     private Patient patientDetails;
+
+    /**
+     * The employee responsible for providing care/attention as regards this Appointment
+     */
+    @Ignore
+    @SerializedName("providerDetails")
+    private Employee providerDetails;
 
     @Ignore
     public Appointment(){
@@ -267,6 +276,14 @@ public class Appointment {
         this.patientDetails = patientDetails;
     }
 
+    public Employee getProviderDetails() {
+        return providerDetails;
+    }
+
+    public void setProviderDetails(Employee providerDetails) {
+        this.providerDetails = providerDetails;
+    }
+
     @Override
     public String toString() {
         return "Appointments{" +
@@ -274,5 +291,14 @@ public class Appointment {
                 ", clinicName='" + clinicId + '\'' +
                 ", startDate=" + startDate +
                 '}';
+    }
+
+    @Override
+    public int compareTo(@NonNull Appointment o) {
+        long date1 = AppUtils.dbStringToLocalDate(getStartDate()).getTime();
+        long date2 = AppUtils.dbStringToLocalDate(o.getStartDate()).getTime();
+
+        //descending order
+        return Long.compare(date1, date2);
     }
 }

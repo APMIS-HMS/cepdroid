@@ -1,4 +1,4 @@
-package ng.apmis.apmismobile.data.database.model;
+package ng.apmis.apmismobile.data.database;
 
 import android.arch.persistence.room.TypeConverter;
 

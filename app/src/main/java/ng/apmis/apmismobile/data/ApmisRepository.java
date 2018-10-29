@@ -2,7 +2,6 @@ package ng.apmis.apmismobile.data;
 
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.ApmisDao;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
 /**
@@ -36,10 +35,12 @@ public class ApmisRepository {
         mApmisDao = apmisDao;
         mApmisNetworkDataSource = apmisNetworkDataSource;
         mExecutors = executors;
-        LiveData<PersonEntry[]> networkData = mApmisNetworkDataSource.getCurrentPersonData();
+        LiveData<PersonEntry> networkData = mApmisNetworkDataSource.getCurrentPersonData();
 
         networkData.observeForever(newpersonData -> {
             mExecutors.diskIO().execute(() -> {
+                if (newpersonData == null)
+                    return;
                 // Insert our new weather data into Sunshine's database
                 deleteOldData();
                 Log.d(LOG_TAG, "Old person detail deleted");
@@ -87,7 +88,22 @@ public class ApmisRepository {
 
     public LiveData<PersonEntry> getUserData () {
         initializeData();
+        Log.e("Viewmodel", "fetching user data was called");
         return mApmisDao.getUserData();
+    }
+
+    /**
+     * Update the user data in the db
+     * @param personEntry
+     */
+    public void updateUserData(PersonEntry personEntry){
+        mExecutors.diskIO().execute(() -> {
+            deleteOldData();
+            Log.d(LOG_TAG, "Old person detail deleted");
+            // Insert our new weather data into Sunshine's database
+            mApmisDao.insertData(personEntry);
+            Log.d("Image", "New values inserted "+personEntry.getProfileImageObject().toString());
+        });
     }
 
 
@@ -114,8 +130,11 @@ public class ApmisRepository {
      * @param appointment The Appointment object fetched
      */
     public void insertAppointment(Appointment appointment){
-        mExecutors.diskIO().execute(() -> {
-            mApmisDao.insertAppointment(appointment);
+        mExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mApmisDao.insertAppointment(appointment);
+            }
         });
     }
 

@@ -17,6 +17,10 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <style name="AppTheme.WhiteAccent">
+        <item name="colorAccent">@android:color/white</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -42,6 +46,18 @@
     <style name="AlertDialogMinWidth" parent="Theme.AppCompat.Light.Dialog">
         <item name="windowFixedWidthMajor">70%</item>
         <item name="windowFixedWidthMinor">70%</item>
+    </style>
+
+
+    <!-- Style for a tab that displays a category name -->
+    <style name="CategoryTab" parent="Widget.Design.TabLayout">
+        <item name="tabSelectedTextColor">@android:color/white</item>
+        <item name="tabTextAppearance">@style/CategoryTabTextAppearance</item>
+    </style>
+
+    <!-- Text appearance style for a category tab -->
+    <style name="CategoryTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">#fff</item>
     </style>
 
 </resources>

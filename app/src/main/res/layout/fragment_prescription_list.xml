@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/pale_cyan"
     tools:context=".ui.dashboard.prescription.PrescriptionListFragment">
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/prescriptions_shimmer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/pale_cyan">
 
         <LinearLayout
             android:layout_width="match_parent"

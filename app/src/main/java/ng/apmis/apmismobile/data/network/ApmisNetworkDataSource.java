@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -17,6 +18,7 @@ import com.firebase.jobdispatcher.Trigger;
 
 import org.json.JSONException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,16 +27,18 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
+import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
-import ng.apmis.apmismobile.data.database.facilityModel.AppointmentType;
+import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * Provides an api for getting network data
@@ -63,7 +67,7 @@ public class ApmisNetworkDataSource {
     private final SharedPreferencesManager sharedPreferencesManager;
 
     //LiveData references
-    private final MutableLiveData<PersonEntry[]> mDownloadedPersonData;
+    private final MutableLiveData<PersonEntry> mDownloadedPersonData;
     private MutableLiveData<List<Patient>> patientDetails;
     private MutableLiveData<List<ClinicSchedule>> clinics;
     private MutableLiveData<List<ScheduleItem>> schedules;
@@ -71,10 +75,13 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Documentation>> documentations;
     private MutableLiveData<List<Service>> services;
     private MutableLiveData<List<Prescription>> prescriptions;
+    private MutableLiveData<List<LabRequest>> labRequests;
     private MutableLiveData<Appointment> appointment;
+    private MutableLiveData<List<Appointment>> appointments;
+    private MutableLiveData<String> profilePhotoPath;
+    private MutableLiveData<List<AppointmentType>> appointmentTypes;
 
     //TODO Switch to LiveData later
-    private List<AppointmentType> appointmentTypes;
     private List<OrderStatus> orderStatuses;
 
 
@@ -89,9 +96,12 @@ public class ApmisNetworkDataSource {
         services = new MutableLiveData<>();
         documentations = new MutableLiveData<>();
         appointment = new MutableLiveData<>();
+        appointments = new MutableLiveData<>();
         prescriptions = new MutableLiveData<>();
+        labRequests = new MutableLiveData<>();
+        profilePhotoPath = new MutableLiveData<>();
+        appointmentTypes = new MutableLiveData<>();
 
-        appointmentTypes = new ArrayList<>();
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
     }
@@ -107,18 +117,8 @@ public class ApmisNetworkDataSource {
         return sInstance;
     }
 
-
-    public LiveData<PersonEntry[]> getCurrentPersonData() {
-        return mDownloadedPersonData;
-    }
-
-    public void setCurrentPersonData(PersonEntry[] personEntries) {
-        //post value for liveData use
-        mDownloadedPersonData.postValue(personEntries);
-    }
-
     /**
-     * Start service to fetch patient details
+     * Start service to fetch person details
      */
     public void startPersonDataFetchService() {
         Intent intentToFetch = new Intent(mContext, ApmisSyncIntentService.class);
@@ -182,7 +182,6 @@ public class ApmisNetworkDataSource {
 
     /**
      * Gets the most recent person details
-     * This function is only called on a background service
      */
     void fetchPersonDetails() {
         apmisExecutors.networkIO().execute(() -> {
@@ -193,6 +192,16 @@ public class ApmisNetworkDataSource {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        });
+    }
+
+    /**
+     * Update a person's details
+     */
+    public void updatePersonDetails(PersonEntry personEntry) {
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Update person started");
+            new NetworkDataCalls(mContext).updatePersonData(personEntry, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 
@@ -293,12 +302,55 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    /**
+     * Fetch Laboratory Request Array using the person Id provided
+     * @param personId Person's Id
+     */
+    public void fetchLabRequestsForPerson(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch Prescription started");
+            new NetworkDataCalls(mContext).fetchLabRequestsForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    /**
+     * Fetch the person's profile photo and save it to a local file
+     * @param personEntry The Person fetched
+     * @param downloadFile The local file to download the photo into
+     */
+    public void fetchAndDownloadPersonProfilePhoto(PersonEntry personEntry, File downloadFile){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Image", "Fetch Image started");
+            new NetworkDataCalls(mContext).downloadProfilePictureForPerson(mContext, personEntry, downloadFile);
+        });
+    }
 
 
 
 
 
+    //Person entry
+    public LiveData<PersonEntry> getCurrentPersonData() {
+        return mDownloadedPersonData;
+    }
 
+    public void setCurrentPersonData(PersonEntry personEntry) {
+        //post value for liveData use
+        mDownloadedPersonData.postValue(personEntry);
+    }
+
+    public void setProfilePhotoPath(String path){
+        profilePhotoPath.postValue(path);
+    }
+
+    public MutableLiveData<String> getPersonProfilePhotoPath(PersonEntry person, File finalLocalFile){
+        //TODO: When implementing liveData fetch in other methods, do it like this here, instead of in the view
+        //Fetch the photo
+        fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
+
+        //return the local path the photo was downloaded to
+        return profilePhotoPath;
+    }
 
 
     //Order Status
@@ -315,10 +367,10 @@ public class ApmisNetworkDataSource {
     //Appointment Types
 
     public void setAppointmentTypes(List<AppointmentType> appointmentTypes){
-        this.appointmentTypes = appointmentTypes;
+        this.appointmentTypes.postValue(appointmentTypes);
     }
 
-    public List<AppointmentType> getAppointmentTypes(){
+    public MutableLiveData<List<AppointmentType>> getAppointmentTypes(){
         return this.appointmentTypes;
     }
 
@@ -402,13 +454,22 @@ public class ApmisNetworkDataSource {
     }
 
 
-    //Appointment
+    //Appointment(s)
     public void setAppointment(Appointment appointment){
         this.appointment.postValue(appointment);
     }
 
     public MutableLiveData<Appointment> getAppointment() {
         return appointment;
+    }
+
+    public void setAppointments(List<Appointment> appointments){
+        this.appointments.postValue(appointments);
+    }
+
+    public LiveData<List<Appointment>> getAllAppointments(String personId){
+        fetchAppointmentsForPerson(personId);
+        return appointments;
     }
 
     //Documentation
@@ -429,5 +490,15 @@ public class ApmisNetworkDataSource {
 
     public MutableLiveData<List<Prescription>> getPrescriptionsForPerson(){
         return this.prescriptions;
+    }
+
+    //Laboratory Requests
+
+    public void setLabRequestsForPerson(List<LabRequest> labRequests) {
+        this.labRequests.postValue(labRequests);
+    }
+
+    public MutableLiveData<List<LabRequest>> getLabRequestsForPerson(){
+        return this.labRequests;
     }
 }

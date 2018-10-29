@@ -67,6 +67,10 @@ public class WelcomeScreenActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Pass extra values if app was launched via notification
+     * @param intent Thee intent to which the data would be passed to
+     */
     private void provideNotificationExtras(Intent intent){
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
             intent.putExtra(Constants.NOTIFICATION_ACTION, Constants.APPOINTMENTS);

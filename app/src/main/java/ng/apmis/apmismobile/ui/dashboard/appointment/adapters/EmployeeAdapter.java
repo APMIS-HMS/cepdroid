@@ -9,12 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
-import ng.apmis.apmismobile.data.database.model.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 
 /**
  * Adapter to conveniently handle data for {@link Employee} items,

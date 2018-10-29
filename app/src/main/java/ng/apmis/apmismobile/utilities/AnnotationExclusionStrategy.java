@@ -5,6 +5,9 @@ import com.google.gson.FieldAttributes;
 
 import ng.apmis.apmismobile.annotations.Exclude;
 
+/**
+ * Exclusion strategy for Gson parsing
+ */
 public class AnnotationExclusionStrategy implements ExclusionStrategy {
 
     @Override

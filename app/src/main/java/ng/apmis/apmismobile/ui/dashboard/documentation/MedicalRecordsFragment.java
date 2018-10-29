@@ -30,6 +30,9 @@ import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
+/**
+ * Show list of records pertaining to Patient Health
+ */
 public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.OnRecordClickedListener {
 
     @BindView(R.id.records_shimmer)
@@ -65,15 +68,17 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
 
         preferencesManager = new SharedPreferencesManager(getContext());
 
-        //recordsRecycler = view.findViewById(R.id.records_recycler);
-
+        //Fetch the medical records from the server
         InjectorUtils.provideNetworkData(getActivity()).fetchMedicalRecordsForPerson(preferencesManager.getPersonId());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recordsRecycler.setLayoutManager(layoutManager);
 
-        if (recordsAdapter != null)
+        if (recordsAdapter != null) {
             recordsRecycler.setAdapter(recordsAdapter);
+            recordsShimmer.setVisibility(View.GONE);
+            recordsShimmer.stopShimmer();
+        }
 
         initViewModel();
 
@@ -97,12 +102,9 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
                 recordsAdapter = new RecordsAdapter(getActivity(), datedDocumentationItems);
                 recordsAdapter.initiateCallbackListener(MedicalRecordsFragment.this);
                 recordsRecycler.setAdapter(recordsAdapter);
-
-
                 Log.d("init fresh", datedDocumentationItems.size()+"");
 
             } else {
-
                 Log.d("init notify", datedDocumentationItems.size()+"");
                 recordsAdapter.clear();
                 recordsAdapter.addAll(datedDocumentationItems);
@@ -110,13 +112,26 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
             }
         };
 
+        //Get the LiveData records from the ViewModel and observe
         recordsListViewModel.getRecordsForPerson().observe(getActivity(), documentationsObserver);
     }
 
+    /**
+     * Populate the Medical Records using the {@link RecordsAdapter.DatedDocumentationItem} which adds
+     * a Date String (Month, Year) to segregate the Documentations by month and year
+     * @param documentations The Documentations
+     * @return A List of DatedDocumentationItems
+     */
     private List<RecordsAdapter.DatedDocumentationItem> populateDocumentationRecordsWithDate(List<Documentation> documentations){
         List<RecordsAdapter.DatedDocumentationItem> datedDocumentationItems = new ArrayList<>();
 
-        Comparator<Documentation> comparator = (o1, o2) -> o2.compareTo(o1);
+        //Sort the documentations by date in descending order
+        Comparator<Documentation> comparator = new Comparator<Documentation>() {
+            @Override
+            public int compare(Documentation o1, Documentation o2) {
+                return o2.compareTo(o1);
+            }
+        };
         Collections.sort(documentations, comparator);
 
         Calendar calendar = Calendar.getInstance();
@@ -128,6 +143,8 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
             Date date = AppUtils.dbStringToLocalDate(documentations.get(i).getUpdatedAt());
             calendar.setTime(date);
 
+            //If it's a new month or a new year or is the first item in the list
+            //Add a date
             if (i == 0 || (calendar.get(Calendar.MONTH) != currentMonth) || calendar.get(Calendar.YEAR) != currentYear){
 
                 currentMonth = calendar.get(Calendar.MONTH);
@@ -164,7 +181,7 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
         super.onStop();
     }
 
-    void setFragment (Fragment fragment) {
+    private void setFragment (Fragment fragment) {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -188,9 +205,5 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
 //    public void onDetach() {
 //        super.onDetach();
 //        mListener = null;
-//    }
-//
-//    public interface OnRecordSelectedListener {
-//        void onRecordSelected(Documentation documentation);
 //    }
 }

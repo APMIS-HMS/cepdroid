@@ -1,6 +1,5 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,18 +10,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
@@ -30,7 +33,7 @@ import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
-import ng.apmis.apmismobile.ui.login.LoginActivity;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -63,6 +66,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         setSupportActionBar(generalToolbar);
         actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
         if (actionBar != null) {
@@ -73,18 +77,21 @@ public class DashboardActivity extends AppCompatActivity {
             selectFragment(item);
             return true;
         });
+
         BottomNavigationViewHelper.disableShiftMode(mBottomNav);
 
-        PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this
-        );
+        PersonFactory personFactory = InjectorUtils.providePersonFactory(DashboardActivity.this);
         mPersonViewModel = ViewModelProviders.of(this, personFactory).get(PersonViewModel.class);
         InjectorUtils.provideNetworkData(this).startPersonDataFetchService();
 
+        profileImage.setVisibility(View.VISIBLE);
+
         //TODO Setup recycler view list and pass to recycler in observer
 
-        mPersonViewModel.getmPersonEntry().observe(this, personEntry -> {
+        mPersonViewModel.getPersonEntry().observe(this, personEntry -> {
             if (personEntry != null) {
                 Log.v("personEntry", String.valueOf(personEntry));
+                attemptLoadImage(personEntry);
                 //TODO stop loading here
             } else {
                 //TODO continue loading and pull data from server again
@@ -94,40 +101,72 @@ public class DashboardActivity extends AppCompatActivity {
 
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, new DashboardFragment())
+                .replace(R.id.fragment_container, new DashboardFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
-        profileImage.setVisibility(View.VISIBLE);
-
-       // profileImage.setImageResource(R.drawable.drugs);
 
         profileImage.setOnClickListener((view) -> {
-            popupMenu = new PopupMenu(this, view);
-            MenuInflater inflater = popupMenu.getMenuInflater();
-            inflater.inflate(R.menu.option_setttings, popupMenu.getMenu());
-
-            popupMenu.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.profile:
-                        startActivity(new Intent(this, ProfileActivity.class));
-                        return true;
-                    case R.id.sign_out:
-                        new SharedPreferencesManager(this).storeLoggedInUserDetails("", "", "", "");
-                        startActivity(new Intent(this, LoginActivity.class));
-                        finish();
-                        return true;
-                }
-                return false;
-            });
-
-            popupMenu.show();
+            startActivity(new Intent(this, ProfileActivity.class));
+//            popupMenu = new PopupMenu(this, view);
+//            MenuInflater inflater = popupMenu.getMenuInflater();
+//            inflater.inflate(R.menu.option_setttings, popupMenu.getMenu());
+//
+//            popupMenu.setOnMenuItemClickListener(item -> {
+//                switch (item.getItemId()) {
+//                    case R.id.profile:
+//                        startActivity(new Intent(this, ProfileActivity.class));
+//                        return true;
+//                    case R.id.sign_out:
+//                        new SharedPreferencesManager(this).storeLoggedInUserDetails("", "", "", "");
+//                        startActivity(new Intent(this, LoginActivity.class));
+//                        finish();
+//                        return true;
+//                }
+//                return false;
+//            });
+//
+//            popupMenu.show();
         });
 
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
             jumpToNotifiedFragment();
         }
 
+    }
+
+    private void attemptLoadImage(PersonEntry person){
+        File profilePhotoDir = new File(this.getFilesDir(), "profilePhotos");
+        profilePhotoDir.mkdir();
+
+        File localFile = null;
+
+        if (!TextUtils.isEmpty(person.getProfileImageFileName()))
+            localFile = new File(profilePhotoDir, person.getProfileImageFileName());
+
+        if (localFile != null && localFile.exists()){
+            try {
+                Glide.with(this).load(localFile).into(profileImage);
+            } catch (Exception e){
+
+            }
+
+        } else if (localFile != null){
+            // Download image from web
+            profileImage.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_user_profile));
+
+            File finalLocalFile = localFile;
+
+            mPersonViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
+                if (!TextUtils.isEmpty(s)){
+                    if (!s.equals("error"))
+                        Glide.with(this).load(finalLocalFile).into(profileImage);
+                }
+            });
+
+        } else {
+            profileImage.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_user_profile));
+        }
     }
 
     @Override
@@ -144,9 +183,7 @@ public class DashboardActivity extends AppCompatActivity {
         toolbarTitle.setText(title);
         if (welcomeScreen) {
             actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(false);
         } else {
-            actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -185,6 +222,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
+
     private void selectFragment(MenuItem item) {
 
         switch (item.getItemId()) {
@@ -206,6 +244,10 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Replace the current fragment with another
+     * @param fragment Fragment used to replace
+     */
     private void placeFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()

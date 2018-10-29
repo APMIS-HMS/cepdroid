@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    app:cardElevation="1dp"
+    app:cardCornerRadius="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/top_panel_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/requesting_physician_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_margin="10dp"
+                android:text="Requesting Physician"/>
+
+            <TextView
+                android:id="@+id/requesting_physician_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/requesting_physician_title"
+                android:layout_toEndOf="@+id/requesting_physician_title"
+                android:layout_toLeftOf="@+id/view_report_button"
+                android:layout_toStartOf="@+id/view_report_button"
+                android:layout_margin="10dp"
+                android:text="Dr. Sarah Omoike"/>
+
+            <Button
+                android:id="@+id/view_report_button"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_margin="5dp"
+                android:padding="3dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:text="View Report"
+                android:background="@drawable/action_button"/>
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider_line"
+            android:layout_below="@+id/top_panel_layout"
+            style="@style/HorizontalDivider"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:id="@+id/title_headers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider_line"
+            android:padding="5dp"
+            android:orientation="horizontal">
+            
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="start"
+                android:textColor="@android:color/darker_gray"
+                android:text="Date"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="center_horizontal"
+                android:textColor="@android:color/darker_gray"
+                android:text="Investigation"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/status_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:drawableRight="@drawable/status_circle"
+                    android:layout_gravity="center"
+                    android:drawablePadding="5dp"
+                    android:text="Status"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/details_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title_headers"
+            android:padding="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="start"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="12/04/2018"/>
+
+            <TextView
+                android:id="@+id/investigation_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="Test Investigation"/>
+
+            <TextView
+                android:id="@+id/status_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="Sample Taken"/>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divider_line_2"
+            android:layout_below="@+id/details_layout"
+            style="@style/HorizontalDivider"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="8dp"/>
+
+        <ImageView
+            android:id="@+id/sample_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="3dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="5dp"
+            android:layout_below="@+id/divider_line_2"
+            android:src="@drawable/icons8_blood_sample"/>
+
+        <TextView
+            android:id="@+id/sample_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_toRightOf="@+id/sample_image"
+            android:layout_toEndOf="@+id/sample_image"
+            android:layout_alignTop="@+id/sample_image"
+            android:layout_alignBottom="@+id/sample_image"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Blood"/>
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

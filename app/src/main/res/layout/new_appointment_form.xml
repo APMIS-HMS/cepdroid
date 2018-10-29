@@ -19,36 +19,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/appointment_type"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
-
-            <RadioGroup
-                android:id="@+id/appointment_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/new_radio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:checked="true"
-                    android:text="@string/new_item" />
-
-                <RadioButton
-                    android:id="@+id/follow_up_radio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:text="@string/follow_up" />
-
-            </RadioGroup>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/appointment_description"
+                android:text="@string/appointment_hospital"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
             <Spinner
@@ -58,6 +29,20 @@
                 android:layout_marginBottom="@dimen/activity_horizontal_margin"
                 android:background="@drawable/spinner_background_no_background_color"
                 android:entries="@array/select_hospital" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/appointment_description"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <Spinner
+                android:id="@+id/select_appt_type_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:background="@drawable/spinner_background_no_background_color"
+                android:entries="@array/select_appt_type" />
 
             <Spinner
                 android:id="@+id/select_clinic_spinner"

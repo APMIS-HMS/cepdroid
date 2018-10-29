@@ -18,6 +18,7 @@ import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.ModuleAdapter;
 import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
+import ng.apmis.apmismobile.ui.dashboard.diagnoses.DiagnosisListFragment;
 import ng.apmis.apmismobile.ui.dashboard.documentation.MedicalRecordsFragment;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileFragment;
 import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionListFragment;
@@ -44,7 +45,7 @@ public class ViewFragment extends Fragment {
         optionItems.add(new ModuleListModel(Constants.PRESCRIPTION, R.drawable.ic_prescription));
         optionItems.add(new ModuleListModel(Constants.HEALTH_PROFILE, R.drawable.ic_health_profile));
         optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
-        optionItems.add(new ModuleListModel("DIAGNOSTIC REPORT", R.drawable.ic_diagnostic_report));
+        optionItems.add(new ModuleListModel(Constants.DIAGNOSES, R.drawable.ic_diagnostic_report));
         optionItems.add(new ModuleListModel("REFERRAL", R.drawable.ic_referral));
         optionItems.add(new ModuleListModel("MENSTRUAL CYCLE", R.drawable.ic_menstrual));
         optionItems.add(new ModuleListModel("CARE TEAM", R.drawable.ic_care_team));
@@ -81,8 +82,8 @@ public class ViewFragment extends Fragment {
                     case "HEALTH INSURANCE":
                         //setFragment(new AppointmentFragment());
                         break;
-                    case "DIAGNOSTIC REPORT":
-                        //setFragment(new AppointmentFragment());
+                    case Constants.DIAGNOSES:
+                        setFragment(new DiagnosisListFragment());
                         break;
                     case "REFERRAL":
                         //setFragment(new AppointmentFragment());
