@@ -25,6 +25,11 @@ public class PersonEntry {
     private int id;
 
     /**
+     * Unique feathers db id
+     */
+    private String _id;
+
+    /**
      * APMIS Id of the Person received upon online registration
      */
     private String apmisId;
@@ -92,8 +97,9 @@ public class PersonEntry {
     private String wallet;
 
     @Ignore
-    public PersonEntry(String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String nationality, String stateOfOrigin, String lgaOfOrigin, ProfileImageObject profileImageObject, String homeAddress, String maritalStatus, String nextOfKin) {
+    public PersonEntry(String apmisId, String _id, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String nationality, String stateOfOrigin, String lgaOfOrigin, ProfileImageObject profileImageObject, String homeAddress, String maritalStatus, String nextOfKin) {
         this.apmisId = apmisId;
+        this._id = _id;
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -118,8 +124,9 @@ public class PersonEntry {
         this.nextOfKin = nextOfKin;
     }
 
-    public PersonEntry(int id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageUriPath, String profileImageFileName, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
+    public PersonEntry(int id, String _id, String apmisId, String title, String firstName, String lastName, String gender, String motherMaidenName, String securityQuestion, String securityAnswer, String primaryContactPhoneNo, String secondaryContactPhoneNo, String dateOfBirth, String email, String otherNames, String biometric, String personProfessions, String nationality, String stateOfOrigin, String lgaOfOrigin, String profileImageUriPath, String profileImageFileName, String homeAddress, String maritalStatus, String nextOfKin, String wallet) {
         this.id = id;
+        this._id = _id;
         this.apmisId = apmisId;
         this.title = title;
         this.firstName = firstName;
@@ -334,6 +341,14 @@ public class PersonEntry {
         }
     }
 
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
+
     public void setProfileImageFileName(String profileImageFileName) {
         this.profileImageFileName = profileImageFileName;
     }
@@ -399,6 +414,7 @@ public class PersonEntry {
                 ", wallet=" + wallet +
                 '}';
     }
+
 
 
 }

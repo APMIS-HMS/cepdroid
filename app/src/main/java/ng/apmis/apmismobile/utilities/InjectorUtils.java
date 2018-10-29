@@ -15,6 +15,7 @@ import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFact
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.diagnoses.DiagnosisViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.documentation.RecordsListViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.find.PreviousItemsViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionViewModelFactory;
@@ -137,6 +138,16 @@ public class InjectorUtils {
     public static ProfileActionViewModelFactory provideProfileActionViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new ProfileActionViewModelFactory(context, apmisRepository);
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public static PreviousItemsViewModelFactory providePreviousItemsViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new PreviousItemsViewModelFactory(context, apmisRepository);
     }
 
 }

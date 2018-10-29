@@ -158,7 +158,7 @@ public class AddAppointmentFragment extends Fragment {
     }
 
     /**
-     * Initialized the AppointmentViewModel and set up all the observers
+     * Initialize the AppointmentViewModel and set up all the observers
      */
     private void initViewModel(){
         AddAppointmentViewModelFactory factory = InjectorUtils.provideAddAppointmentViewModelFactory(getActivity().getApplicationContext());

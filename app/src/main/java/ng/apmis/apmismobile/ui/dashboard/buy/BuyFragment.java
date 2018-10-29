@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,7 @@ public class BuyFragment extends android.support.v4.app.Fragment {
 
             }
         });*/
-       tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+       tabLayout.setTabMode(TabLayout.GRAVITY_FILL | TabLayout.MODE_SCROLLABLE);
         viewPager.setAdapter(adapter);
 
 

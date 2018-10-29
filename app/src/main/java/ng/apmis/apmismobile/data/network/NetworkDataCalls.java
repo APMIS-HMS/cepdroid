@@ -77,7 +77,7 @@ public final class NetworkDataCalls {
 
 
     /**
-     * Todo: Not used yet <br/>
+     * Todo: Not used here <br/>
      * Logs user into the application with user name and password and returns success or failure as JSONObject
      * @param apmisId Unique User Id given to every APMIS user
      * @param password Secret Password
@@ -139,6 +139,7 @@ public final class NetworkDataCalls {
         queue.add(strRequest);
     }
 
+
     /**
      * Fetch the data contained in the {@link PersonEntry} object from the server
      * @param context The current context
@@ -186,9 +187,8 @@ public final class NetworkDataCalls {
 
                 PersonEntry personEntry = gson.fromJson(response.toString(), PersonEntry.class);
                 Log.v("responseEntry", personEntry.toString());
-                PersonEntry[] personEntries = {personEntry};
 
-                InjectorUtils.provideNetworkData(context.getApplicationContext()).setCurrentPersonData(personEntries);
+                InjectorUtils.provideNetworkData(context.getApplicationContext()).setCurrentPersonData(personEntry);
 
             }
         }, new Response.ErrorListener() {
@@ -208,6 +208,53 @@ public final class NetworkDataCalls {
             }
         };
         queue.add(jsonObjectRequest);
+    }
+
+
+    /**
+     * Updates the person data with new/changed information on the server
+     * @param personEntry The new {@link PersonEntry} data
+     * @param accessToken The security access token obtained from login
+     */
+    public void updatePersonData(PersonEntry personEntry, String accessToken){
+        Log.d("Update person ...", "Started update");
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("firstName", personEntry.getFirstName());
+            params.put("lastName", personEntry.getLastName());
+            params.put("email", personEntry.getEmail());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.PATCH, BASE_URL + "people/"+personEntry.get_id(), params, response -> {
+
+            Log.v("Update person response", String.valueOf(response));
+
+            PersonEntry person = gson.fromJson(response.toString(), PersonEntry.class);
+            InjectorUtils.provideNetworkData(context).setCurrentPersonData(person);
+
+        }, (VolleyError error) -> {
+
+            Log.e("Update person error", String.valueOf(error.getMessage()));
+            //Return a null object to indicate failure
+            InjectorUtils.provideNetworkData(context).setCurrentPersonData(null);
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        queue.add(appointmentRequest);
     }
 
     public void resetPassword() {
@@ -604,6 +651,7 @@ public final class NetworkDataCalls {
 
                     Log.v("Fetch appoints", appointments.toString());
 
+                    InjectorUtils.provideNetworkData(context).setAppointments(appointments);
                     InjectorUtils.provideRepository(context).insertAppointmentsForPatient(appointments);
 
                 }
@@ -614,7 +662,7 @@ public final class NetworkDataCalls {
 
         }, (VolleyError error) -> {
 
-            Log.e("Fetch appoints error", String.valueOf(error.getMessage()));
+            Log.e("Fetch appoints error", error.toString());
 
         }) {
 
@@ -629,6 +677,7 @@ public final class NetworkDataCalls {
             }
         };
 
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
         queue.add(appointmentRequest);
     }
 
@@ -787,14 +836,12 @@ public final class NetworkDataCalls {
     }
 
     /**
-     *
-     * @param apmisId
-     * @param personId
-     * @param image
-     * @param image
-     * @return
+     * Upload profile photo from device to the server
+     * @param personEntry The {@link PersonEntry} object with the photo
+     * @param image The Bitmap image of the photo the user wishes to upload
+     * @param accessToken The security access token obtained from login
      */
-    public void uploadProfilePictureForPerson(PersonEntry personEntry, String apmisId, String personId, Bitmap image, String accessToken) {
+    public void uploadProfilePictureForPerson(PersonEntry personEntry, Bitmap image, String accessToken) {
 
         byte[] imageArr = AppUtils.convertBitmapToByteArray(image);
         String imageBase64String = Base64.encodeToString(imageArr, Base64.NO_WRAP);
@@ -810,9 +857,9 @@ public final class NetworkDataCalls {
             job.put("docName", "me.jpeg");
             job.put("docType", "Image");
             job.put("size", size);
-            job.put("user", apmisId);
-            job.put("id", personId);
-            job.put("facilityId", "5a4c581448eaa74a00040989");
+            job.put("user", personEntry.getApmisId());
+            job.put("id", personEntry.get_id());
+            job.put("facilityId", "x");//getting facility Id is quite a pain, but surprisingly, anything works
 
 
             Log.v("Image Profile", String.valueOf(job));
@@ -850,7 +897,8 @@ public final class NetworkDataCalls {
                     personEntry.setProfileImageObject(profileImageObject);
                     personEntry.setProfileImageFileName(profileImageObject.getFilename());
                     personEntry.setProfileImageUriPath(profileImageObject.getPath());
-                    InjectorUtils.provideRepository(context).updateUserData(personEntry);
+                    InjectorUtils.provideNetworkData(context).setCurrentPersonData(personEntry);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -870,6 +918,7 @@ public final class NetworkDataCalls {
             }
         };
 
+        //Set(extend) timeout for upload request
         uploadRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
 
         queue.add(uploadRequest);
@@ -933,6 +982,13 @@ public final class NetworkDataCalls {
 
     }
 
+    /**
+     * Makes a request for the image using the Person image URI and downloads the profile
+     * picture image to a local file
+     * @param context The calling context
+     * @param person The person we're downloading the image for
+     * @param downloadFile The download file the image is being written to
+     */
     public void downloadProfilePictureForPerson(Context context, PersonEntry person, File downloadFile){
         Log.v("Image", "Download image started to "+downloadFile.getAbsolutePath());
         ImageRequest imageRequest = new ImageRequest(person.getProfileImageUriPath(), response -> {
@@ -955,6 +1011,7 @@ public final class NetworkDataCalls {
             public void onErrorResponse(VolleyError error) {
                 try {
                     Log.e("TAG", error.getLocalizedMessage());
+                    //Notify an error occurred
                     InjectorUtils.provideNetworkData(context).setProfilePhotoPath("error");
                 } catch (Exception e){
 

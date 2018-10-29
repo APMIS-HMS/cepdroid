@@ -1,6 +1,9 @@
 package ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.app.Service;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -28,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -36,21 +40,32 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.theartofdev.edmodo.cropper.CropImage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.network.NetworkDataCalls;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
@@ -60,6 +75,7 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+import static ng.apmis.apmismobile.utilities.Constants.BASE_URL;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -123,12 +139,39 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
     @BindView(R.id.image_loader)
     ProgressBar imageProgress;
 
+    @BindView(R.id.save_changes_layout)
+    RelativeLayout saveChangesLayout;
+
+    @BindView(R.id.save_changes_progress)
+    ProgressBar saveChangesProgress;
+
     @OnClick(R.id.change_image_fab)
-    void selectImage(){
+    void selectImageClicked(){
         selectImageOption();
     }
 
-    boolean isEditing;
+    @OnClick(R.id.save_changes_button)
+    void saveChangesClicked(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogMinWidth);
+        AlertDialog dialog = builder.create();
+        View authorizeLayout = LayoutInflater.from(getContext()).inflate(R.layout.layout_apmis_authorize, null, false);
+        dialog.setView(authorizeLayout);
+
+        EditText passwordEdit = authorizeLayout.findViewById(R.id.password_edit_text);
+
+
+        authorizeLayout.findViewById(R.id.cancel_button).setOnClickListener(v -> dialog.dismiss());
+        authorizeLayout.findViewById(R.id.authorize_button).setOnClickListener(v -> {
+            String password = passwordEdit.getText().toString();
+            confirmPasswordAndSave(password, dialog);
+        });
+        dialog.show();
+    }
+
+    //Flag to check if the view is in editing mode
+    private boolean isEditing;
+    //Flag to check if any edit has begun on this fragment
+    private boolean hasEditStarted;
 
     private EditProfileViewModel editProfileViewModel;
     
@@ -142,6 +185,10 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
     private SharedPreferencesManager prefs;
 
     private Intent cameraIntent, galleryIntent;
+
+    private ProgressDialog progressDialog;
+
+    private PersonEntry person;
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -174,20 +221,18 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         prefs = new SharedPreferencesManager(getContext());
 
-        editProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isEditing = true;
+        editProfileButton.setOnClickListener(v -> {
+            isEditing = true;
 
-                TransitionManager.beginDelayedTransition(imageActionLayout);
-                changeImageFab.setVisibility(View.GONE);
-                actionLayout.setVisibility(View.GONE);
+            TransitionManager.beginDelayedTransition(imageActionLayout);
+            changeImageFab.setVisibility(View.GONE);
+            actionLayout.setVisibility(View.GONE);
 
-                TransitionManager.beginDelayedTransition(detailsLayout);
-                nameEditLayout.setVisibility(View.VISIBLE);
-                saveChangesButton.setVisibility(View.VISIBLE);
+            TransitionManager.beginDelayedTransition(detailsLayout);
+            nameEditLayout.setVisibility(View.VISIBLE);
+            saveChangesLayout.setVisibility(View.VISIBLE);
 
-            }
+            beginTextEdits();
         });
 
         initViewModel();
@@ -195,7 +240,6 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         return view;
     }
 
-    private PersonEntry person;
 
     private void initViewModel(){
         EditProfileViewModelFactory factory = InjectorUtils.provideEditProfileViewModelFactory(getContext());
@@ -221,9 +265,36 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         editProfileViewModel.getPersonEntry().observe(this, personEntryObserver);
 
+        Observer<PersonEntry> downloadedPersonObserver = personEntry -> {
+            //if it's not in edit mode, and the edit process hasn't begun at all (by calling save changes)
+            //This check is done to prevent external observations from another service fetching the
+            //same downloadedPersonData
+            if (!(isEditing && hasEditStarted))
+                return;
+
+            if (personEntry != null) {
+                AppUtils.showShortToast(getContext(), "Details saved successfully");
+                saveChangesProgress.setVisibility(View.GONE);
+                saveChangesButton.setClickable(true);
+                onBackPressed();
+            }
+            else {
+                AppUtils.showShortToast(getContext(), "Unable to save details");
+                saveChangesProgress.setVisibility(View.GONE);
+                saveChangesButton.setClickable(true);
+            }
+        };
+
+        editProfileViewModel.getDownloadedPerson().observe(this, downloadedPersonObserver);
+
     }
 
+    /**
+     * Attempt to load the profile image into the profile imageView
+     * @param person The Person with the profile
+     */
     private void attemptLoadImage(PersonEntry person){
+        //create the profile photo directory in the app file directory
         File profilePhotoDir = new File(getContext().getFilesDir(), "profilePhotos");
         profilePhotoDir.mkdir();
 
@@ -241,12 +312,13 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
             }
 
         } else if (localFile != null){
-            // Download image from web
+            // Set default avatar and show download progress bar
             profileImageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_user_profile));
             imageProgress.setVisibility(View.VISIBLE);
 
             File finalLocalFile = localFile;
 
+            //Download the image from the web
             editProfileViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
                 imageProgress.setVisibility(View.GONE);
                 if (!TextUtils.isEmpty(s)){
@@ -257,12 +329,15 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
                 }
             });
 
+        }  else {
+            profileImageView.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_user_profile));
         }
     }
 
+    /**
+     * Show a bottom sheet fragment to display image upload options
+     */
     private void selectImageOption() {
-        final CharSequence[] items = {"Capture Photo", "Choose from Gallery"};
-
         final BottomSheetDialog builder = new BottomSheetDialog(getContext());
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.bottom_dialog_photo_upload, null);
@@ -297,7 +372,9 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         builder.show();
     }
 
-
+    /**
+     * Set up and execute the take picture intent
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -335,7 +412,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
                     //Save reference to the camera intent
                     cameraIntent = takePictureIntent;
                     if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 9000);
+                        requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 9000);
                     } else {
                         startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
                     }
@@ -344,6 +421,9 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         }
     }
 
+    /**
+     * Show device gallery to select an image
+     */
     public void getImageFromGallery() {
 
         galleryIntent = new Intent(Intent.ACTION_PICK,
@@ -367,6 +447,138 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
+    }
+
+    /**
+     * Start the cropper activity
+     */
+    private void cropImage(){
+        // start cropping activity for pre-acquired image saved on the device
+        CropImage.activity(uri).setFixAspectRatio(true)
+                .start(getContext(), this);
+    }
+
+    /**
+     * Make the required edittexts editable
+     */
+    private void beginTextEdits(){
+
+        EditText[] changeables = {emailEdit, lastNameEdit, firstNameEdit };
+        EditText[] unChangeables = {apmisIdEdit, phoneEdit, passwordEdit};
+
+        for (EditText editText : changeables){
+            editText.setLongClickable(true);
+            editText.setClickable(true);
+            //Make text focusable
+            editText.setFocusable(true);
+            //Allow focus when touched
+            editText.setFocusableInTouchMode(true);
+            //this grants the text focus
+            editText.requestFocus();
+        }
+
+        for (EditText editText : unChangeables){
+            editText.setEnabled(false);
+        }
+    }
+
+    /**
+     * Remove editable capabilities from edittext
+     */
+    private void endTextEdits(){
+
+        EditText[] changeables = {firstNameEdit, lastNameEdit, emailEdit};
+        EditText[] unChangeables = {apmisIdEdit, phoneEdit, passwordEdit};
+
+        for (EditText editText : changeables){
+            editText.setFocusable(false);
+            editText.setClickable(false);
+            editText.setLongClickable(false);
+        }
+
+        for (EditText editText : unChangeables){
+            editText.setEnabled(true);
+        }
+    }
+
+    private void saveChanges(){
+        Log.v("Profile", "Saving Changes...");
+        //TODO, perform some validation
+        person.setFirstName(firstNameEdit.getText().toString());
+        person.setLastName(lastNameEdit.getText().toString());
+        person.setEmail(emailEdit.getText().toString());
+
+        hasEditStarted = true;//flag to allow downloaded person data to be observed in this fragment
+        editProfileViewModel.updatePersonEntry(person);
+        saveChangesButton.setClickable(false);
+        saveChangesProgress.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Send a request to the server to authenticate the current user with a password
+     * @param password The typed in password
+     * @param alertDialog AlertDialog object
+     */
+    private void confirmPasswordAndSave(String password, AlertDialog alertDialog){
+        RequestQueue queue = Volley.newRequestQueue(getContext().getApplicationContext());
+
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("Authenticating");
+        progressDialog.setMessage("Please wait");
+        progressDialog.show();
+
+        APMISAPP.getInstance().networkIO().execute(() -> {
+
+            JSONObject job = new JSONObject();
+            try {
+                job.put("email", new SharedPreferencesManager(getContext()).getStoredApmisId());
+                job.put("password", password);
+                job.put("strategy", "local");
+                Log.v("Person to Json", String.valueOf(job));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "authentication", job, response -> {
+                progressDialog.dismiss();
+                alertDialog.dismiss();
+                saveChanges();
+
+            }, error -> {
+                Log.d("error", String.valueOf(error.getMessage()) + "Error");
+                progressDialog.dismiss();
+                new android.support.v7.app.AlertDialog.Builder(getContext())
+                        .setTitle("Authentication Failed")
+                        .setMessage("Please try again !!!")
+                        .setPositiveButton("Dismiss", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .show();
+            });
+
+            queue.add(loginRequest);
+        });
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            isEditing = savedInstanceState.getBoolean("isEditing", false);
+            hasEditStarted = savedInstanceState.getBoolean("hasEditStarted", false);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("isEditing", isEditing);
+        outState.putBoolean("hasEditStarted", hasEditStarted);
     }
 
     @Override
@@ -406,7 +618,8 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
                 new Thread(() -> {
                     Log.d("Image", "Upload image started");
                     if (person != null) {
-                        new NetworkDataCalls(getContext()).uploadProfilePictureForPerson(person, prefs.getStoredApmisId(), prefs.getPersonId(), bitmap, prefs.getStoredUserAccessToken());
+                        //TODO Use LiveData for this upload
+                        new NetworkDataCalls(getContext()).uploadProfilePictureForPerson(person, bitmap, prefs.getStoredUserAccessToken());
                         getActivity().runOnUiThread(() -> imageProgress.setVisibility(View.VISIBLE));
                     } else
                         AppUtils.showShortToast(getContext(), "Failed to upload photo");
@@ -416,13 +629,6 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         }
 
     }
-
-    public void cropImage(){
-        // start cropping activity for pre-acquired image saved on the device
-        CropImage.activity(uri).setFixAspectRatio(true)
-                .start(getContext(), this);
-    }
-
 
     @Override
     public void onAttach(Context context) {
@@ -434,13 +640,19 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         super.onDetach();
     }
 
+    /**
+     * Overriding the onBackPressed method of the activity using listeners in the activity.
+     * @return <code>true</code> if the activity should handle the onBackPressed,
+     *          <code>false</code> if it should be overridden by this fragment.
+     */
     @Override
     public boolean onBackPressed() {
         if (isEditing){
+            endTextEdits();
             isEditing = false;
 
             TransitionManager.beginDelayedTransition(detailsLayout, new ChangeBounds());
-            saveChangesButton.setVisibility(View.GONE);
+            saveChangesLayout.setVisibility(View.GONE);
             nameEditLayout.setVisibility(View.GONE);
 
             TransitionManager.beginDelayedTransition(imageActionLayout);

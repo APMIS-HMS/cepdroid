@@ -30,11 +30,13 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * A simple {@link Fragment} subclass.
+ * Displays the Actions associated with a Per
  */
 public class ProfileActionFragment extends Fragment {
 
     private SharedPreferencesManager prefs;
 
+    //Constant for the My Profile Click
     public static final String ACTION_MY_PROFILE = "action";
 
     @BindView(R.id.profile_image)
@@ -92,21 +94,9 @@ public class ProfileActionFragment extends Fragment {
 
         prefs = new SharedPreferencesManager(getContext());
 
-        //InjectorUtils.provideNetworkData(getContext()).startPersonDataFetchService();
-
         initViewModel();
 
-//        profileImageView.setOnClickListener(v -> {
-//
-//            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.me);
-//
-//            new Thread(() -> {
-//                Log.d("Image", "Upload image started");
-//                new NetworkDataCalls(getContext()).uploadProfilePictureForPerson(prefs.getStoredApmisId(), prefs.getPersonId(), bitmap,  prefs.getStoredUserAccessToken());
-//
-//            }).start();
-//        });
-
+        //Tell Activity to change to the edit profile fragment
         myProfileButton.setOnClickListener(v -> mListener.onProfileAction(ACTION_MY_PROFILE));
 
         apmisIdText.setText(prefs.getStoredApmisId());
@@ -135,31 +125,36 @@ public class ProfileActionFragment extends Fragment {
 
     }
 
+    /**
+     * Attempt to load the profile image into the profile imageView
+     * @param person The Person with the profile
+     */
     private void attemptLoadImage(PersonEntry person){
+        //create the profile photo directory in the app file directory
         File profilePhotoDir = new File(getContext().getFilesDir(), "profilePhotos");
         profilePhotoDir.mkdir();
 
         File localFile = null;
-
-        //Log.v("Image", person.getProfileImageFileName());
 
         if (!TextUtils.isEmpty(person.getProfileImageFileName()))
             localFile = new File(profilePhotoDir, person.getProfileImageFileName());
 
         if (localFile != null && localFile.exists()){
             try {
+                //load locally
                 Glide.with(getContext()).load(localFile).into(profileImageView);
             } catch (Exception e){
 
             }
 
         } else if (localFile != null) {
-            // Download image from web
+            // Set default avatar and show download progress bar
             profileImageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_user_profile));
             imageProgress.setVisibility(View.VISIBLE);
 
             File finalLocalFile = localFile;
 
+            //Download the image from the web
             mProfileActionViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
                 imageProgress.setVisibility(View.GONE);
                 if (!TextUtils.isEmpty(s)){
@@ -170,6 +165,8 @@ public class ProfileActionFragment extends Fragment {
                 }
             });
 
+        }  else {
+            profileImageView.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_user_profile));
         }
     }
 

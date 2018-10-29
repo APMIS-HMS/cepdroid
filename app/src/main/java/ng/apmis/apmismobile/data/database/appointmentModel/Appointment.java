@@ -7,6 +7,8 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.Room;
 import android.support.annotation.NonNull;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
@@ -99,6 +101,13 @@ public class Appointment implements Comparable<Appointment>{
      */
     @Ignore
     private Patient patientDetails;
+
+    /**
+     * The employee responsible for providing care/attention as regards this Appointment
+     */
+    @Ignore
+    @SerializedName("providerDetails")
+    private Employee providerDetails;
 
     @Ignore
     public Appointment(){
@@ -265,6 +274,14 @@ public class Appointment implements Comparable<Appointment>{
 
     public void setPatientDetails(Patient patientDetails) {
         this.patientDetails = patientDetails;
+    }
+
+    public Employee getProviderDetails() {
+        return providerDetails;
+    }
+
+    public void setProviderDetails(Employee providerDetails) {
+        this.providerDetails = providerDetails;
     }
 
     @Override

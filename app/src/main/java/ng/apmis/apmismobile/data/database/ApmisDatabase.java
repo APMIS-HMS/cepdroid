@@ -15,7 +15,7 @@ import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
  * This class takes care of creating the person database (ROOM)
  */
 
-@Database(entities = {PersonEntry.class, Appointment.class}, version = 5)
+@Database(entities = {PersonEntry.class, Appointment.class}, version = 6)
 @TypeConverters({Converters.class})
 
 public abstract class ApmisDatabase extends RoomDatabase {
@@ -34,7 +34,7 @@ public abstract class ApmisDatabase extends RoomDatabase {
                 if (sInstance == null) {
                     sInstance = Room.databaseBuilder(context.getApplicationContext(),
                             ApmisDatabase.class, ApmisDatabase.DATABASE_NAME)
-                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                             .build();
                 }
             }
@@ -78,6 +78,14 @@ public abstract class ApmisDatabase extends RoomDatabase {
         public void migrate(SupportSQLiteDatabase database) {
             //add the ProfileImageFileName column to the Person table
             database.execSQL("ALTER TABLE `person` ADD COLUMN `profileImageFileName` TEXT");
+        }
+    };
+
+    static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            //add the ProfileImageFileName column to the Person table
+            database.execSQL("ALTER TABLE `person` ADD COLUMN `_id` TEXT");
         }
     };
 
