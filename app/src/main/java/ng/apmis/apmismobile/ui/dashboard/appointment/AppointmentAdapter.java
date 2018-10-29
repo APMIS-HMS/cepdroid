@@ -40,8 +40,10 @@ import ng.apmis.apmismobile.utilities.AppUtils;
 public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private ArrayList<Appointment> appointmentList;
+    //private ArrayList<Appointment> appointmentList;
     private ArrayList<SegmentedAppointmentItem> segmentedAppointmentItems;
+
+    //ViewType constants
     private final int TYPE_SEGMENT = 0;
     private final int TYPE_APPOINTMENT = 1;
     private final int TYPE_COLLAPSED = 2;
@@ -49,17 +51,8 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private boolean areMissedCollapsed = true;
     private boolean arePastCollapsed = true;
 
-    private RelativeLayout rootView;
-    private RecyclerView mRecyclerView;
-
+    //To check if an animation is still going on
     private boolean isAnimating = false;
-
-    @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-
-        mRecyclerView = recyclerView;
-    }
 
     /**
      * Enumeration to highlight the various states an appointment may be in
@@ -77,17 +70,20 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    AppointmentAdapter(Context context, RelativeLayout rootView) {
+    AppointmentAdapter(Context context) {
         mContext = context;
-        this.rootView = rootView;
-        appointmentList = new ArrayList<>();
+        //appointmentList = new ArrayList<>();
         segmentedAppointmentItems = new ArrayList<>();
     }
 
+    /**
+     * Perform sorts on the list of appointments
+     * @param appointments
+     */
     private void rearrangeAppointments(List<Appointment> appointments){
 
         Comparator<Appointment> compareAppointmentDates = (o1, o2) -> {
-            //ascending order of dates
+            //ascending order of dates, from oldest to newest
             return o1.compareTo(o2);
         };
 
@@ -96,19 +92,27 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return getStatus(o2).segmentName.compareTo(getStatus(o1).segmentName);
         };
 
-
+        //Firstly, sort the appointments by dates, oldest to newest
         Collections.sort(appointments, compareAppointmentDates);
+
+        //Then sort them by status names alphabetically descending (Scheduled, Past, Missed)
         Collections.sort(appointments, compareNames);
 
     }
 
-    void setAppointmentList(ArrayList<Appointment> appointmentList, boolean isRecent) {
+    /**
+     * Sets the segmentedAppointments which would populate the recyclerView
+     * @param appointmentList the appointment items to populate the segmentedAppointment items list
+     */
+    void setAppointmentList(ArrayList<Appointment> appointmentList) {
         segmentedAppointmentItems.clear();
 
+        //Re-order the appointments to fit required arrangement
         rearrangeAppointments(appointmentList);
 
         Appointment previousAppointmentInList = null;
         Appointment currentAppointmentInList;
+
 
         for (int i=0; i<appointmentList.size(); ++i){
             if (i>0)
@@ -117,23 +121,25 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             //Add the scheduled segment title first
             if (i==0){
+                //Scheduled title
                 segmentedAppointmentItems.add(
                         new SegmentedAppointmentItem(AppointmentStatus.SCHEDULED.segmentName,
                                 false, null));
             } else if (getStatus(currentAppointmentInList) != getStatus(previousAppointmentInList)){
+                //Checks for a change in appointment category and adds segment title based on the new category
                 segmentedAppointmentItems.add(
                         new SegmentedAppointmentItem(getStatus(currentAppointmentInList).segmentName,
                                 true, null));
             }
 
-            //Then add other items
+            //Then add other usual appointment items
             segmentedAppointmentItems.add(
                     new SegmentedAppointmentItem(null, false, currentAppointmentInList)
             );
 
         }
 
-        this.appointmentList.addAll(appointmentList);
+        //this.appointmentList.addAll(appointmentList);
         notifyDataSetChanged();
     }
 
@@ -156,12 +162,12 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     void addToAppointmentList (Appointment appointment) {
-        this.appointmentList.add(appointment);
+        //this.appointmentList.add(appointment);
         notifyDataSetChanged();
     }
 
     public void clear(){
-        this.appointmentList = new ArrayList<>();
+        //this.appointmentList = new ArrayList<>();
         this.segmentedAppointmentItems.clear();
     }
 
@@ -357,6 +363,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 mContext.getResources().getDrawable(R.drawable.ic_arrow_drop_down), null);
     }
 
+    /**
+     * Indicate to the adapter that the missed appointment items are collapsing or expanding,
+     * also including the missed segment title asl well.
+     */
     private void notifyMissedItemsChanged(){
         for (int i=0; i<segmentedAppointmentItems.size(); ++i){
 
@@ -370,6 +380,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    /**
+     * Indicate to the adapter that the past appointment items are collapsing or expanding,
+     * also including the past segment title asl well.
+     */
     private void notifyPastItemsChanged(){
         for (int i=0; i<segmentedAppointmentItems.size(); ++i){
 
@@ -382,7 +396,6 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
     }
-
 
 
     class AppointmentViewHolder extends RecyclerView.ViewHolder {
@@ -419,10 +432,25 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    /**
+     * Simple encapsulation class for the segment title and {@link Appointment},
+     * with a boolean flag indicating if a segment can collapse or not
+     */
     static class SegmentedAppointmentItem {
 
+        /**
+         * Title of the segment. (Scheduled, Missed or Past)
+         */
         private String title;
+
+        /**
+         * Flag to indicate if the segment appointments can collapse or not
+         */
         private boolean isCollapsibleSegment;
+
+        /**
+         * The Scheduled Appointment item
+         */
         private Appointment appointment;
 
         public SegmentedAppointmentItem(String title, boolean isCollapsibleSegment, Appointment appointment) {

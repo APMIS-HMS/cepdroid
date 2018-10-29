@@ -101,10 +101,11 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
 
     @Override
     public void onBackPressed() {
+        //Allow the EditProfileFragment to override the onBackPressed
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (!(fragment instanceof OnBackPressedListener) || ((OnBackPressedListener) fragment).onBackPressed()) {
             super.onBackPressed();
         } else
-            mListener.onBackPressed();
+            mListener.onBackPressed();//use the EditProfileFragment's onBackPressed
     }
 }

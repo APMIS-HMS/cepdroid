@@ -122,7 +122,7 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
         };
 
         //Observe the LabRequests(Investigations)
-        diagnosisViewModel.getLabRequestsForPerson().observe(getActivity(), labRequestObserver);
+        diagnosisViewModel.getLabRequestsForPerson().observe(this, labRequestObserver);
 
     }
 
@@ -174,6 +174,7 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
 
     @Override
     public void onViewReportClicked(Intent i) {
+        //Open the medical records from here
         MedicalRecordsDetailsFragment detailsFragment = MedicalRecordsDetailsFragment.newInstance(i);
         setFragment(detailsFragment);
     }

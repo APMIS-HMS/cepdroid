@@ -14,11 +14,13 @@ public class EditProfileViewModel extends ViewModel {
 
     private ApmisRepository apmisRepository;
     private LiveData<PersonEntry> mPersonEntry;
+    private LiveData<PersonEntry> mDownloadedPerson;
     private LiveData<String> personPhotoPath;
 
     EditProfileViewModel(Context context, ApmisRepository apmisRepository) {
         this.apmisRepository = apmisRepository;
         mPersonEntry = apmisRepository.getUserData();
+        mDownloadedPerson = apmisRepository.getNetworkDataSource().getCurrentPersonData();
 
     }
 
@@ -26,11 +28,17 @@ public class EditProfileViewModel extends ViewModel {
         return mPersonEntry;
     }
 
+    public LiveData<PersonEntry> getDownloadedPerson() {
+        return mDownloadedPerson;
+    }
+
     public LiveData<String> getPersonPhotoPath(PersonEntry person, File finalLocalFile){
         personPhotoPath = apmisRepository.getNetworkDataSource().getPersonProfilePhotoPath(person, finalLocalFile);
         return personPhotoPath;
     }
 
-
+    public void updatePersonEntry(PersonEntry personEntry){
+        apmisRepository.getNetworkDataSource().updatePersonDetails(personEntry);
+    }
 
 }

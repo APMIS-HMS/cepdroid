@@ -91,9 +91,9 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
             if (appointmentAdapter == null) {
 
-                appointmentAdapter = new AppointmentAdapter(getActivity(), relativeLayout);
+                appointmentAdapter = new AppointmentAdapter(getActivity());
 
-                appointmentAdapter.setAppointmentList(this.appointments, true);
+                appointmentAdapter.setAppointmentList(this.appointments);
 
                 appointmentRecycler.setAdapter(appointmentAdapter);
 
@@ -103,7 +103,7 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
             } else {
                 Log.d("Called notify", this.appointments.size()+"");
                 appointmentAdapter.clear();
-                appointmentAdapter.setAppointmentList(this.appointments, true);
+                appointmentAdapter.setAppointmentList(this.appointments);
                 appointmentAdapter.notifyDataSetChanged();
             }
         };

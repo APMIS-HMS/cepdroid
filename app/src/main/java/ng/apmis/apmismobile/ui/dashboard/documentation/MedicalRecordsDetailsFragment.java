@@ -66,7 +66,7 @@ public class MedicalRecordsDetailsFragment extends Fragment {
 
     /**
      * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * this fragment using the Documentation parameter.
      *
      * @param documentation Documentation Record Object.
      * @return A new instance of fragment MedicalRecordsDetailsFragment.
@@ -79,6 +79,13 @@ public class MedicalRecordsDetailsFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the Intent parameter.
+     *
+     * @param intent Intent object containing documentation params
+     * @return A new instance of fragment MedicalRecordsDetailsFragment.
+     */
     public static MedicalRecordsDetailsFragment newInstance(Intent intent) {
         MedicalRecordsDetailsFragment fragment = new MedicalRecordsDetailsFragment();
         Bundle args = new Bundle();

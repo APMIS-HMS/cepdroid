@@ -123,15 +123,17 @@
                     android:layout_weight="1"
                     android:layout_marginLeft="24dp"
                     android:layout_marginRight="24dp"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="20dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/first_name_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
-                        android:hint="@string/first_name"
-                        android:enabled="false"/>
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:hint="@string/first_name"/>
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -141,15 +143,17 @@
                     android:layout_weight="1"
                     android:layout_marginLeft="24dp"
                     android:layout_marginRight="24dp"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="20dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/last_name_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
-                        android:hint="@string/last_name"
-                        android:enabled="false"/>
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:longClickable="false"
+                        android:hint="@string/last_name"/>
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -160,15 +164,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="20dp">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/email_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:hint="@string/e_mail"
-                    android:enabled="false"/>
+                    android:focusable="false"
+                    android:clickable="false"
+                    android:longClickable="false"
+                    android:hint="@string/e_mail"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -177,15 +183,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="20dp">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/phone_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:hint="@string/phone_number"
-                    android:enabled="false"/>
+                    android:inputType="phone"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:clickable="false"
+                    android:hint="@string/phone_number"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -194,15 +202,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="20dp">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/apmis_id_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:clickable="false"
                     android:textAllCaps="true"
-                    android:hint="@string/apmis_id_placeholder"
-                    android:enabled="false"/>
+                    android:hint="@string/apmis_id_placeholder"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -211,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="20dp">
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/password_edit_layout"
@@ -224,8 +235,9 @@
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
                         android:hint="@string/password_placeholder_lower_case"
-                        android:editable="false"
-                        android:enabled="false"/>
+                        android:focusable="false"
+                        android:longClickable="false"
+                        android:clickable="false"/>
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -243,20 +255,50 @@
 
             </RelativeLayout>
 
-            <Button
-                android:id="@+id/save_changes_button"
+            <RelativeLayout
+                android:id="@+id/save_changes_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:paddingLeft="20dp"
-                android:paddingStart="20dp"
-                android:paddingRight="20dp"
-                android:paddingEnd="20dp"
-                android:background="@drawable/action_button"
-                android:textColor="@android:color/white"
-                android:layout_gravity="center_horizontal"
                 android:visibility="gone"
-                android:text="Save changes"/>
+                android:gravity="center">
+
+                <FrameLayout
+                    android:id="@+id/frame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true">
+
+                    <Button
+                        android:id="@+id/save_changes_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="70dp"
+                        android:paddingStart="70dp"
+                        android:paddingRight="70dp"
+                        android:paddingEnd="70dp"
+                        android:background="@drawable/action_button"
+                        android:textColor="@android:color/white"
+                        android:text="Save changes"/>
+
+                </FrameLayout>
+
+
+
+                <ProgressBar
+                    android:id="@+id/save_changes_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:visibility="gone"
+                    style="?android:attr/android:progressBarStyle"
+                    android:theme="@style/AppTheme.WhiteAccent"
+                    android:layout_alignRight="@+id/frame"
+                    android:layout_alignEnd="@+id/frame" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 

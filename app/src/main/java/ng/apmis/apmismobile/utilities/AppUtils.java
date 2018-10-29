@@ -268,7 +268,7 @@ public class AppUtils {
     }
 
     /**
-     *
+     * Converting Bitmap to byte array
      * @param bitmap
      * @return
      */
@@ -279,7 +279,7 @@ public class AppUtils {
     }
 
     /**
-     *
+     *Converting byte array to Bitmap
      * @param byteArray
      * @return
      */
@@ -290,8 +290,8 @@ public class AppUtils {
 
     /**
      * Check if user is connected to the internet
-     * @param context
-     * @return
+     * @param context The calling context
+     * @return <code>true</code> if there's available network connectivity
      */
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
@@ -302,8 +302,8 @@ public class AppUtils {
 
     /**
      * Helper method to copy contents of one file into another
-     * @param src
-     * @param dst
+     * @param src The source file to copy from
+     * @param dst The destination file to write to
      * @throws IOException
      */
     public static void copy(File src, File dst) throws IOException {
@@ -325,6 +325,13 @@ public class AppUtils {
         }
     }
 
+    /**
+     * Helper method to compress the size of an image while maintaining it's good quality
+     * @param context The calling context of the compressImage method
+     * @param imagePath File path of the image on the device
+     * @param compressTries The amount of times the image has recursively been compressed
+     * @return Path to the compressed image
+     */
     public static String compressImage(Context context, String imagePath, int compressTries) {
 
         String filePath = imagePath;
@@ -450,6 +457,13 @@ public class AppUtils {
 
     }
 
+    /**
+     * Perform some necessary calculations for the ggod output of the image
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return the calculated size
+     */
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         final int height = options.outHeight;
         final int width = options.outWidth;

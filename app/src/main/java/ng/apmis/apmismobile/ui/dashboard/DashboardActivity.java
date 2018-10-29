@@ -10,16 +10,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
@@ -27,6 +33,7 @@ import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -77,11 +84,14 @@ public class DashboardActivity extends AppCompatActivity {
         mPersonViewModel = ViewModelProviders.of(this, personFactory).get(PersonViewModel.class);
         InjectorUtils.provideNetworkData(this).startPersonDataFetchService();
 
+        profileImage.setVisibility(View.VISIBLE);
+
         //TODO Setup recycler view list and pass to recycler in observer
 
         mPersonViewModel.getPersonEntry().observe(this, personEntry -> {
             if (personEntry != null) {
                 Log.v("personEntry", String.valueOf(personEntry));
+                attemptLoadImage(personEntry);
                 //TODO stop loading here
             } else {
                 //TODO continue loading and pull data from server again
@@ -95,7 +105,6 @@ public class DashboardActivity extends AppCompatActivity {
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
-        profileImage.setVisibility(View.VISIBLE);
 
         profileImage.setOnClickListener((view) -> {
             startActivity(new Intent(this, ProfileActivity.class));
@@ -124,6 +133,40 @@ public class DashboardActivity extends AppCompatActivity {
             jumpToNotifiedFragment();
         }
 
+    }
+
+    private void attemptLoadImage(PersonEntry person){
+        File profilePhotoDir = new File(this.getFilesDir(), "profilePhotos");
+        profilePhotoDir.mkdir();
+
+        File localFile = null;
+
+        if (!TextUtils.isEmpty(person.getProfileImageFileName()))
+            localFile = new File(profilePhotoDir, person.getProfileImageFileName());
+
+        if (localFile != null && localFile.exists()){
+            try {
+                Glide.with(this).load(localFile).into(profileImage);
+            } catch (Exception e){
+
+            }
+
+        } else if (localFile != null){
+            // Download image from web
+            profileImage.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_user_profile));
+
+            File finalLocalFile = localFile;
+
+            mPersonViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
+                if (!TextUtils.isEmpty(s)){
+                    if (!s.equals("error"))
+                        Glide.with(this).load(finalLocalFile).into(profileImage);
+                }
+            });
+
+        } else {
+            profileImage.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_user_profile));
+        }
     }
 
     @Override

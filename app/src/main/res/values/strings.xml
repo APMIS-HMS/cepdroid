@@ -193,6 +193,15 @@
         <item>Select Time</item>
     </string-array>
 
+    <string-array name="filter">
+        <item>Hospital</item>
+        <item>Doctor</item>
+        <item>Nurse</item>
+        <item>Services</item>
+        <item>Pharmacy</item>
+        <item>Ambulance</item>
+    </string-array>
+
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="password_prompt">Please enter your\nAPMIS password</string>

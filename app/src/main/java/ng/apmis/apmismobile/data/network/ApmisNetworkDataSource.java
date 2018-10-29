@@ -67,7 +67,7 @@ public class ApmisNetworkDataSource {
     private final SharedPreferencesManager sharedPreferencesManager;
 
     //LiveData references
-    private final MutableLiveData<PersonEntry[]> mDownloadedPersonData;
+    private final MutableLiveData<PersonEntry> mDownloadedPersonData;
     private MutableLiveData<List<Patient>> patientDetails;
     private MutableLiveData<List<ClinicSchedule>> clinics;
     private MutableLiveData<List<ScheduleItem>> schedules;
@@ -77,6 +77,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Prescription>> prescriptions;
     private MutableLiveData<List<LabRequest>> labRequests;
     private MutableLiveData<Appointment> appointment;
+    private MutableLiveData<List<Appointment>> appointments;
     private MutableLiveData<String> profilePhotoPath;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
 
@@ -95,6 +96,7 @@ public class ApmisNetworkDataSource {
         services = new MutableLiveData<>();
         documentations = new MutableLiveData<>();
         appointment = new MutableLiveData<>();
+        appointments = new MutableLiveData<>();
         prescriptions = new MutableLiveData<>();
         labRequests = new MutableLiveData<>();
         profilePhotoPath = new MutableLiveData<>();
@@ -190,6 +192,16 @@ public class ApmisNetworkDataSource {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        });
+    }
+
+    /**
+     * Update a person's details
+     */
+    public void updatePersonDetails(PersonEntry personEntry) {
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Update person started");
+            new NetworkDataCalls(mContext).updatePersonData(personEntry, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 
@@ -301,6 +313,11 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    /**
+     * Fetch the person's profile photo and save it to a local file
+     * @param personEntry The Person fetched
+     * @param downloadFile The local file to download the photo into
+     */
     public void fetchAndDownloadPersonProfilePhoto(PersonEntry personEntry, File downloadFile){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Image", "Fetch Image started");
@@ -313,13 +330,13 @@ public class ApmisNetworkDataSource {
 
 
     //Person entry
-    public LiveData<PersonEntry[]> getCurrentPersonData() {
+    public LiveData<PersonEntry> getCurrentPersonData() {
         return mDownloadedPersonData;
     }
 
-    public void setCurrentPersonData(PersonEntry[] personEntries) {
+    public void setCurrentPersonData(PersonEntry personEntry) {
         //post value for liveData use
-        mDownloadedPersonData.postValue(personEntries);
+        mDownloadedPersonData.postValue(personEntry);
     }
 
     public void setProfilePhotoPath(String path){
@@ -327,7 +344,11 @@ public class ApmisNetworkDataSource {
     }
 
     public MutableLiveData<String> getPersonProfilePhotoPath(PersonEntry person, File finalLocalFile){
-        InjectorUtils.provideNetworkData(mContext).fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
+        //TODO: When implementing liveData fetch in other methods, do it like this here, instead of in the view
+        //Fetch the photo
+        fetchAndDownloadPersonProfilePhoto(person, finalLocalFile);
+
+        //return the local path the photo was downloaded to
         return profilePhotoPath;
     }
 
@@ -433,13 +454,22 @@ public class ApmisNetworkDataSource {
     }
 
 
-    //Appointment
+    //Appointment(s)
     public void setAppointment(Appointment appointment){
         this.appointment.postValue(appointment);
     }
 
     public MutableLiveData<Appointment> getAppointment() {
         return appointment;
+    }
+
+    public void setAppointments(List<Appointment> appointments){
+        this.appointments.postValue(appointments);
+    }
+
+    public LiveData<List<Appointment>> getAllAppointments(String personId){
+        fetchAppointmentsForPerson(personId);
+        return appointments;
     }
 
     //Documentation

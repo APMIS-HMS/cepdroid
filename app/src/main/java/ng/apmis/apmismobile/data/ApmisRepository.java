@@ -35,10 +35,12 @@ public class ApmisRepository {
         mApmisDao = apmisDao;
         mApmisNetworkDataSource = apmisNetworkDataSource;
         mExecutors = executors;
-        LiveData<PersonEntry[]> networkData = mApmisNetworkDataSource.getCurrentPersonData();
+        LiveData<PersonEntry> networkData = mApmisNetworkDataSource.getCurrentPersonData();
 
         networkData.observeForever(newpersonData -> {
             mExecutors.diskIO().execute(() -> {
+                if (newpersonData == null)
+                    return;
                 // Insert our new weather data into Sunshine's database
                 deleteOldData();
                 Log.d(LOG_TAG, "Old person detail deleted");
