@@ -75,6 +75,7 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         diagnosisRecycler.setLayoutManager(layoutManager);
 
+        //handles back stack pop call here
         if (diagnosisAdapter != null) {
             diagnosisRecycler.setAdapter(diagnosisAdapter);
             diagnosisShimmer.setVisibility(View.GONE);

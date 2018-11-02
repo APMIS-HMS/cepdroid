@@ -9,12 +9,10 @@ import android.widget.ImageView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -32,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ng.apmis.apmismobile.APMISAPP;
+import ng.apmis.apmismobile.data.database.SearchTermItem;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
@@ -41,6 +41,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
+import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.personModel.ProfileImageObject;
@@ -61,10 +62,11 @@ public final class NetworkDataCalls {
     //private static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
     private static final String BASE_URL = Constants.BASE_URL;
 
+    private static String REVERSE_QUERY = "&$sort[createdAt]=-1";
+
     JSONObject dataResponse, errorResponse;
     private Gson gson;
     private Context context;
-    RequestQueue queue;
 
     public NetworkDataCalls(Context context) {
         this.context = context;
@@ -72,7 +74,6 @@ public final class NetworkDataCalls {
         gsonBuilder.setExclusionStrategies(new AnnotationExclusionStrategy());
         gsonBuilder.setDateFormat("M/d/yy hh:mm a");
         gson = gsonBuilder.create();
-        queue = Volley.newRequestQueue(context);
     }
 
 
@@ -110,7 +111,7 @@ public final class NetworkDataCalls {
             }
         });
 
-        queue.add(loginRequest);
+        APMISAPP.getInstance().addToRequestQueue(loginRequest);
         return dataResponse;
     }
 
@@ -136,7 +137,7 @@ public final class NetworkDataCalls {
                 }
             }
         });
-        queue.add(strRequest);
+        APMISAPP.getInstance().addToRequestQueue(strRequest);
     }
 
 
@@ -200,14 +201,14 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
                 return params;
             }
         };
-        queue.add(jsonObjectRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
 
@@ -254,7 +255,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(appointmentRequest);
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 
     public void resetPassword() {
@@ -308,7 +309,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -316,7 +317,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -329,7 +330,7 @@ public final class NetworkDataCalls {
     public void fetchClinicsForFacility(Context context, String facilityId, String accessToken){
         Log.d("Clinic response", "Started fetch patient o");
 
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "schedules?facilityId=" + facilityId, null, response -> {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "schedules?facilityId=" + facilityId + REVERSE_QUERY, null, response -> {
 
             Log.v("Clinic response", String.valueOf(response));
 
@@ -359,7 +360,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -367,7 +368,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -379,7 +380,7 @@ public final class NetworkDataCalls {
     public void fetchCategoriesForFacility(Context context, String facilityId, String accessToken){
         Log.d("Services response", "Started fetch patient o");
 
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "organisation-services?facilityId=" + facilityId, null, response -> {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "organisation-services?facilityId=" + facilityId + REVERSE_QUERY, null, response -> {
 
             Log.v("Services response", String.valueOf(response));
 
@@ -414,7 +415,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -422,7 +423,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -464,7 +465,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -472,7 +473,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -513,7 +514,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -521,7 +522,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -562,7 +563,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -570,7 +571,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -625,7 +626,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(appointmentRequest);
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 
     /**
@@ -638,7 +639,7 @@ public final class NetworkDataCalls {
         Log.d("Fetch appoints", "Started submit");
 
 
-        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-patient-appointments?personId="+personId, null, response -> {
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-patient-appointments?personId="+personId + REVERSE_QUERY, null, response -> {
 
             Log.v("Fetch appoints response", String.valueOf(response));
 
@@ -678,7 +679,7 @@ public final class NetworkDataCalls {
         };
 
         appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
-        queue.add(appointmentRequest);
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 
     /**
@@ -689,7 +690,7 @@ public final class NetworkDataCalls {
      */
     public void fetchMedicalRecordForPerson(Context context, String personId, String accessToken){
 
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "documentations?personId=" + personId, null, response -> {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "documentations?personId=" + personId + REVERSE_QUERY, null, response -> {
 
             Log.v("Records response", String.valueOf(response));
 
@@ -735,7 +736,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -743,7 +744,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -754,7 +755,7 @@ public final class NetworkDataCalls {
      */
     public void fetchPrescriptionsForPerson(Context context, String personId, String accessToken){
 
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-prescriptions/0?personId=" + personId, null, response -> {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-prescriptions/0?personId=" + personId + REVERSE_QUERY, null, response -> {
 
             Log.v("Prescription response", String.valueOf(response));
 
@@ -780,7 +781,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -788,7 +789,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -799,7 +800,7 @@ public final class NetworkDataCalls {
      */
     public void fetchLabRequestsForPerson(Context context, String personId, String accessToken){
 
-        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-lab-requests/0?personId=" + personId, null, response -> {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-person-lab-requests/0?personId=" + personId + REVERSE_QUERY, null, response -> {
 
             Log.v("Lab Request response", String.valueOf(response));
 
@@ -824,7 +825,7 @@ public final class NetworkDataCalls {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Content-Type", "application/json; charset=utf-8");
 
                 params.put("Authorization", "Bearer " + accessToken);
 
@@ -832,7 +833,7 @@ public final class NetworkDataCalls {
             }
         };
 
-        queue.add(jsonArrayRequest);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
     /**
@@ -921,7 +922,7 @@ public final class NetworkDataCalls {
         //Set(extend) timeout for upload request
         uploadRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
 
-        queue.add(uploadRequest);
+        APMISAPP.getInstance().addToRequestQueue(uploadRequest);
 
 
 //        OkHttpClient client = new OkHttpClient.Builder()
@@ -1019,7 +1020,122 @@ public final class NetworkDataCalls {
             }
         });
 
-        queue.add(imageRequest);
+        APMISAPP.getInstance().addToRequestQueue(imageRequest);
     }
+
+
+    /**
+     *
+     * @param context
+     * @param itemType
+     * @param accessToken
+     */
+    public void searchForItems(Context context, String itemType, String searchQuery, String accessToken){
+        String urlQuery;
+
+        switch (itemType) {
+            case "Hospital":
+                urlQuery = "facilities?$select[name]&$select[email]&$select[logoObject]";
+                break;
+            case "Doctor":
+                urlQuery = "employees?isActive=true&professionId=Doctor";
+                break;
+            case "Nurse":
+                urlQuery = "employees?isActive=true&professionId=Nurse";
+                break;
+            default:
+                return;
+        }
+
+
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + urlQuery, null, response -> {
+
+            Log.v("Find Request response", String.valueOf(response));
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                if (jsonArray.length()>0) {
+
+                    List<SearchTermItem> foundItems = parseFoundObjectsUsingType(itemType, jsonArray);
+
+                    Log.v("Find Request R.entry", foundItems.get(0).toString());
+
+                    InjectorUtils.provideNetworkData(context).setFoundObjects(foundItems);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, error -> Log.e("Lab Request error", String.valueOf(error.getMessage()))) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        jsonArrayRequest.setShouldCache(false);
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
+    }
+
+
+    private List<SearchTermItem> parseFoundObjectsUsingType(String type, JSONArray jsonArray){
+        List<SearchTermItem> foundItems = new ArrayList<>();
+
+        switch (type){
+            case "Hospital":
+                List<Facility> facilities = (Arrays.asList(gson.fromJson(jsonArray.toString(), Facility[].class)));
+                for (Facility facility : facilities){
+                    String logoUrl = null;
+                    if (facility.getLogoObject() != null)
+                        logoUrl = facility.getLogoObject().getPath();
+                    String hospitalId = facility.getId();
+                    String name = facility.getName();
+                    String email = facility.getEmail();
+                    foundItems.add(new SearchTermItem(logoUrl, hospitalId, name, email, "Hospital"));
+                }
+                return foundItems;
+
+
+            case "Doctor":
+                List<Employee> employees = (Arrays.asList(gson.fromJson(jsonArray.toString(), Employee[].class)));
+                for (Employee doctor : employees){
+                    String doctorId = doctor.getId();
+                    String doctorName = doctor.getPersonDetails().getFirstName() +
+                            " " + doctor.getPersonDetails().getLastName();
+                    String department = doctor.getDepartmentId();
+                    String doctorImageUrl = doctor.getPersonDetails().getProfileImageUriPath();
+                    foundItems.add(new SearchTermItem(doctorImageUrl, doctorId, doctorName, department, "Doctor"));
+                }
+                return foundItems;
+
+
+            case "Nurse":
+                List<Employee> nurses = (Arrays.asList(gson.fromJson(jsonArray.toString(), Employee[].class)));
+                for (Employee nurse : nurses){
+                    String nurseId = nurse.getId();
+                    String nurseName = nurse.getPersonDetails().getFirstName() +
+                            " " + nurse.getPersonDetails().getLastName();
+                    String department = nurse.getDepartmentId();
+                    String nurseImageUrl = nurse.getPersonDetails().getProfileImageUriPath();
+                    foundItems.add(new SearchTermItem(nurseImageUrl, nurseId, nurseName, department, "Nurse"));
+                }
+                return foundItems;
+
+
+            default:
+                return foundItems;
+        }
+    }
+
+
+
 
 }

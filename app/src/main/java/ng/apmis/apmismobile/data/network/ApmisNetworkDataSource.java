@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import ng.apmis.apmismobile.APMISAPP;
+import ng.apmis.apmismobile.data.database.SearchTermItem;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
@@ -76,6 +77,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Service>> services;
     private MutableLiveData<List<Prescription>> prescriptions;
     private MutableLiveData<List<LabRequest>> labRequests;
+    private MutableLiveData<List<SearchTermItem>> foundObjects;
     private MutableLiveData<Appointment> appointment;
     private MutableLiveData<List<Appointment>> appointments;
     private MutableLiveData<String> profilePhotoPath;
@@ -96,6 +98,7 @@ public class ApmisNetworkDataSource {
         services = new MutableLiveData<>();
         documentations = new MutableLiveData<>();
         appointment = new MutableLiveData<>();
+        foundObjects = new MutableLiveData<>();
         appointments = new MutableLiveData<>();
         prescriptions = new MutableLiveData<>();
         labRequests = new MutableLiveData<>();
@@ -326,6 +329,12 @@ public class ApmisNetworkDataSource {
     }
 
 
+    public void fetchFoundItems(String itemType, String searchQuery){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch found items started");
+            new NetworkDataCalls(mContext).searchForItems(mContext, itemType, searchQuery, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
 
 
 
@@ -501,4 +510,20 @@ public class ApmisNetworkDataSource {
     public MutableLiveData<List<LabRequest>> getLabRequestsForPerson(){
         return this.labRequests;
     }
+
+
+    //Found Objects in searches
+    public LiveData<List<SearchTermItem>> getFoundObjects(String itemType, String searchQuery){
+        fetchFoundItems(itemType, searchQuery);
+        return foundObjects;
+    }
+
+    public void setFoundObjects(List<SearchTermItem> foundObjectsList){
+        foundObjects.postValue(foundObjectsList);
+    }
+
+    public void clearFoundObjects(){
+        foundObjects = new MutableLiveData<>();
+    }
+
 }

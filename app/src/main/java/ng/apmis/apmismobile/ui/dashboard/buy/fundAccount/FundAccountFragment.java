@@ -35,8 +35,8 @@ public class FundAccountFragment extends Fragment {
 
         recyclerView = root.findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setNestedScrollingEnabled(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
 
 
         return root;

@@ -70,6 +70,12 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
             holder.previousVisitShimmer.stopShimmer();
             holder.previousVisitShimmer.setVisibility(View.GONE);
             previousItems = generatePreviousItemTypesFromAppointments(searchTerm);
+
+            if (previousItems.size() == 0) {
+                holder.emptyView.setVisibility(View.VISIBLE);
+                holder.emptyView.setText("Click here to find a "+searchTerm);
+            } else
+                holder.emptyView.setVisibility(View.GONE);
         }
 
         holder.titleTermText.setText(searchTerm);
@@ -96,17 +102,19 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
             SearchTermItem item = null;
             switch (type){
                 case "Hospital":
+                    String hospitalId = appointment.getFacilityId();
                     String name = appointment.getPatientDetails().getFacilityObj().getName();
                     String clinic = appointment.getClinicId();
-                    item = new SearchTermItem(name, clinic);
+                    item = new SearchTermItem(hospitalId, name, clinic, "Hospital");
                     break;
                 case "Doctor":
                     try {
+                        String doctorId = appointment.getDoctorId();
                         String doctorName = appointment.getProviderDetails().getPersonDetails().getFirstName() +
                                 " " + appointment.getProviderDetails().getPersonDetails().getLastName();
                         String department = appointment.getProviderDetails().getDepartmentId();
                         String doctorImageUrl = appointment.getProviderDetails().getPersonDetails().getProfileImageUriPath();
-                        item = new SearchTermItem(doctorImageUrl, doctorName, department);
+                        item = new SearchTermItem(doctorImageUrl, doctorId, doctorName, department, "Doctor");
                     } catch (Exception ignored){}
                     break;
                 default:
@@ -151,6 +159,9 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
 
         @BindView(R.id.previous_visit_shimmer)
         ShimmerFrameLayout previousVisitShimmer;
+
+        @BindView(R.id.empty_view)
+        TextView emptyView;
 
         public SearchTermRowViewHolder(View itemView) {
             super(itemView);

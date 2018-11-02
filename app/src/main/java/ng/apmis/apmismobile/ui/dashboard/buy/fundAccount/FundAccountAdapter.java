@@ -94,8 +94,10 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void fundHistoryView (FundHistoryViewHolder holder) {
         FundHistoryAdapter adapter1 = new FundHistoryAdapter(funds);
-        holder.recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        holder.recyclerView.setLayoutManager(layoutManager);
         holder.recyclerView.setAdapter(adapter1);
+        holder.recyclerView.setNestedScrollingEnabled(false);
     }
 
     private void filterObjects () {
