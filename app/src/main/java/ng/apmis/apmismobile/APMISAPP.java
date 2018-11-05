@@ -1,19 +1,23 @@
 package ng.apmis.apmismobile;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class APMISAPP {
+public class APMISAPP extends Application{
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -22,6 +26,15 @@ public class APMISAPP {
     private final Executor mainThread;
     private final Executor networkIO;
     private RequestQueue queue;
+    private static Context mContext;
+
+    private String TAG = "APMIS";
+
+    public APMISAPP(){
+        this.diskIO = null;
+        this.networkIO = null;
+        this.mainThread = null;
+    }
 
     private APMISAPP(Executor diskIO, Executor networkIO, Executor mainThread) {
         this.diskIO = diskIO;
@@ -29,7 +42,10 @@ public class APMISAPP {
         this.mainThread = mainThread;
     }
 
-    public static APMISAPP getInstance(){
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mContext = getApplicationContext();
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new APMISAPP(Executors.newSingleThreadExecutor(),
@@ -37,9 +53,36 @@ public class APMISAPP {
                         new MainThreadExecutor());
             }
         }
+    }
+
+    public static APMISAPP getInstance(){
         return sInstance;
     }
 
+    public RequestQueue getRequestQueue() {
+        if (queue == null) {
+            queue = Volley.newRequestQueue(mContext);
+        }
+
+        return queue;
+    }
+
+    public <T> void addToRequestQueue(Request<T> req, String tag) {
+        // set the default tag if tag is empty
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+        getRequestQueue().add(req);
+    }
+
+    public <T> void addToRequestQueue(Request<T> req) {
+        req.setTag(TAG);
+        getRequestQueue().add(req);
+    }
+
+    public void cancelPendingRequests(Object tag) {
+        if (queue != null) {
+            queue.cancelAll(tag);
+        }
+    }
 
     public Executor diskIO(){
         return diskIO;

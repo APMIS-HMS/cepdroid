@@ -61,7 +61,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
                 .commit();
     }
 
-    public void instantiateOnBackPressedListener(OnBackPressedListener listener){
+    public void instantiateFragmentOnBackPressedListener(OnBackPressedListener listener){
         this.mListener = listener;
     }
 
@@ -91,7 +91,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
         switch (action){
             case ACTION_MY_PROFILE:
                 editProfileFragment = EditProfileFragment.newInstance();
-                instantiateOnBackPressedListener(editProfileFragment);
+                instantiateFragmentOnBackPressedListener(editProfileFragment);
                 placeFragment(editProfileFragment);
                 break;
             default:

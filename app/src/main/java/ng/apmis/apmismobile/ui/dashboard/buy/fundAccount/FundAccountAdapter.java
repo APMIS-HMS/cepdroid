@@ -1,6 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard.buy.fundAccount;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -16,6 +18,7 @@ import ng.apmis.apmismobile.data.database.fundAccount.Beneficiaries;
 import ng.apmis.apmismobile.data.database.fundAccount.Fund;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.beneficiaries.BeneficiariesAdapter;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.fundHistory.FundHistoryAdapter;
+import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 
 /**
  * Created by Thadeus-APMIS on 10/26/2018.
@@ -47,6 +50,9 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (viewType) {
             case BENEFICIARIES:
                 view = inflater.inflate(R.layout.beneficiaries, parent, false);
+                Button fundWallet = view.findViewById(R.id.fund_wallet);
+
+                fundWallet.setOnClickListener((views) -> parent.getContext().startActivity(new Intent(view.getContext(), FundWalletActivity.class)));
                 holder = new BeneficiariesViewHolder(view);
                 break;
             case FUND:
@@ -94,8 +100,10 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void fundHistoryView (FundHistoryViewHolder holder) {
         FundHistoryAdapter adapter1 = new FundHistoryAdapter(funds);
-        holder.recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        holder.recyclerView.setLayoutManager(layoutManager);
         holder.recyclerView.setAdapter(adapter1);
+        holder.recyclerView.setNestedScrollingEnabled(false);
     }
 
     private void filterObjects () {

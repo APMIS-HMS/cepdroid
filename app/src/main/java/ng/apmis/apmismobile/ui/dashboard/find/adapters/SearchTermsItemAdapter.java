@@ -50,32 +50,42 @@ public class SearchTermsItemAdapter extends RecyclerView.Adapter<SearchTermsItem
         SearchTermItem item = searchTermsItems.get(position);
 
         holder.titleText.setText(item.getTitle());
+
+        if (item.getType().equals("Hospital"))
+            holder.itemImage.setImageResource(R.drawable.ic_default_hospital);
+        else if (item.getType().equals("Doctor"))
+            holder.itemImage.setImageResource(R.drawable.ic_default_profile);
+
+
         holder.subTitleText.setText(item.getSubTitle());
-            Glide.with(context)
-                    .load(item.getImageURL())
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            try {
-                                holder.imageLoader.setVisibility(View.GONE);
-                            } catch (Exception ignored) {
-                            }
-                            return false;
-                        }
+        Glide.with(context)
+            .load(item.getImageURL())
+            .listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    try {
+                        holder.imageLoader.setVisibility(View.GONE);
+                    } catch (Exception ignored) {}
 
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            holder.imageLoader.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(holder.itemImage);
+                    if (item.getType().equals("Hospital"))
+                        target.onLoadCleared(context.getResources().getDrawable(R.drawable.ic_default_hospital));
+                    else if (item.getType().equals("Doctor"))
+                        target.onLoadCleared(context.getResources().getDrawable(R.drawable.ic_default_profile));
+                    return true;
+                }
 
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    holder.imageLoader.setVisibility(View.GONE);
+                    return false;
+                }
+            })
+            .into(holder.itemImage);
     }
 
     @Override
     public int getItemCount() {
-        return searchTermsItems.size();
+        return searchTermsItems==null ? 0 : searchTermsItems.size();
     }
 
     class SearchTermsItemViewHolder extends RecyclerView.ViewHolder {
