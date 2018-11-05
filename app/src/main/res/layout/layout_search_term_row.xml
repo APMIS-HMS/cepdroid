@@ -52,6 +52,16 @@
 
         </android.support.v7.widget.RecyclerView>
 
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="186dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="Click here to find a Hospital"/>
+
 
     </FrameLayout>
 

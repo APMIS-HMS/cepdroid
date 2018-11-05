@@ -1,5 +1,6 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
+import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -55,6 +56,8 @@ public class DashboardActivity extends AppCompatActivity {
     TextView toolbarTitle;
 
     ActionBar actionBar;
+
+    public String findSearchTerm = "Hospital";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +245,16 @@ public class DashboardActivity extends AppCompatActivity {
                 placeFragment(new FindFragment());
                 break;
         }
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+        // check if search intent
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            intent.putExtra("SearchTerm", findSearchTerm);
+        }
+
+        super.startActivity(intent);
     }
 
     /**

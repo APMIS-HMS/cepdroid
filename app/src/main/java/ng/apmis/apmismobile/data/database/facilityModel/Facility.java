@@ -102,6 +102,8 @@ public class Facility {
      */
     private List<String> memberFacilities = null;
 
+    private LogoObject logoObject;
+
     private List<Object> invitees = null;
     private boolean isValidRegistration;
     private boolean status;
@@ -121,7 +123,7 @@ public class Facility {
                     boolean isTokenVerified, List<MinorLocation> minorLocations,
                     List<Object> facilitymoduleId, List<Department> departments,
                     List<Object> secondaryContactPhoneNo, List<String> memberof,
-                    List<String> memberFacilities, boolean isHostFacility, boolean isNetworkFacility) {
+                    List<String> memberFacilities, LogoObject logoObject, boolean isHostFacility, boolean isNetworkFacility) {
         this._id = _id;
         this.website = website;
         this.shortName = shortName;
@@ -149,6 +151,7 @@ public class Facility {
         this.secondaryContactPhoneNo = secondaryContactPhoneNo;
         this.memberof = memberof;
         this.memberFacilities = memberFacilities;
+        this.logoObject = logoObject;
         this.isHostFacility = isHostFacility;
         this.isNetworkFacility = isNetworkFacility;
     }
@@ -383,6 +386,14 @@ public class Facility {
 
     public void setIsNetworkFacility(boolean isNetworkFacility) {
         this.isNetworkFacility = isNetworkFacility;
+    }
+
+    public LogoObject getLogoObject() {
+        return logoObject;
+    }
+
+    public void setLogoObject(LogoObject logoObject) {
+        this.logoObject = logoObject;
     }
 
     @Override

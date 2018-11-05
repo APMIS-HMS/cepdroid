@@ -221,5 +221,6 @@
     <string name="last_name">Last Name</string>
     <string name="e_mail">E-mail</string>
     <string name="apmis_id">APMIS ID</string>
+    <string name="search_hint">Enter search term</string>
 
 </resources>
