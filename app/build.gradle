@@ -29,6 +29,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     dexOptions {
+
         javaMaxHeapSize "4g"
     }
     buildToolsVersion '27.0.3'
