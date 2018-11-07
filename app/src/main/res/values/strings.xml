@@ -193,6 +193,14 @@
         <item>Select Time</item>
     </string-array>
 
+    <string-array name="select_service">
+        <item>Select Service</item>
+    </string-array>
+
+    <string-array name="select_price">
+        <item>Select Price</item>
+    </string-array>
+
     <string-array name="filter">
         <item>Hospital</item>
         <item>Doctor</item>

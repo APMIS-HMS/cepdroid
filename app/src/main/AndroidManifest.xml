@@ -43,7 +43,7 @@
             <!-- enable the search dialog to send searches to SearchableActivity -->
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".ui.dashboard.find.FoundItemsActivity" />
+                android:value=".ui.dashboard.find.foundItems.FoundItemsActivity" />
         </activity>
 
         <service

@@ -4,17 +4,14 @@ package ng.apmis.apmismobile.ui.dashboard.find.foundItems;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -47,7 +44,7 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
     private OnFragmentInteractionListener mListener;
 
     public interface OnFragmentInteractionListener{
-        void onIdActionPerformed(String id);
+        void onViewIdActionPerformed(String id, String name);
     }
 
     public FoundItemsListFragment() {
@@ -115,8 +112,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
     }
 
     @Override
-    public void onViewClicked(String id) {
-        mListener.onIdActionPerformed(id);
+    public void onViewClicked(String id, String name) {
+        mListener.onViewIdActionPerformed(id, name);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class FoundItemsAdapter extends RecyclerView.Adapter<FoundItemsAdapter.Fo
     private OnViewClickedListener mListener;
 
     public interface OnViewClickedListener {
-        void onViewClicked(String id);
+        void onViewClicked(String id, String name);
     }
 
     public FoundItemsAdapter(Context context){
@@ -80,7 +80,7 @@ public class FoundItemsAdapter extends RecyclerView.Adapter<FoundItemsAdapter.Fo
             @Override
             public void onClick(View v) {
                 //Change fragments with the id
-                mListener.onViewClicked(foundItem.getId());
+                mListener.onViewClicked(foundItem.getId(), foundItem.getTitle());
             }
         });
 

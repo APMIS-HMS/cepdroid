@@ -17,6 +17,7 @@ import ng.apmis.apmismobile.ui.dashboard.diagnoses.DiagnosisViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.documentation.RecordsListViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.find.PreviousItemsViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital.FoundHospitalDetailViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionViewModelFactory;
@@ -159,6 +160,16 @@ public class InjectorUtils {
     public static FoundItemsViewModelFactory provideFoundItemsViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new FoundItemsViewModelFactory(apmisRepository);
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public static FoundHospitalDetailViewModelFactory provideFoundHospitalDetailViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new FoundHospitalDetailViewModelFactory(apmisRepository);
     }
 
 }

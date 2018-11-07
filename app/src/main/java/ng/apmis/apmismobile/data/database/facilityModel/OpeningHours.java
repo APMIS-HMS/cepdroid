@@ -61,17 +61,17 @@ public class OpeningHours {
 
         static class Open {
 
-            private Integer nextDate;
+            private Long nextDate;
             private Integer minutes;
             private Integer hours;
             private String time;
             private Integer day;
 
-            public Integer getNextDate() {
+            public Long getNextDate() {
                 return nextDate;
             }
 
-            public void setNextDate(Integer nextDate) {
+            public void setNextDate(Long nextDate) {
                 this.nextDate = nextDate;
             }
 
@@ -111,17 +111,17 @@ public class OpeningHours {
 
         static class Close {
 
-            private Integer nextDate;
+            private Long nextDate;
             private Integer minutes;
             private Integer hours;
             private String time;
             private Integer day;
 
-            public Integer getNextDate() {
+            public Long getNextDate() {
                 return nextDate;
             }
 
-            public void setNextDate(Integer nextDate) {
+            public void setNextDate(Long nextDate) {
                 this.nextDate = nextDate;
             }
 
