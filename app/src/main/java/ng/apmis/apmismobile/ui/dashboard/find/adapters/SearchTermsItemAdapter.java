@@ -71,7 +71,7 @@ public class SearchTermsItemAdapter extends RecyclerView.Adapter<SearchTermsItem
                         target.onLoadCleared(context.getResources().getDrawable(R.drawable.ic_default_hospital));
                     else if (item.getType().equals("Doctor"))
                         target.onLoadCleared(context.getResources().getDrawable(R.drawable.ic_default_profile));
-                    return true;
+                    return true; //prevent onLoadFailed from being called on the target
                 }
 
                 @Override

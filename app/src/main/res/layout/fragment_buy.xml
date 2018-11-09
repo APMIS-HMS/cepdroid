@@ -24,10 +24,10 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/balance"
+                    android:id="@+id/balance_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="N456.94"
+                    android:text="₦ . . . "
                     android:layout_centerHorizontal="true"
                     android:textColor="@android:color/white"
                     android:textSize="30sp"
@@ -40,7 +40,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
                     android:textAlignment="center"
-                    android:layout_below="@+id/balance"
+                    android:layout_below="@+id/balance_text"
                     android:layout_centerHorizontal="true"/>
 
             </RelativeLayout>

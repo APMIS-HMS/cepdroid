@@ -1,168 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity">
+    android:orientation="vertical"
+    tools:context=".ui.dashboard.payment.FundWalletActivity">
 
-    <LinearLayout
+    <include
+        layout="@layout/action_bar" />
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="18dp">
+        tools:context="ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:text="Amount"
-                android:textSize="16sp"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/edittext_background_grey" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:text="Card type"
-                android:textSize="16sp" />
-
-            <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/spinner_background_no_background_color"
-                android:entries="@array/select_appt_type" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:text="Card number"
-                android:textSize="16sp" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/edittext_background_grey"
-                android:drawableEnd="@android:drawable/ic_menu_camera"
-                android:drawablePadding="8dp"
-                android:drawableRight="@android:drawable/ic_menu_camera" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="18dp">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Expiration MM/YY"
-                    android:textSize="16sp" />
+                    android:layout_marginBottom="6dp"
+                    android:text="Amount"
+                    android:textSize="16sp"/>
 
                 <EditText
+                    android:id="@+id/amount_edit"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:background="@drawable/edittext_background_grey" />
+                    android:padding="5dp"
+                    android:inputType="number"
+                    android:hint="@string/naira_sign"
+                    android:background="@drawable/edittext_background" />
 
             </LinearLayout>
 
-            <View
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="match_parent" />
-
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Expiration MM/YY"
+                    android:layout_marginBottom="6dp"
+                    android:text="Email Address"
                     android:textSize="16sp" />
 
                 <EditText
+                    android:id="@+id/email_edit"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:background="@drawable/edittext_background_grey" />
+                    android:inputType="textEmailAddress"
+                    android:padding="5dp"
+                    android:background="@drawable/edittext_background" />
 
             </LinearLayout>
 
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Pin"
-                android:textSize="16sp" />
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
 
-            <EditText
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="Card number"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/card_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:text="5060666666666666666"
+                    android:background="@drawable/edittext_background"
+                    android:drawableEnd="@android:drawable/ic_menu_camera"
+                    android:drawablePadding="8dp"
+                    android:drawableRight="@android:drawable/ic_menu_camera" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Expiration MM/YY"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/expiration_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:gravity="center"
+                        android:inputType="number"
+                        android:text="03/23"
+                        android:maxLength="5"
+                        android:padding="5dp"
+                        android:background="@drawable/edittext_background" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="CVV"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/cvv_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:inputType="numberPassword"
+                        android:text="123"
+                        android:maxLength="3"
+                        android:padding="5dp"
+                        android:background="@drawable/edittext_background" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <RadioButton
+                android:id="@+id/save_card_radio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save card"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/pay_button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edittext_background_grey" />
+                android:layout_marginTop="12dp"
+                android:textColor="@color/action_button_text_color"
+                android:background="@drawable/action_button"
+                android:text="Fund" />
 
         </LinearLayout>
-        
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save card"
-            android:layout_marginTop="8dp" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:enabled="false"
-            android:text="Fund" />
-
-    </LinearLayout>
 
 
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

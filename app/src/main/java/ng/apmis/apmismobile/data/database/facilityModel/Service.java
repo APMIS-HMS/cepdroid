@@ -1,5 +1,12 @@
 package ng.apmis.apmismobile.data.database.facilityModel;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
+import ng.apmis.apmismobile.data.database.fundAccount.Price;
+
 /**
  * Created by mofeejegi.<br/>
  * Class representing medical services offered by a <code>Clinic</code>
@@ -19,6 +26,10 @@ public class Service {
      * Code name (short representation) of the Service
      */
     private String code;
+
+    @SerializedName("price")
+    @Expose
+    private List<Price> prices = null;
 
     public String getId() {
         return _id;
@@ -59,4 +70,16 @@ public class Service {
         this.code = code;
     }
 
+    public List<Price> getPrices() {
+        return prices;
+    }
+
+    public void setPrices(List<Price> prices) {
+        this.prices = prices;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

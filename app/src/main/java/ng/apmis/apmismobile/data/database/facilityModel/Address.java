@@ -30,7 +30,7 @@ public class Address {
     private String scope;
     private List<Review> reviews = null;
     private String reference;
-    private Integer rating;
+    private Double rating;
 
     @SerializedName("place_id")
     private String placeId;
@@ -146,11 +146,11 @@ public class Address {
         this.reference = reference;
     }
 
-    public Integer getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 

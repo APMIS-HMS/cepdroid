@@ -13,6 +13,8 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.fundAccount.Beneficiaries;
 import ng.apmis.apmismobile.data.database.fundAccount.Fund;
@@ -33,12 +35,22 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private ArrayList<Beneficiaries> beneficiaries;
     private ArrayList<Fund> funds;
 
+    private OnFundWalletClickedListener mListener;
+
+    public interface OnFundWalletClickedListener{
+        void onFundWalletClicked();
+    }
+
     public FundAccountAdapter(Context context, ArrayList<Object> items) {
         this.context = context;
         this.items = items;
         this.beneficiaries = new ArrayList<>();
         this.funds = new ArrayList<>();
         filterObjects();
+    }
+
+    public void instantiateWalletFundListener(OnFundWalletClickedListener listener){
+        this.mListener = listener;
     }
 
     @NonNull
@@ -96,6 +108,13 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         BeneficiariesAdapter adapter1 = new BeneficiariesAdapter(beneficiaries);
         holder.recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.recyclerView.setAdapter(adapter1);
+
+        holder.fundWalletButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onFundWalletClicked();
+            }
+        });
     }
 
     private void fundHistoryView (FundHistoryViewHolder holder) {
@@ -120,10 +139,15 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     class BeneficiariesViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.fund_wallet)
+        Button fundWalletButton;
+
         RecyclerView recyclerView;
 
         public BeneficiariesViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
+
             recyclerView = itemView.findViewById(R.id.child_recyclerview);
         }
     }

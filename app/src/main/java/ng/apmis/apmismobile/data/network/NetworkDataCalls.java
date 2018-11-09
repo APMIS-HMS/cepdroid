@@ -15,6 +15,7 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,9 +43,11 @@ import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
+import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.personModel.ProfileImageObject;
+import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.AppUtils;
@@ -1035,7 +1038,7 @@ public final class NetworkDataCalls {
 
         switch (itemType) {
             case "Hospital":
-                urlQuery = "facilities?$select[name]&$select[email]&$select[logoObject]";
+                urlQuery = "facilities?$select[name]&$select[email]&$select[logoObject]&facilityTypeId=Hospital&$sort[updatedAt]=-1";
                 break;
             case "Doctor":
                 urlQuery = "employees?isActive=true&professionId=Doctor";
@@ -1085,7 +1088,12 @@ public final class NetworkDataCalls {
         APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
-
+    /**
+     *
+     * @param type
+     * @param jsonArray
+     * @return
+     */
     private List<SearchTermItem> parseFoundObjectsUsingType(String type, JSONArray jsonArray){
         List<SearchTermItem> foundItems = new ArrayList<>();
 
@@ -1133,6 +1141,267 @@ public final class NetworkDataCalls {
             default:
                 return foundItems;
         }
+    }
+
+    /**
+     *
+     * @param facilityId
+     * @param accessToken
+     */
+    public void fetchFacilityDetails(Context context, String facilityId, String accessToken){
+        Log.d("Fetch facility", "Started fetch");
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "facilities/"+facilityId, null, response -> {
+
+            Log.v("Fetch facility response", String.valueOf(response));
+
+            Facility facility = gson.fromJson(response.toString(), Facility.class);
+
+            Log.v("Fetch facility", facility.toString());
+
+            InjectorUtils.provideNetworkData(context).setFacilityData(facility);
+
+
+        }, (VolleyError error) -> {
+
+            Log.e("Fetch facility error", error.toString());
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
+    }
+
+    /**
+     *
+     * @param context
+     * @param facilityId
+     * @param accessToken
+     */
+    public void fetchServiceCategoryId(Context context, String facilityId, String accessToken){
+        Log.d("Fetch categoryId", "Started fetch");
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "organisation-services?facilityId=" + facilityId
+                + "&$select[categories.name]&$select[categories._id]", null, response -> {
+
+            Log.v("Fetch categoryId resp", String.valueOf(response));
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                JSONArray categoryArray = jsonArray.getJSONObject(0).getJSONArray("categories");
+
+                String categoryId = null;
+                for (int i = 0; i < categoryArray.length(); ++i){
+                    if (categoryArray.getJSONObject(i).getString("name").equals("Medical Records")) {
+                        categoryId = categoryArray.getJSONObject(i).getString("_id");
+                    }
+                }
+
+                Log.v("Fetch categoryId", categoryArray.toString());
+
+                if (categoryId != null)
+                    InjectorUtils.provideNetworkData(context).setServiceCategoryIdForFacility(categoryId);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, (VolleyError error) -> {
+
+            Log.e("Fetch categoryId error", error.toString());
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
+
+    }
+
+
+    /**
+     *
+     * @param context
+     * @param facilityId
+     * @param categoryId
+     * @param accessToken
+     */
+    public void fetchServiceCategoryBillManager(Context context, String facilityId, String categoryId, String accessToken){
+        Log.d("Fetch servCat", "Started fetch");
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "bill-managers?facilityId="+facilityId+"&categoryId="+categoryId, null, response -> {
+
+            Log.v("Fetch servCat response", String.valueOf(response));
+
+            BillManager billManager = gson.fromJson(response.toString(), BillManager.class);
+
+            Log.v("Fetch servCat", billManager.toString());
+
+            InjectorUtils.provideNetworkData(context).setCategoryBillManager(billManager);
+
+
+        }, (VolleyError error) -> {
+
+            Log.e("Fetch servCat error", error.toString());
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
+    }
+
+
+    /**
+     *
+     * @param context
+     * @param personId
+     * @param accessToken
+     */
+    public void fetchPersonWallet(Context context, String personId, String accessToken){
+        Log.d("Fetch wallet", "Started fetch");
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "people/"+personId+"?$select[wallet]", null, response -> {
+
+            Log.v("Fetch wallet response", String.valueOf(response));
+
+            try {
+
+                JSONObject walletObject = response.getJSONObject("wallet");
+
+                Wallet wallet = gson.fromJson(walletObject.toString(), Wallet.class);
+
+                Log.v("Fetch wallet", wallet.toString());
+
+                InjectorUtils.provideNetworkData(context).setPersonWallet(wallet);
+
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+
+
+
+
+        }, (VolleyError error) -> {
+
+            Log.e("Fetch wallet error", error.toString());
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
+    }
+
+    /**
+     *
+     * @param context
+     * @param referenceCode
+     * @param amountPaid
+     * @param accessToken
+     */
+    public void fetchPaymentVerificationData(Context context, String referenceCode, int amountPaid, String personId, String accessToken){
+        Log.d("Pay Verify", "Started verification");
+
+        JSONObject params = new JSONObject();
+        try {
+            JSONObject ref = new JSONObject();
+            ref.put("trxref", referenceCode);
+            params.put("ref", ref);
+
+            JSONObject payment = new JSONObject();
+            payment.put("type", "e-payment");
+            payment.put("route", "Paystack");
+            params.put("payment", payment);
+
+            params.put("entity", "Person");
+            params.put("destinationId", personId);
+            params.put("amount", amountPaid);
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "fund-wallet", params, response -> {
+
+            Log.v("Pay Verify response", String.valueOf(response));
+
+            String status = null;
+
+            try {
+                status = response.getString("status");
+            } catch (JSONException e) {
+                status = "error";
+                e.printStackTrace();
+            }
+
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData(status);
+
+        }, (VolleyError error) -> {
+
+            Log.e("Pay Verify error", String.valueOf(error.getMessage()));
+            //Return an error string
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData("error");
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(120000, 6, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 
 

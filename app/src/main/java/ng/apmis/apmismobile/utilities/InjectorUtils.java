@@ -13,11 +13,14 @@ import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.buy.BuyViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.diagnoses.DiagnosisViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.documentation.RecordsListViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.find.PreviousItemsViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital.FoundHospitalDetailViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile.EditProfileViewModelFactory;
@@ -159,6 +162,36 @@ public class InjectorUtils {
     public static FoundItemsViewModelFactory provideFoundItemsViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new FoundItemsViewModelFactory(apmisRepository);
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public static FoundHospitalDetailViewModelFactory provideFoundHospitalDetailViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new FoundHospitalDetailViewModelFactory(apmisRepository);
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public static BuyViewModelFactory provideBuyViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new BuyViewModelFactory(apmisRepository);
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public static FundWalletViewModelFactory provideFundWalletViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new FundWalletViewModelFactory(apmisRepository);
     }
 
 }

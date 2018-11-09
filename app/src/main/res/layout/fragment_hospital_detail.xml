@@ -4,33 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.find.foundItems.FoundHospitalDetailFragment">
+    tools:context=".ui.dashboard.find.foundItems.foundHospital.FoundHospitalDetailFragment">
 
     <LinearLayout
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp">
 
-        <ImageView
-            android:id="@+id/logo_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_default_hospital"
-            android:layout_margin="10dp"
-            android:background="#ddd"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+
+            <ImageView
+                android:id="@+id/logo_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_default_hospital"
+                android:background="#ddd"/>
+
+            <ProgressBar
+                android:id="@+id/logo_loader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
 
         <TextView
-            android:id="@+id/name_text_view"
+            android:id="@+id/email_text_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:text="@string/hello_blank_fragment" />
+            android:text="@string/loading" />
 
-        <TableRow
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp">
+
+            <ProgressBar
+                android:id="@+id/price_loader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
 
             <Button
                 android:id="@+id/register_button"
@@ -38,9 +58,60 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/action_button"
                 android:textColor="@android:color/white"
+                android:gravity="center"
+                android:visibility="gone"
                 android:text="Register"/>
 
-        </TableRow>
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/price_service_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_margin="5dp"
+                android:text="Select registration service and price"/>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <Spinner
+                    android:id="@+id/service_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/select_service"
+                    android:layout_weight="1"/>
+
+                <Spinner
+                    android:id="@+id/price_spinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/select_price"
+                    android:layout_weight="1"/>
+
+            </TableRow>
+
+            <Button
+                android:id="@+id/pay_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:textColor="@android:color/white"
+                android:background="@drawable/action_button"
+                android:visibility="gone"
+                android:text="Pay"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

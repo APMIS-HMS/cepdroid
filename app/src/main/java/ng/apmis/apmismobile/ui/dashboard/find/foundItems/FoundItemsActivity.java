@@ -1,36 +1,27 @@
 package ng.apmis.apmismobile.ui.dashboard.find.foundItems;
 
 import android.app.SearchManager;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
-
-import com.facebook.shimmer.ShimmerFrameLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.data.database.SearchTermItem;
+import ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital.FoundHospitalDetailFragment;
 import ng.apmis.apmismobile.utilities.AppUtils;
-import ng.apmis.apmismobile.utilities.InjectorUtils;
 
-public class FoundItemsActivity extends AppCompatActivity implements FoundItemsListFragment.OnFragmentInteractionListener {
+public class FoundItemsActivity extends AppCompatActivity implements FoundItemsListFragment.OnFragmentInteractionListener,
+        FoundHospitalDetailFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.general_toolbar)
     Toolbar generalToolbar;
@@ -41,6 +32,8 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
     String searchQuery;
     String searchExtra;
 
+    ActionBar actionBar;
+
     FoundItemsListFragment foundItemsListFragment;
 
     @Override
@@ -50,7 +43,7 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
         ButterKnife.bind(this);
 
         setSupportActionBar(generalToolbar);
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
@@ -80,6 +73,10 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
     }
 
 
+    public void setToolBarTitle(String title) {
+        toolbarTitle.setText(title);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -105,8 +102,10 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
     }
 
     @Override
-    public void onIdActionPerformed(String id) {
-        AppUtils.showShortToast(this, "Clicked "+id);
+    public void onViewIdActionPerformed(String id, String name) {
+        if (searchExtra.equals("Hospital")){
+            placeFragment(FoundHospitalDetailFragment.newInstance(id, name));
+        }
     }
 
     /**
@@ -117,8 +116,14 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                //.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack("current")
                 .commit();
+    }
+
+    @Override
+    public void onPayClicked(String facilityId) {
+
     }
 }

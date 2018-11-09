@@ -176,7 +176,6 @@ public class AddAppointmentFragment extends Fragment {
             } else {
                 appointmentTypeArrayAdapter.notifyDataSetChanged();
             }
-
         };
 
         appointmentViewModel.getAppointmentTypes().observe(getActivity(), appointmentTypesObserver);

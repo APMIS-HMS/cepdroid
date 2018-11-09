@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -34,12 +33,14 @@ import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
+import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
+import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
-import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * Provides an api for getting network data
@@ -81,6 +82,11 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<Appointment> appointment;
     private MutableLiveData<List<Appointment>> appointments;
     private MutableLiveData<String> profilePhotoPath;
+    private MutableLiveData<Facility> facilityData;
+    private MutableLiveData<String> serviceCategoryId;
+    private MutableLiveData<BillManager> categoryBillManager;
+    private MutableLiveData<Wallet> personWallet;
+    private MutableLiveData<String> paymentVerificationData;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
 
     //TODO Switch to LiveData later
@@ -102,8 +108,13 @@ public class ApmisNetworkDataSource {
         appointments = new MutableLiveData<>();
         prescriptions = new MutableLiveData<>();
         labRequests = new MutableLiveData<>();
+        facilityData = new MutableLiveData<>();
+        serviceCategoryId = new MutableLiveData<>();
+        categoryBillManager = new MutableLiveData<>();
         profilePhotoPath = new MutableLiveData<>();
+        personWallet = new MutableLiveData<>();
         appointmentTypes = new MutableLiveData<>();
+        paymentVerificationData = new MutableLiveData<>();
 
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
@@ -321,7 +332,7 @@ public class ApmisNetworkDataSource {
      * @param personEntry The Person fetched
      * @param downloadFile The local file to download the photo into
      */
-    public void fetchAndDownloadPersonProfilePhoto(PersonEntry personEntry, File downloadFile){
+    private void fetchAndDownloadPersonProfilePhoto(PersonEntry personEntry, File downloadFile){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Image", "Fetch Image started");
             new NetworkDataCalls(mContext).downloadProfilePictureForPerson(mContext, personEntry, downloadFile);
@@ -329,12 +340,54 @@ public class ApmisNetworkDataSource {
     }
 
 
-    public void fetchFoundItems(String itemType, String searchQuery){
+    /**
+     *
+     * @param itemType
+     * @param searchQuery
+     */
+    private void fetchFoundItems(String itemType, String searchQuery){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Found", "Fetch found items started");
             new NetworkDataCalls(mContext).searchForItems(mContext, itemType, searchQuery, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
+
+    private void fetchFacilityData(String id){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch facility details started");
+            new NetworkDataCalls(mContext).fetchFacilityDetails(mContext, id, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    private void fetchServiceCategoryForFacility(String id){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch service category started");
+            new NetworkDataCalls(mContext).fetchServiceCategoryId(mContext, id, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    private void fetchServiceCategoryBillManager(String facilityId, String categoryId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch bill manager started");
+            new NetworkDataCalls(mContext).fetchServiceCategoryBillManager(mContext, facilityId, categoryId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    private void fetchPersonWallet(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch person wallet started");
+            new NetworkDataCalls(mContext).fetchPersonWallet(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+
+    private void fetchPaymentVerificationData(String referenceCode, int amountPaid){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch payment verification started");
+            new NetworkDataCalls(mContext).fetchPaymentVerificationData(mContext, referenceCode, amountPaid, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
 
 
 
@@ -452,6 +505,22 @@ public class ApmisNetworkDataSource {
     }
 
 
+    //Category
+
+    public LiveData<String> getServiceCategoryIdForFacility(String id){
+        fetchServiceCategoryForFacility(id);
+        return serviceCategoryId;
+    }
+
+    public void setServiceCategoryIdForFacility(String categoryServiceIdValue){
+        serviceCategoryId.postValue(categoryServiceIdValue);
+    }
+
+    public void clearServiceCategoryId(){
+        serviceCategoryId = new MutableLiveData<>();
+    }
+
+
     //Patients
 
     public void setPatientDetailsForPerson(List<Patient> patientDetails){
@@ -525,5 +594,68 @@ public class ApmisNetworkDataSource {
     public void clearFoundObjects(){
         foundObjects = new MutableLiveData<>();
     }
+
+
+    //Facility Details
+
+    public LiveData<Facility> getFacilityDetails(String id){
+        fetchFacilityData(id);
+        return facilityData;
+    }
+
+    public void setFacilityData(Facility facilityDataValue){
+        facilityData.postValue(facilityDataValue);
+    }
+
+    public void clearFacilityData(){
+        facilityData = new MutableLiveData<>();
+    }
+
+
+    //Bill Manager
+    public LiveData<BillManager> getBillManagerForFacilityServiceCategory(String facilityId, String categoryId){
+        fetchServiceCategoryBillManager(facilityId, categoryId);
+        return categoryBillManager;
+    }
+
+    public void setCategoryBillManager(BillManager billManager){
+        categoryBillManager.postValue(billManager);
+    }
+
+    public void clearBillManager(){
+        categoryBillManager = new MutableLiveData<>();
+    }
+
+
+
+    //Wallet
+    public LiveData<Wallet> getPersonWallet(String personId){
+        fetchPersonWallet(personId);
+        return personWallet;
+    }
+
+    public void setPersonWallet(Wallet wallet){
+        personWallet.postValue(wallet);
+    }
+
+    public void clearWallet(){
+        personWallet = new MutableLiveData<>();
+    }
+
+
+    //Payment verification data
+    public LiveData<String> getPaymentVerificationData(String referenceCode, int amountPaid){
+        fetchPaymentVerificationData(referenceCode, amountPaid);
+        return paymentVerificationData;
+    }
+
+    public void setPaymentVerificationData(String status){
+        paymentVerificationData.postValue(status);
+    }
+
+    public void clearPaymentVerificationData(){
+        paymentVerificationData = new MutableLiveData<>();
+    }
+
 
 }

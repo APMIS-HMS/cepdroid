@@ -1,5 +1,6 @@
 package ng.apmis.apmismobile.ui.dashboard.buy.fundAccount;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,15 +16,26 @@ import java.util.ArrayList;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.fundAccount.Beneficiaries;
 import ng.apmis.apmismobile.data.database.fundAccount.Fund;
+import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
+import ng.apmis.apmismobile.utilities.AppUtils;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Thadeus-APMIS on 10/23/2018.
  */
 
-public class FundAccountFragment extends Fragment {
+public class FundAccountFragment extends Fragment implements FundAccountAdapter.OnFundWalletClickedListener {
 
+    public static final int FUND_WALLET_REQUEST = 1;
     RecyclerView recyclerView;
     FundAccountAdapter adapter;
+
+    public interface OnWalletFundedListener{
+        void onWalletFunded();
+    }
+
+    private OnWalletFundedListener mListener;
 
     @Nullable
     @Override
@@ -38,6 +50,7 @@ public class FundAccountFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
+        adapter.instantiateWalletFundListener(this);
 
         return root;
     }
@@ -64,5 +77,23 @@ public class FundAccountFragment extends Fragment {
 
         return allList;
     }
+
+    @Override
+    public void onFundWalletClicked() {
+        Intent i = new Intent(getActivity(), FundWalletActivity.class);
+        startActivityForResult(i, FUND_WALLET_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case FUND_WALLET_REQUEST:
+                    mListener.onWalletFunded();
+                    break;
+            }
+        }
+    }
+
 
 }
