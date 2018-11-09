@@ -23,4 +23,15 @@
 
     </item>
 
+    <item android:state_enabled="false">
+
+        <shape android:shape="rectangle">
+
+            <corners android:radius="7dp"/>
+            <solid android:color="#bbb"/>
+
+        </shape>
+
+    </item>
+
 </selector>

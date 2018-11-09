@@ -47,6 +47,7 @@ import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.personModel.ProfileImageObject;
+import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
 import ng.apmis.apmismobile.utilities.AppUtils;
@@ -1279,6 +1280,127 @@ public final class NetworkDataCalls {
         };
 
         appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
+    }
+
+
+    /**
+     *
+     * @param context
+     * @param personId
+     * @param accessToken
+     */
+    public void fetchPersonWallet(Context context, String personId, String accessToken){
+        Log.d("Fetch wallet", "Started fetch");
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "people/"+personId+"?$select[wallet]", null, response -> {
+
+            Log.v("Fetch wallet response", String.valueOf(response));
+
+            try {
+
+                JSONObject walletObject = response.getJSONObject("wallet");
+
+                Wallet wallet = gson.fromJson(walletObject.toString(), Wallet.class);
+
+                Log.v("Fetch wallet", wallet.toString());
+
+                InjectorUtils.provideNetworkData(context).setPersonWallet(wallet);
+
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+
+
+
+
+        }, (VolleyError error) -> {
+
+            Log.e("Fetch wallet error", error.toString());
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
+    }
+
+    /**
+     *
+     * @param context
+     * @param referenceCode
+     * @param amountPaid
+     * @param accessToken
+     */
+    public void fetchPaymentVerificationData(Context context, String referenceCode, int amountPaid, String personId, String accessToken){
+        Log.d("Pay Verify", "Started verification");
+
+        JSONObject params = new JSONObject();
+        try {
+            JSONObject ref = new JSONObject();
+            ref.put("trxref", referenceCode);
+            params.put("ref", ref);
+
+            JSONObject payment = new JSONObject();
+            payment.put("type", "e-payment");
+            payment.put("route", "Paystack");
+            params.put("payment", payment);
+
+            params.put("entity", "Person");
+            params.put("destinationId", personId);
+            params.put("amount", amountPaid);
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "fund-wallet", params, response -> {
+
+            Log.v("Pay Verify response", String.valueOf(response));
+
+            String status = null;
+
+            try {
+                status = response.getString("status");
+            } catch (JSONException e) {
+                status = "error";
+                e.printStackTrace();
+            }
+
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData(status);
+
+        }, (VolleyError error) -> {
+
+            Log.e("Pay Verify error", String.valueOf(error.getMessage()));
+            //Return an error string
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData("error");
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(120000, 6, 1));
         APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 

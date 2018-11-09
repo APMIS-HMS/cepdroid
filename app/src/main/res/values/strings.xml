@@ -230,5 +230,6 @@
     <string name="e_mail">E-mail</string>
     <string name="apmis_id">APMIS ID</string>
     <string name="search_hint">Enter search term</string>
+    <string name="naira_sign">₦</string>
 
 </resources>

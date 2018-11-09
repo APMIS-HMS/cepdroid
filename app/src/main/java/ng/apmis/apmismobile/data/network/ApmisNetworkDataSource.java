@@ -39,6 +39,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 
 /**
@@ -84,6 +85,8 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<Facility> facilityData;
     private MutableLiveData<String> serviceCategoryId;
     private MutableLiveData<BillManager> categoryBillManager;
+    private MutableLiveData<Wallet> personWallet;
+    private MutableLiveData<String> paymentVerificationData;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
 
     //TODO Switch to LiveData later
@@ -109,7 +112,9 @@ public class ApmisNetworkDataSource {
         serviceCategoryId = new MutableLiveData<>();
         categoryBillManager = new MutableLiveData<>();
         profilePhotoPath = new MutableLiveData<>();
+        personWallet = new MutableLiveData<>();
         appointmentTypes = new MutableLiveData<>();
+        paymentVerificationData = new MutableLiveData<>();
 
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
@@ -363,8 +368,23 @@ public class ApmisNetworkDataSource {
 
     private void fetchServiceCategoryBillManager(String facilityId, String categoryId){
         apmisExecutors.networkIO().execute(() -> {
-            Log.d("Found", "Fetch facility details started");
+            Log.d("Found", "Fetch bill manager started");
             new NetworkDataCalls(mContext).fetchServiceCategoryBillManager(mContext, facilityId, categoryId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    private void fetchPersonWallet(String personId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch person wallet started");
+            new NetworkDataCalls(mContext).fetchPersonWallet(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+
+    private void fetchPaymentVerificationData(String referenceCode, int amountPaid){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Fetch payment verification started");
+            new NetworkDataCalls(mContext).fetchPaymentVerificationData(mContext, referenceCode, amountPaid, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 
@@ -605,5 +625,37 @@ public class ApmisNetworkDataSource {
     public void clearBillManager(){
         categoryBillManager = new MutableLiveData<>();
     }
+
+
+
+    //Wallet
+    public LiveData<Wallet> getPersonWallet(String personId){
+        fetchPersonWallet(personId);
+        return personWallet;
+    }
+
+    public void setPersonWallet(Wallet wallet){
+        personWallet.postValue(wallet);
+    }
+
+    public void clearWallet(){
+        personWallet = new MutableLiveData<>();
+    }
+
+
+    //Payment verification data
+    public LiveData<String> getPaymentVerificationData(String referenceCode, int amountPaid){
+        fetchPaymentVerificationData(referenceCode, amountPaid);
+        return paymentVerificationData;
+    }
+
+    public void setPaymentVerificationData(String status){
+        paymentVerificationData.postValue(status);
+    }
+
+    public void clearPaymentVerificationData(){
+        paymentVerificationData = new MutableLiveData<>();
+    }
+
 
 }
