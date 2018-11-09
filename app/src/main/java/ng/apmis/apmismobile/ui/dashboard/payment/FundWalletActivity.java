@@ -1,18 +1,15 @@
 package ng.apmis.apmismobile.ui.dashboard.payment;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
-import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -21,20 +18,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.paystack.android.Paystack;
 import co.paystack.android.PaystackSdk;
 import co.paystack.android.Transaction;
-import co.paystack.android.exceptions.ExpiredAccessCodeException;
 import co.paystack.android.model.Card;
 import co.paystack.android.model.Charge;
 import ng.apmis.apmismobile.R;
@@ -73,6 +65,10 @@ public class FundWalletActivity extends AppCompatActivity {
     @BindView(R.id.pay_button)
     Button payButton;
 
+    private int amountPaid;
+
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,17 +110,46 @@ public class FundWalletActivity extends AppCompatActivity {
         verificationObserver = s -> {
             if (s != null) {
                 AppUtils.showShortToast(this, s.toUpperCase());
-                dismissDialog();
+                dismissLoadingDialog();
 
-                if (s.equals("success")){
-                    setResult(RESULT_OK);
-                } else {
-                    setResult(RESULT_CANCELED);
-                }
+                presentCompletionDialog(s.equals("success"));
 
-                finish();
             }
         };
+
+    }
+
+    private void presentCompletionDialog(boolean isSuccessful){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog dialog = builder.create();
+
+        dialog.setCancelable(false);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view = inflater.inflate(R.layout.layout_fund_completed, null, false);
+
+        TextView textView = view.findViewById(R.id.fund_status_text);
+        ImageView imageIcon = view.findViewById(R.id.image_icon);
+
+        if (isSuccessful){
+            textView.setText(Html.fromHtml("Your wallet has successfully been funded with <b>&#8358;"+ amountPaid +"</b>"));
+        } else {
+            imageIcon.setImageResource(R.drawable.ic_error_red_24dp);
+            textView.setText("Something went wrong with the payment verification, please contact us within 24hrs to resolve the issue");
+        }
+
+        Button button = view.findViewById(R.id.complete_button);
+        button.setOnClickListener(v -> {
+            if (isSuccessful){
+                setResult(RESULT_OK);
+            } else {
+                setResult(RESULT_CANCELED);
+            }
+
+            finish();
+        });
+
+        dialog.setView(view);
+        dialog.show();
 
     }
 
@@ -203,7 +228,7 @@ public class FundWalletActivity extends AppCompatActivity {
         if (card.isValid()) {
             // charge card
             chargeCard(card, Integer.parseInt(amount), email);
-            showDialog();
+            showLoadingDialog();
         } else {
             if (!card.validNumber())
                 cardEdit.setError("Please enter valid card number");
@@ -230,12 +255,12 @@ public class FundWalletActivity extends AppCompatActivity {
                 // This is called only after transaction is deemed successful.
                 // Retrieve the transaction, and send its reference to your server
                 // for verification.
-                dismissDialog();
-                AppUtils.showShortToast(FundWalletActivity.this, transaction.getReference());
+                AppUtils.showShortToast(FundWalletActivity.this, "Please Wait...");
                 Log.e("Pay", transaction.getReference());
 
                 fundWalletViewModel.clearVerification();
-                showDialog();
+
+                amountPaid = amount;
                 fundWalletViewModel.getPayData(transaction.getReference(), amount).observe(FundWalletActivity.this, verificationObserver);
             }
 
@@ -244,7 +269,6 @@ public class FundWalletActivity extends AppCompatActivity {
                 // This is called only before requesting OTP.
                 // Save reference so you may send to server. If
                 // error occurs with OTP, you should still verify on server.
-                AppUtils.showShortToast(FundWalletActivity.this, "Please Wait...");
             }
 
             @Override
@@ -262,7 +286,7 @@ public class FundWalletActivity extends AppCompatActivity {
 //                    return;
 //                }
 //
-                dismissDialog();
+                dismissLoadingDialog();
                 if (transaction.getReference() != null) {
                     AppUtils.showShortToast(FundWalletActivity.this, transaction.getReference() + " concluded with error: " + error.getMessage());
                     //Log.e("Pay", String.format("%s  concluded with error: %s %s", transaction.getReference(), error.getClass().getSimpleName(), error.getMessage()));
@@ -276,10 +300,7 @@ public class FundWalletActivity extends AppCompatActivity {
         });
     }
 
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
-
-    private void showDialog(){
+    private void showLoadingDialog(){
         builder = new AlertDialog.Builder(this);
         dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -290,7 +311,7 @@ public class FundWalletActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void dismissDialog(){
+    private void dismissLoadingDialog(){
         if (dialog != null) {
             dialog.cancel();
         }

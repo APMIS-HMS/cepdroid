@@ -231,5 +231,6 @@
     <string name="apmis_id">APMIS ID</string>
     <string name="search_hint">Enter search term</string>
     <string name="naira_sign">₦</string>
+    <string name="insufficient_funds">Insufficient funds in your wallet for this transaction</string>
 
 </resources>

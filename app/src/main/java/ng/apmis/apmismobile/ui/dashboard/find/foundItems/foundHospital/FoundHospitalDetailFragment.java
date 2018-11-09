@@ -1,11 +1,14 @@
 package ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.transition.TransitionManager;
 import android.util.Log;
@@ -32,13 +35,19 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.fundAccount.Price;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsActivity;
+import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,6 +59,8 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     private static String KEY_ID = "facilityIdKey";
     private static String KEY_NAME = "facilityNameKey";
+
+    public static final int FUND_WALLET_REQUEST = 1;
 
     private OnFragmentInteractionListener mListener;
     private String id, name;
@@ -95,6 +106,8 @@ public class FoundHospitalDetailFragment extends Fragment {
     private Service selectedService;
     private Price selectedPrice;
 
+    private SharedPreferencesManager pref;
+
     public interface OnFragmentInteractionListener{
         void onPayClicked(String facilityId);
     }
@@ -115,6 +128,8 @@ public class FoundHospitalDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        pref = new SharedPreferencesManager(getContext());
 
         if (getArguments() != null) {
 
@@ -176,8 +191,18 @@ public class FoundHospitalDetailFragment extends Fragment {
             }
         });
 
+        payButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPaymentDetailsDialog();
+            }
+        });
+
         return view;
     }
+
+    private Observer<Wallet> walletObserver;
+    private int walletFunds;
 
     private void initViewModel(){
         FoundHospitalDetailViewModelFactory viewModelFactory = InjectorUtils.provideFoundHospitalDetailViewModelFactory(getContext());
@@ -249,7 +274,6 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     }
 
-
     private void setupSpinnerAdaptersWithBillManager(BillManager billManager) {
         List<Service> services = billManager.getServices();
 
@@ -265,7 +289,90 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     }
 
+    /**
+     * Show a bottom sheet fragment to display payment details
+     */
+    private void showPaymentDetailsDialog() {
+        final BottomSheetDialog builder = new BottomSheetDialog(getContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.bottom_dialog_reg_payment, null);
+        builder.setContentView(dialogView);
 
+        LinearLayout layout = dialogView.findViewById(R.id.bottom_dialog_layout);
+        TextView serviceText = dialogView.findViewById(R.id.service_text);
+        TextView priceText = dialogView.findViewById(R.id.price_text);
+        TextView apmisIdText = dialogView.findViewById(R.id.apmis_id_text);
+        TextView nameText = dialogView.findViewById(R.id.name_text);
+        TextView walletText = dialogView.findViewById(R.id.wallet_text);
+        TextView registerOrFundButton = dialogView.findViewById(R.id.register_fund_button);
+        TextView warningText = dialogView.findViewById(R.id.warning_text);
+
+        serviceText.setText(selectedService.getName());
+        priceText.setText(String.format("₦%s", selectedPrice.getPrice()+""));
+
+        //Quickly fetch the user data from local db
+        LiveData<PersonEntry> entryLiveData = InjectorUtils.provideRepository(getContext()).getUserData();
+        Observer<PersonEntry> personEntryObserver = personEntry -> {
+            if (personEntry != null){
+                if (personEntry.getEmail() != null) {
+                    apmisIdText.setText(personEntry.getApmisId());
+                    nameText.setText(personEntry.getFirstName() + " " + personEntry.getLastName());
+                }
+            }
+        };
+        entryLiveData.removeObservers(this);
+        entryLiveData.observe(this, personEntryObserver);
+
+
+        walletObserver = wallet -> {
+            if (wallet != null){
+                Log.e("WALLET", "Observed");
+                walletFunds = wallet.getBalance();
+                walletText.setText(String.format("₦%s", walletFunds+""));
+
+                boolean isMoneyEnough = walletFunds >= selectedPrice.getPrice();
+
+                if (isMoneyEnough){
+                    registerOrFundButton.setText("Register");
+                } else {
+                    registerOrFundButton.setText("Fund Wallet");
+                    TransitionManager.beginDelayedTransition(layout);
+                    warningText.setVisibility(View.VISIBLE);
+                }
+
+                registerOrFundButton.setEnabled(true);
+                registerOrFundButton.setOnClickListener(v -> {
+                    if (isMoneyEnough){
+                        builder.cancel();
+                    } else {
+                        builder.cancel();
+                        Intent i = new Intent(getContext(), FundWalletActivity.class);
+                        startActivityForResult(i, FUND_WALLET_REQUEST);
+                    }
+                });
+
+            }
+        };
+
+        foundHospitalViewModel.clearPersonWallet();
+        foundHospitalViewModel.getPersonWallet(pref.getPersonId()).removeObservers(this);
+        foundHospitalViewModel.getPersonWallet(pref.getPersonId()).observe(this, walletObserver);
+
+
+        builder.show();
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case FUND_WALLET_REQUEST:
+                    showPaymentDetailsDialog();
+                    break;
+            }
+        }
+    }
 
 
     @Override

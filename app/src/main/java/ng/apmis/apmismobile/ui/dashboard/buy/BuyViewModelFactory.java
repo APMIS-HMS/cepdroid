@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
 import ng.apmis.apmismobile.data.ApmisRepository;
-import ng.apmis.apmismobile.ui.dashboard.buy.payBills.BuyViewModel;
 
 public class BuyViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 

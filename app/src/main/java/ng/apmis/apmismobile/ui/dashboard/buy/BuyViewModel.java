@@ -1,4 +1,4 @@
-package ng.apmis.apmismobile.ui.dashboard.buy.payBills;
+package ng.apmis.apmismobile.ui.dashboard.buy;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;

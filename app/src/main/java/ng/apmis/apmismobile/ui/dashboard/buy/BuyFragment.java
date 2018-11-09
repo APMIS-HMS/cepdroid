@@ -3,16 +3,13 @@ package ng.apmis.apmismobile.ui.dashboard.buy;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -25,10 +22,10 @@ import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
-import ng.apmis.apmismobile.ui.dashboard.buy.payBills.BuyViewModel;
+import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.FundAccountFragment;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
-public class BuyFragment extends android.support.v4.app.Fragment {
+public class BuyFragment extends android.support.v4.app.Fragment implements FundAccountFragment.OnWalletFundedListener{
 
 
     private static final String CLASSNAME = BuyFragment.class.getSimpleName();
@@ -68,18 +65,20 @@ public class BuyFragment extends android.support.v4.app.Fragment {
         tabLayout.setTabMode(TabLayout.GRAVITY_CENTER);
         viewPager.setAdapter(adapter);
 
+
         initViewModel();
 
         return rootView;
     }
 
     BuyViewModel buyViewModel;
+    Observer<Wallet> walletObserver = null;
 
     private void initViewModel(){
         BuyViewModelFactory viewModelFactory = InjectorUtils.provideBuyViewModelFactory(getContext());
         buyViewModel = ViewModelProviders.of(this, viewModelFactory).get(BuyViewModel.class);
 
-        final Observer<Wallet> walletObserver = wallet -> {
+        walletObserver = wallet -> {
 
             if (wallet != null) {
                 balanceTextView.setText(String.format("₦%s", wallet.getBalance()+""));
@@ -98,4 +97,9 @@ public class BuyFragment extends android.support.v4.app.Fragment {
         super.onResume();
     }
 
+    @Override
+    public void onWalletFunded() {
+        buyViewModel.getPersonWallet(personId).removeObservers(this);
+        buyViewModel.getPersonWallet(personId).observe(this, walletObserver);
+    }
 }

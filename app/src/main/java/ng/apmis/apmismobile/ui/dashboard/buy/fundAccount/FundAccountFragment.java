@@ -42,8 +42,9 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_buys, container, false);
 
-
         adapter = new FundAccountAdapter(getActivity(), generateSampleData());
+
+        instantiateOnWalletFundedListener((OnWalletFundedListener) getParentFragment());
 
         recyclerView = root.findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
@@ -95,5 +96,8 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
         }
     }
 
+    public void instantiateOnWalletFundedListener(OnWalletFundedListener listener){
+        this.mListener = listener;
+    }
 
 }
