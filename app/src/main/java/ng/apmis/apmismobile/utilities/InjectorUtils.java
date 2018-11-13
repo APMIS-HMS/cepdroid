@@ -14,6 +14,7 @@ import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.transactionHistory.TransactionHistoryViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.diagnoses.DiagnosisViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.documentation.RecordsListViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsViewModelFactory;
@@ -192,6 +193,11 @@ public class InjectorUtils {
     public static FundWalletViewModelFactory provideFundWalletViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new FundWalletViewModelFactory(apmisRepository);
+    }
+
+    public static TransactionHistoryViewModelFactory provideTransactionViewModelFactory(Context context) {
+        ApmisNetworkDataSource apmisNetworkDataSource = provideNetworkData(context);
+        return new TransactionHistoryViewModelFactory(apmisNetworkDataSource);
     }
 
 }

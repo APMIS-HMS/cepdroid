@@ -88,6 +88,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<Wallet> personWallet;
     private MutableLiveData<String> paymentVerificationData;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
+    private MutableLiveData<PersonEntry> paidByPerson;
 
     //TODO Switch to LiveData later
     private List<OrderStatus> orderStatuses;
@@ -115,6 +116,7 @@ public class ApmisNetworkDataSource {
         personWallet = new MutableLiveData<>();
         appointmentTypes = new MutableLiveData<>();
         paymentVerificationData = new MutableLiveData<>();
+        paidByPerson = new MutableLiveData<>();
 
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
@@ -388,6 +390,12 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    private void fetchPaidByPerson(String paidById) {
+        apmisExecutors.networkIO().execute(() -> {
+            new NetworkDataCalls(mContext).getPaidBy(mContext, paidById, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
 
 
 
@@ -649,6 +657,11 @@ public class ApmisNetworkDataSource {
         return paymentVerificationData;
     }
 
+    public LiveData<PersonEntry> getPaidByPersonData (String personId) {
+        fetchPaidByPerson(personId);
+        return paidByPerson;
+    }
+
     public void setPaymentVerificationData(String status){
         paymentVerificationData.postValue(status);
     }
@@ -658,4 +671,7 @@ public class ApmisNetworkDataSource {
     }
 
 
+    public void setPaidByName(PersonEntry personEntry) {
+        paidByPerson.postValue(personEntry);
+    }
 }

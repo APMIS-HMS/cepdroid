@@ -60,7 +60,7 @@ public class BuyFragment extends android.support.v4.app.Fragment {
         });
 
         ViewPager viewPager = rootView.findViewById(R.id.view_pager);
-        BuyCategoryAdapter adapter = new BuyCategoryAdapter(getActivity(), getChildFragmentManager());
+        BuyCategoryAdapter adapter = new BuyCategoryAdapter(getChildFragmentManager());
 
         TabLayout tabLayout = rootView.findViewById(R.id.tabview);
         tabLayout.setupWithViewPager(viewPager);

@@ -231,5 +231,7 @@
     <string name="apmis_id">APMIS ID</string>
     <string name="search_hint">Enter search term</string>
     <string name="naira_sign">₦</string>
+    <string name="trx_amount_placeholder">NGN %s</string>
+    <string name="paid_by">%s %s %s</string>
 
 </resources>

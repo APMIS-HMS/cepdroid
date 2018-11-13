@@ -214,6 +214,43 @@ public final class NetworkDataCalls {
         APMISAPP.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
+    /**
+     * Fetch the data of person that paid for a service in fund wallet
+     * @param context The current context
+     * @param personId The person Id that initiated the transaction
+     * @param accessToken The security access token obtained from login
+     */
+    public void getPaidBy (Context context, String personId, String accessToken) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "people/" + personId, new JSONObject(), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                PersonEntry personEntry = gson.fromJson(response.toString(), PersonEntry.class);
+                Log.v("responseEntry", personEntry.toString());
+
+                InjectorUtils.provideNetworkData(context.getApplicationContext()).setPaidByName(personEntry);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.v("Person error", String.valueOf(error.getMessage()));
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+        APMISAPP.getInstance().addToRequestQueue(jsonObjectRequest);
+    }
+
+
 
     /**
      * Updates the person data with new/changed information on the server

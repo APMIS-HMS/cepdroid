@@ -24,6 +24,8 @@ import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 
 public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdapter.MyViewHolder> {
 
+    private static final int ADD_BENEFICIARY = 0;
+    private static final int BENEFICIARY = 1;
     private ArrayList<Beneficiaries> allBeneficiaries = new ArrayList<>();
 
     public BeneficiariesAdapter(ArrayList<Beneficiaries> beneficiaries) {
@@ -43,6 +45,11 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdap
         Beneficiaries beneficiary = allBeneficiaries.get(position);
         holder.imageView.setImageResource(beneficiary.getImage());
         holder.userName.setText(beneficiary.getName());
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     @Override
