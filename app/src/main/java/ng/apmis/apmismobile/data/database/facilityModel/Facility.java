@@ -3,6 +3,8 @@ package ng.apmis.apmismobile.data.database.facilityModel;
 
 import java.util.List;
 
+import ng.apmis.apmismobile.annotations.Exclude;
+
 /**
  * Created by mofeejegi-apmis.<br/>
  * Base object representing any organization.
@@ -101,6 +103,9 @@ public class Facility {
      * Ids of the sub-facilities of this parent Facility
      */
     private List<String> memberFacilities = null;
+
+    @Exclude
+    private String patientIdForPerson;
 
     private LogoObject logoObject;
 
@@ -429,5 +434,13 @@ public class Facility {
                 ", isHostFacility=" + isHostFacility +
                 ", isNetworkFacility=" + isNetworkFacility +
                 '}';
+    }
+
+    public String getPatientIdForPerson() {
+        return patientIdForPerson;
+    }
+
+    public void setPatientIdForPerson(String patientIdForPerson) {
+        this.patientIdForPerson = patientIdForPerson;
     }
 }

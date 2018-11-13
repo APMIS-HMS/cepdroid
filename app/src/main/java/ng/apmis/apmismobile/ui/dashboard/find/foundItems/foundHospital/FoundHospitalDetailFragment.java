@@ -1,5 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -30,6 +32,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -40,6 +43,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.fundAccount.Price;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsActivity;
@@ -108,6 +112,12 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     private SharedPreferencesManager pref;
 
+    private Observer<Wallet> walletObserver;
+    private Observer<Patient> patientObserver;
+    private int walletFunds;
+
+    private ProgressDialog progressDialog;
+
     public interface OnFragmentInteractionListener{
         void onPayClicked(String facilityId);
     }
@@ -148,6 +158,8 @@ public class FoundHospitalDetailFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         initViewModel();
+
+        progressDialog = new ProgressDialog(getContext());
 
         registerButton.setOnClickListener(v -> {
             registrationBillManager = null;
@@ -201,12 +213,22 @@ public class FoundHospitalDetailFragment extends Fragment {
         return view;
     }
 
-    private Observer<Wallet> walletObserver;
-    private int walletFunds;
+    List<String> registeredIds = null;
 
     private void initViewModel(){
         FoundHospitalDetailViewModelFactory viewModelFactory = InjectorUtils.provideFoundHospitalDetailViewModelFactory(getContext());
         foundHospitalViewModel = ViewModelProviders.of(this, viewModelFactory).get(FoundHospitalDetailViewModel.class);
+
+        final Observer<List<String>> registeredFacilityIdsObserver = facilityIds -> {
+
+            if (facilityIds != null) {
+                registeredIds = new ArrayList<>(facilityIds);
+            }
+        };
+
+        //Get this value first, it should have been preloaded prior to this page
+        foundHospitalViewModel.getRegisteredFacilityIds().observe(this, registeredFacilityIdsObserver);
+
 
         final Observer<Facility> facilityObserver = facility -> {
 
@@ -244,7 +266,26 @@ public class FoundHospitalDetailFragment extends Fragment {
             if (s != null) {
                 registrationCategoryId = s;
                 priceLoader.setVisibility(View.GONE);
-                registerButton.setVisibility(View.VISIBLE);
+
+                if (registeredIds != null) {
+                    if (registeredIds.contains(id))
+                        AppUtils.showShortToast(getContext(), "You have already registered in this facility");
+                    else
+                        registerButton.setVisibility(View.VISIBLE);
+                } else {
+                    AppUtils.showShortToast(getContext(), "Could not fetch registration details. Please try again later");
+                }
+            }
+        };
+
+        patientObserver = patient -> {
+            if (patient != null){
+                //Show patient completion dialog
+                hideProgressDialog();
+                showRegistrationCompletedDialog();
+            } else {
+                //Show error dialog
+                displayErrorDialog();
             }
         };
 
@@ -254,6 +295,38 @@ public class FoundHospitalDetailFragment extends Fragment {
         foundHospitalViewModel.clearServiceCategoryId();
         foundHospitalViewModel.getServiceCategoryIdForFacility(id).observe(this, serviceIdObserver);
 
+    }
+
+    private void showRegistrationCompletedDialog(){
+        new android.support.v7.app.AlertDialog.Builder(getContext())
+                .setTitle("Success")
+                .setCancelable(false)
+                .setMessage("You have registered as a patient in this Hospital.\nWould you like to set an appointment now?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    dialog.dismiss();
+                    getActivity().onBackPressed();
+                })
+                .setNegativeButton("Maybe later", (dialog, which) -> {
+                    dialog.dismiss();
+                    getActivity().onBackPressed();
+                })
+                .show();
+    }
+
+    private void displayErrorDialog(){
+        new android.support.v7.app.AlertDialog.Builder(getContext())
+                .setTitle("Failed")
+                .setMessage("Could not create appointment.\nPlease try again")
+                .setPositiveButton("Close", (dialog, which) -> {
+                    hideProgressDialog();
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    private void hideProgressDialog(){
+        if (progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     private void initBillManagerObserver(){
@@ -304,7 +377,7 @@ public class FoundHospitalDetailFragment extends Fragment {
         TextView apmisIdText = dialogView.findViewById(R.id.apmis_id_text);
         TextView nameText = dialogView.findViewById(R.id.name_text);
         TextView walletText = dialogView.findViewById(R.id.wallet_text);
-        TextView registerOrFundButton = dialogView.findViewById(R.id.register_fund_button);
+        Button registerOrFundButton = dialogView.findViewById(R.id.register_fund_button);
         TextView warningText = dialogView.findViewById(R.id.warning_text);
 
         serviceText.setText(selectedService.getName());
@@ -343,6 +416,7 @@ public class FoundHospitalDetailFragment extends Fragment {
                 registerOrFundButton.setEnabled(true);
                 registerOrFundButton.setOnClickListener(v -> {
                     if (isMoneyEnough){
+                        attemptFacilityRegistration();
                         builder.cancel();
                     } else {
                         builder.cancel();
@@ -358,10 +432,23 @@ public class FoundHospitalDetailFragment extends Fragment {
         foundHospitalViewModel.getPersonWallet(pref.getPersonId()).removeObservers(this);
         foundHospitalViewModel.getPersonWallet(pref.getPersonId()).observe(this, walletObserver);
 
-
         builder.show();
     }
 
+    private void attemptFacilityRegistration(){
+        showProgressDialog("Registering", "Please wait while we connect you to "+name);
+
+        foundHospitalViewModel.clearPatientOnRegistration();
+        foundHospitalViewModel.registerPatient(pref.getPersonId(), id).observe(this, patientObserver);
+    }
+
+    private void showProgressDialog(String title, String message){
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(message);
+        progressDialog.show();
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -373,7 +460,6 @@ public class FoundHospitalDetailFragment extends Fragment {
             }
         }
     }
-
 
     @Override
     public void onAttach(Context context) {

@@ -275,7 +275,7 @@ public final class NetworkDataCalls {
     }
 
     /**
-     * Fetch {@link Patient} details list for every facility the Person is enrolled into
+     * Fetch {@link Patient} details list for facilities the Person is enrolled into
      * @param context The current calling context
      * @param personId The person Id obtained from login
      * @param accessToken The security access token obtained from login
@@ -320,6 +320,91 @@ public final class NetworkDataCalls {
             }
         };
 
+        APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
+    }
+
+    /**
+     * Fetch facility details
+     * @param context
+     * @param personId
+     * @param accessToken
+     */
+    public void fetchRegisteredFacilities(Context context, String personId, String accessToken){
+
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "patients?personId=" + personId + "&$limit=null&$select[facilityId]", null, response -> {
+
+            Log.v("Reg Facility response", String.valueOf(response));
+
+            List<String> facilityIds = null;
+            List<Facility> facilities = new ArrayList<>();
+
+            try {
+                JSONArray jsonArray = response.getJSONArray("data");
+
+                if (jsonArray.length()>0) {
+
+                    facilityIds = new ArrayList<>();
+
+                    try {
+
+                        for (int i = 0; i < jsonArray.length(); ++i){
+                            String nextId = jsonArray.getJSONObject(i).getString("facilityId");
+
+                            //In case of duplicates, filter them out. Even though the whole point of these
+                            //facility id checks are to avoid duplicates from occurring in the first place
+                            if (i == 0) {
+                                facilityIds.add(nextId);
+                                Facility facility = gson.fromJson(jsonArray.getJSONObject(i).getString("facilityObj"), Facility.class);
+                                facility.setPatientIdForPerson(jsonArray.getJSONObject(i).getString("_id"));
+                                facilities.add(facility);
+
+                            } else if (!facilityIds.contains(nextId)) {
+                                facilityIds.add(nextId);
+                                Facility facility = gson.fromJson(jsonArray.getJSONObject(i).getString("facilityObj"), Facility.class);
+                                facility.setPatientIdForPerson(jsonArray.getJSONObject(i).getString("_id"));
+                                facilities.add(facility);
+                            }
+                        }
+
+                        Log.v("Reg facilityId fetch", jsonArray.toString());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.v("Reg Facility respEntry", response.toString());
+
+                    InjectorUtils.provideNetworkData(context).setRegisteredFacilities(facilityIds, facilities);
+
+                } else {
+
+                    InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, facilities);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, facilities);
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Reg Facility error", String.valueOf(error.getMessage()));
+                InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, new ArrayList<>());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
         APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
 
@@ -1405,6 +1490,55 @@ public final class NetworkDataCalls {
     }
 
 
+    /**
+     * Register a person as a patient in a Facility
+     * @param context The calling context
+     * @param personId The id of the person being registered
+     * @param facilityId The id of the facility the person is being registered into
+     * @param accessToken The security access token obtained from login
+     */
+    public void registerPatientInFacility(Context context, String personId, String facilityId, String accessToken){
+        Log.d("Reg patient", "Started registration");
 
+        JSONObject params = new JSONObject();
+        try {
+            params.put("personId", personId);
+            params.put("facilityId", facilityId);
+            params.put("isActive", true);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest registrationRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "patients", params, response -> {
+
+            Log.v("Reg patient response", String.valueOf(response));
+
+            Patient registrationResponse = gson.fromJson(response.toString(), Patient.class);
+
+            InjectorUtils.provideNetworkData(context).setRegisteredPatient(registrationResponse);
+
+        }, (VolleyError error) -> {
+
+            Log.e("Reg patient error", String.valueOf(error.getMessage()));
+            //Return a null object
+            InjectorUtils.provideNetworkData(context).setRegisteredPatient(null);
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        registrationRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(registrationRequest);
+    }
 
 }

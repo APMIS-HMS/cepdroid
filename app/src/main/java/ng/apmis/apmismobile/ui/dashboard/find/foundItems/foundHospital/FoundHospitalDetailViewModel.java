@@ -3,9 +3,12 @@ package ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import java.util.List;
+
 import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.database.personModel.Wallet;
 
 public class FoundHospitalDetailViewModel extends ViewModel {
@@ -55,5 +58,19 @@ public class FoundHospitalDetailViewModel extends ViewModel {
 
     public void clearPersonWallet(){
         apmisRepository.getNetworkDataSource().clearWallet();
+    }
+
+    public void clearPatientOnRegistration(){
+        apmisRepository.getNetworkDataSource().clearPatientOnRegistration();
+    }
+
+    public LiveData<Patient> registerPatient(String personId, String facilityId){
+        return apmisRepository.getNetworkDataSource().registerPatient(personId, facilityId);
+    }
+
+
+
+    public LiveData<List<String>> getRegisteredFacilityIds() {
+        return apmisRepository.getNetworkDataSource().getRegisteredFacilityIds();
     }
 }
