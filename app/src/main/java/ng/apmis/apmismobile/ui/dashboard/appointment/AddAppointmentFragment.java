@@ -263,6 +263,7 @@ public class AddAppointmentFragment extends Fragment {
 
             //Only record observations if appointment body is valid
             if (validateAppointmentBody()) {
+                hideProgressDialog();
 
                 if (appointment != null) {
                     //Save to room here
@@ -272,7 +273,6 @@ public class AddAppointmentFragment extends Fragment {
                     appointment.setPersonId(appointment.getPatientDetails().getPersonId());
                     appointmentViewModel.insertAppointment(appointment);
 
-                    hideProgressDialog();
                     displaySuccessDialog(appointment.get_id());
 
                 } else {
@@ -572,6 +572,8 @@ public class AddAppointmentFragment extends Fragment {
         appointment.setPatientId(mSelectedFacility.getPatientIdForPerson());
         appointment.setAppointmentReason("");
         appointment.setCategory(mSelectedService.getName());
+
+        Log.e("Submit ted", appointment.toString());
 
 
         appointmentViewModel.submitAppointment(appointment);

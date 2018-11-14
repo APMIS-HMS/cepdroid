@@ -697,7 +697,7 @@ public final class NetworkDataCalls {
 
         }, (VolleyError error) -> {
 
-            Log.e("Submit appoint error", String.valueOf(error.getMessage()));
+            Log.e("Submit appoint error", String.valueOf(error.networkResponse.statusCode));
             //Return a null object
             InjectorUtils.provideNetworkData(context).setAppointment(null);
 
@@ -714,6 +714,7 @@ public final class NetworkDataCalls {
             }
         };
 
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
         APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 
