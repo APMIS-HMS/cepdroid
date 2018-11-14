@@ -193,6 +193,14 @@
         <item>Select Time</item>
     </string-array>
 
+    <string-array name="select_service">
+        <item>Select Service</item>
+    </string-array>
+
+    <string-array name="select_price">
+        <item>Select Price</item>
+    </string-array>
+
     <string-array name="filter">
         <item>Hospital</item>
         <item>Doctor</item>
@@ -222,5 +230,9 @@
     <string name="e_mail">E-mail</string>
     <string name="apmis_id">APMIS ID</string>
     <string name="search_hint">Enter search term</string>
+    <string name="naira_sign">₦</string>
+    <string name="insufficient_funds">Insufficient funds in your wallet for this transaction</string>
+    <string name="trx_amount_placeholder">NGN %s</string>
+    <string name="paid_by">%s %s %s</string>
 
 </resources>

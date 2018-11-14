@@ -17,6 +17,8 @@ import com.android.volley.toolbox.Volley;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import co.paystack.android.PaystackSdk;
+
 public class APMISAPP extends Application{
 
     // For Singleton instantiation
@@ -46,6 +48,7 @@ public class APMISAPP extends Application{
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+        PaystackSdk.initialize(getApplicationContext());
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new APMISAPP(Executors.newSingleThreadExecutor(),

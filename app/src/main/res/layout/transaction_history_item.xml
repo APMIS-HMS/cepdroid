@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="80dp"
+    android:padding="8dp"
+    android:background="#f2f2f2"
+    android:layout_marginBottom="12dp"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Detail"
+            android:textColor="#292929"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/transaction_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Laboratory Levy"
+            android:textSize="10sp"
+            android:textColor="#292929" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/transaction_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/trx_amount_placeholder"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/amount"
+            android:text="Tue July 8, 2018 2:30 AM"
+            android:textSize="10sp"
+            android:layout_marginTop="20dp"
+            android:textColor="#292929"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

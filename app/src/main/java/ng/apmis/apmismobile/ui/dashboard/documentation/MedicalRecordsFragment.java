@@ -170,7 +170,7 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
     public void onResume() {
         if (getActivity() != null) {
             ((DashboardActivity)getActivity()).profileImage.setVisibility(View.GONE);
-            ((DashboardActivity)getActivity()).setToolBarTitle(Constants.MEDICAL_RECORDS, false);
+            ((DashboardActivity)getActivity()).setToolBarTitle(Constants.CLINICAL_DOCUMENTATION, false);
         }
         super.onResume();
     }

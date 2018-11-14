@@ -90,4 +90,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     //for cropping images
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
+    //paystack
+    compile 'co.paystack.android:paystack:3.0.10'
 }

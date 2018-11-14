@@ -51,7 +51,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edittext_background_grey" />
+                android:background="@drawable/edittext_background" />
 
         </LinearLayout>
 
@@ -73,7 +73,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edittext_background_grey" />
+                android:background="@drawable/edittext_background" />
 
         </LinearLayout>
 

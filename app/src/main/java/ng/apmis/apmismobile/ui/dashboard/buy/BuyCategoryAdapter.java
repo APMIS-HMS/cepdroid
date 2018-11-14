@@ -17,13 +17,13 @@ import ng.apmis.apmismobile.ui.dashboard.buy.payBills.PayBillsFragment;
 
 public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
 
-    private Context context;
     private String[] pageTitles = new String[]{"Fund Account", "Pay Bills", "Make Purchase"};
 
-    public BuyCategoryAdapter(Context context, FragmentManager fm) {
+    public BuyCategoryAdapter(FragmentManager fm) {
         super(fm);
-        this.context = context;
     }
+
+
 
     @Override
     public Fragment getItem(int position) {
@@ -37,7 +37,6 @@ public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
             default:
                 return new FundAccountFragment();
         }
-
     }
 
     @Override
@@ -59,4 +58,5 @@ public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
                 return pageTitles[0];
         }
     }
+
 }

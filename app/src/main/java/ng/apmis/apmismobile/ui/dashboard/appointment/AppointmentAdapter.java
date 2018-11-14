@@ -125,7 +125,11 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 segmentedAppointmentItems.add(
                         new SegmentedAppointmentItem(AppointmentStatus.SCHEDULED.segmentName,
                                 false, null));
-            } else if (getStatus(currentAppointmentInList) != getStatus(previousAppointmentInList)){
+            }
+
+            if (getStatus(currentAppointmentInList) != AppointmentStatus.SCHEDULED &&
+                    getStatus(currentAppointmentInList) != getStatus(previousAppointmentInList)){
+                //Scheduled segment titles have already been handled statically
                 //Checks for a change in appointment category and adds segment title based on the new category
                 segmentedAppointmentItems.add(
                         new SegmentedAppointmentItem(getStatus(currentAppointmentInList).segmentName,
@@ -144,6 +148,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private AppointmentStatus getStatus(Appointment appointment) {
+        if (appointment == null){
+            return null;
+        }
+
         //The current time now
         Date now = new Date();
 
@@ -238,6 +246,9 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 });
 
                 popup.show(); //showing popup menu
+
+
+                AppUtils.showShortToast(mContext, "View show now");
             }); //closing the setOnClickListener method
 
         } else if (holder instanceof SegmentTitleViewHolder){
