@@ -309,7 +309,7 @@ public class ApmisNetworkDataSource {
     public void fetchMedicalRecordsForPerson(String personId){
         apmisExecutors.networkIO().execute(() -> {
             Log.d(LOG_TAG, "Fetch Records started");
-            new NetworkDataCalls(mContext).fetchMedicalRecordForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+            new NetworkDataCalls(mContext).fetchClinicalDocumentationForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 

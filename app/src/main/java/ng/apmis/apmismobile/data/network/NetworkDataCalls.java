@@ -789,6 +789,8 @@ public final class NetworkDataCalls {
 
         }, (VolleyError error) -> {
 
+            //return null in case of errors
+            InjectorUtils.provideNetworkData(context).setAppointment(null);
             Log.e("Fetch appoints error", error.toString());
 
         }) {
@@ -814,7 +816,7 @@ public final class NetworkDataCalls {
      * @param personId The personId of the Patient
      * @param accessToken The security access token obtained from login
      */
-    public void fetchMedicalRecordForPerson(Context context, String personId, String accessToken){
+    public void fetchClinicalDocumentationForPerson(Context context, String personId, String accessToken){
 
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "documentations?personId=" + personId + REVERSE_QUERY, null, response -> {
 

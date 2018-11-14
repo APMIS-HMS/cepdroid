@@ -45,6 +45,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     @BindView(R.id.navigation)
     public BottomNavigationView mBottomNav;
+
     @BindView(R.id.img_profile)
     public CircleImageView profileImage;
     PopupMenu popupMenu;

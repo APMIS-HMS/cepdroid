@@ -17,6 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,6 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 public class AppointmentFragment extends Fragment implements View.OnClickListener {
 
     AppointmentAdapter appointmentAdapter;
-    ProgressBar loadUpcomingProgress;
 
     private SharedPreferencesManager sharedPreferencesManager;
     private ArrayList<Appointment> appointments = new ArrayList<>();
@@ -44,6 +45,9 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
     @BindView(R.id.relative_layout)
     RelativeLayout relativeLayout;
+
+    @BindView(R.id.appointments_shimmer)
+    ShimmerFrameLayout appointmentsShimmer;
 
     RecyclerView appointmentRecycler;
 
@@ -54,12 +58,12 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
         ButterKnife.bind(this, rootView);
 
+        appointmentsShimmer.startShimmer();
+
         assert getActivity() != null;
         sharedPreferencesManager = new SharedPreferencesManager(getActivity());
         appointmentRecycler = rootView.findViewById(R.id.recently_booked_recycler);
         rootView.findViewById(R.id.appointment_add_fab).setOnClickListener(this);
-
-        loadUpcomingProgress = rootView.findViewById(R.id.recently_booked_loader);
 
         InjectorUtils.provideNetworkData(getActivity()).fetchAppointmentsForPerson(sharedPreferencesManager.getPersonId());
 
@@ -69,8 +73,9 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
         TransitionManager.beginDelayedTransition(appointmentRecycler);
 
         if (appointmentAdapter != null){
+            appointmentsShimmer.stopShimmer();
+            appointmentsShimmer.setVisibility(View.GONE);
             appointmentRecycler.setAdapter(appointmentAdapter);
-            loadUpcomingProgress.setVisibility(View.GONE);
         }
 
         initViewModel();
@@ -89,6 +94,7 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
             this.appointments.clear();
             this.appointments.addAll(appointments);
 
+
             if (appointmentAdapter == null) {
 
                 appointmentAdapter = new AppointmentAdapter(getActivity());
@@ -97,7 +103,9 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
                 appointmentRecycler.setAdapter(appointmentAdapter);
 
-                loadUpcomingProgress.setVisibility(View.GONE);
+                appointmentsShimmer.stopShimmer();
+                appointmentsShimmer.setVisibility(View.GONE);
+
                 Log.d("Called fresh", this.appointments.size()+"");
 
             } else {
