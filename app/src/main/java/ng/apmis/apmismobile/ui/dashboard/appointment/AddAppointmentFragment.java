@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -105,7 +104,6 @@ public class AddAppointmentFragment extends Fragment {
 
     //Selectable data lists
     private List<AppointmentType> mAppointmentTypes;
-    private List<Patient> mPatients;
     private List<Facility> mFacilities;
     private List<ClinicSchedule> mClinics;
     private List<Service> mServices;
@@ -115,7 +113,6 @@ public class AddAppointmentFragment extends Fragment {
     //Selectable data items
     private AppointmentType mAppointmentType;
     private OrderStatus mOrderStatus;
-    private Patient mPatient;
     private Facility mSelectedFacility;
     private ClinicSchedule mSelectedClinic;
     private Service mSelectedService;
@@ -181,9 +178,8 @@ public class AddAppointmentFragment extends Fragment {
         appointmentViewModel.getAppointmentTypes().observe(getActivity(), appointmentTypesObserver);
 
 
-        final Observer<List<Patient>> patientsObserver = patients -> {
-            mPatients = patients;
-            mFacilities = getFacilitiesFromPatients(patients);
+        Observer<List<Facility>> facilitiesObserver = facilities -> {
+            mFacilities = facilities;
 
             if (hospitalAdapter == null) {
                 hospitalAdapter = new FacilityAdapter(getContext(), 0, mFacilities);
@@ -193,10 +189,10 @@ public class AddAppointmentFragment extends Fragment {
             }
         };
 
-        appointmentViewModel.getPatientsForPerson().observe(getActivity(), patientsObserver);
+        appointmentViewModel.getRegisteredFacilities().observe(getActivity(), facilitiesObserver);
 
 
-        final Observer<List<ClinicSchedule>> clinicsObserver = clinics -> {
+        Observer<List<ClinicSchedule>> clinicsObserver = clinics -> {
             mClinics = clinics;
 
             if (clinicAdapter == null) {
@@ -267,6 +263,7 @@ public class AddAppointmentFragment extends Fragment {
 
             //Only record observations if appointment body is valid
             if (validateAppointmentBody()) {
+                hideProgressDialog();
 
                 if (appointment != null) {
                     //Save to room here
@@ -276,7 +273,6 @@ public class AddAppointmentFragment extends Fragment {
                     appointment.setPersonId(appointment.getPatientDetails().getPersonId());
                     appointmentViewModel.insertAppointment(appointment);
 
-                    hideProgressDialog();
                     displaySuccessDialog(appointment.get_id());
 
                 } else {
@@ -309,7 +305,6 @@ public class AddAppointmentFragment extends Fragment {
      * Reset all selectable fields to null
      */
     private void resetAllSelectedFields(){
-        mPatient = null;
         mSelectedFacility = null;
         mSelectedClinic = null;
         mSelectedService = null;
@@ -409,7 +404,6 @@ public class AddAppointmentFragment extends Fragment {
                 //Get the facility id of the work by reducing position by 1
                 if (position > 0) {
 
-                    mPatient = mPatients.get(position - 1);
                     mSelectedFacility = mFacilities.get(position - 1);
 
                     InjectorUtils.provideNetworkData(getContext()).fetchClinicSchedulesForFacility(mSelectedFacility.getId());
@@ -522,9 +516,6 @@ public class AddAppointmentFragment extends Fragment {
      */
     private boolean validateAppointmentBody(){
 
-        if (mPatient == null)
-            return false;
-
         if (mSelectedFacility == null)
             return false;
 
@@ -578,9 +569,11 @@ public class AddAppointmentFragment extends Fragment {
         appointment.setClinicId(mSelectedClinic.getClinic());
         appointment.setDoctorId(mSelectedDoctor.getId());
         appointment.setOrderStatusId(mOrderStatus.getName());
-        appointment.setPatientId(mPatient.getId());
+        appointment.setPatientId(mSelectedFacility.getPatientIdForPerson());
         appointment.setAppointmentReason("");
         appointment.setCategory(mSelectedService.getName());
+
+        Log.e("Submit ted", appointment.toString());
 
 
         appointmentViewModel.submitAppointment(appointment);
@@ -640,7 +633,7 @@ public class AddAppointmentFragment extends Fragment {
         appointmentViewModel.getSchedules().removeObservers(getActivity());
         appointmentViewModel.getServices().removeObservers(getActivity());
         appointmentViewModel.getClinics().removeObservers(getActivity());
-        appointmentViewModel.getPatientsForPerson().removeObservers(getActivity());
+        appointmentViewModel.getRegisteredFacilities().removeObservers(getActivity());
         appointmentViewModel.getEmployees().removeObservers(getActivity());
     }
 

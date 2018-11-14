@@ -71,6 +71,8 @@ public class ApmisNetworkDataSource {
     //LiveData references
     private final MutableLiveData<PersonEntry> mDownloadedPersonData;
     private MutableLiveData<List<Patient>> patientDetails;
+    private MutableLiveData<List<Facility>> registeredFacilities;
+    private MutableLiveData<List<String>> registeredFacilityIds;
     private MutableLiveData<List<ClinicSchedule>> clinics;
     private MutableLiveData<List<ScheduleItem>> schedules;
     private MutableLiveData<List<Employee>> employees;
@@ -87,6 +89,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<BillManager> categoryBillManager;
     private MutableLiveData<Wallet> personWallet;
     private MutableLiveData<String> paymentVerificationData;
+    private MutableLiveData<Patient> registeredPatient;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
     private MutableLiveData<PersonEntry> paidByPerson;
 
@@ -99,6 +102,8 @@ public class ApmisNetworkDataSource {
         apmisExecutors = executorThreads;
         mDownloadedPersonData = new MutableLiveData<>();
         patientDetails = new MutableLiveData<>();
+        registeredFacilities = new MutableLiveData<>();
+        registeredFacilityIds = new MutableLiveData<>();
         clinics = new MutableLiveData<>();
         schedules = new MutableLiveData<>();
         employees = new MutableLiveData<>();
@@ -117,6 +122,7 @@ public class ApmisNetworkDataSource {
         appointmentTypes = new MutableLiveData<>();
         paymentVerificationData = new MutableLiveData<>();
         paidByPerson = new MutableLiveData<>();
+        registeredPatient = new MutableLiveData<>();
 
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
@@ -204,7 +210,7 @@ public class ApmisNetworkDataSource {
             Log.d(LOG_TAG, "Fetch person details started");
             try {
                 new NetworkDataCalls(mContext).getPersonData(mContext, sharedPreferencesManager.getStoredLoggedInUser().getString("pid"), sharedPreferencesManager.getStoredLoggedInUser().getString("token"));
-                new NetworkDataCalls(mContext).fetchPatientDetailsForPerson(mContext, sharedPreferencesManager.getPersonId(),  sharedPreferencesManager.getStoredUserAccessToken());
+                new NetworkDataCalls(mContext).fetchRegisteredFacilities(mContext, sharedPreferencesManager.getPersonId(),  sharedPreferencesManager.getStoredUserAccessToken());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -382,13 +388,22 @@ public class ApmisNetworkDataSource {
         });
     }
 
-
     private void fetchPaymentVerificationData(String referenceCode, int amountPaid){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Found", "Fetch payment verification started");
             new NetworkDataCalls(mContext).fetchPaymentVerificationData(mContext, referenceCode, amountPaid, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
+
+    private void registerPatientInFacility(String personId, String facilityId){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d("Found", "Patient registration started");
+            new NetworkDataCalls(mContext).registerPatientInFacility(mContext, personId, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+
+
 
     private void fetchPaidByPerson(String paidById) {
         apmisExecutors.networkIO().execute(() -> {
@@ -421,6 +436,24 @@ public class ApmisNetworkDataSource {
         //return the local path the photo was downloaded to
         return profilePhotoPath;
     }
+
+
+    //Registered Facility Ids and metadata
+
+    public void setRegisteredFacilities(List<String> ids, List<Facility> facilities){
+        registeredFacilityIds.postValue(ids);
+        registeredFacilities.postValue(facilities);
+    }
+
+    public LiveData<List<String>> getRegisteredFacilityIds(){
+        return registeredFacilityIds;
+    }
+
+    public LiveData<List<Facility>> getRegisteredFacilities(){
+        return registeredFacilities;
+    }
+
+
 
 
     //Order Status
@@ -495,7 +528,7 @@ public class ApmisNetworkDataSource {
 
     //Services
 
-    public void setServicesForFacility(List<Category> categories){
+    public void setServicesForFacility(List<Category> categories) {
         for (Category category : categories){
             if (category.getName().equalsIgnoreCase("Appointment")) {
                 this.services.postValue(category.getServices());
@@ -670,6 +703,35 @@ public class ApmisNetworkDataSource {
         paymentVerificationData = new MutableLiveData<>();
     }
 
+
+
+
+    //Patient registration
+    public void clearPatientOnRegistration(){
+        registeredPatient = new MutableLiveData<>();
+    }
+
+    public LiveData<Patient> registerPatient(String personId, String facilityId){
+        registerPatientInFacility(personId, facilityId);
+        return registeredPatient;
+    }
+
+    public void setRegisteredPatient(Patient patient){
+        if (patient != null) {
+            //quickly add the new facility id to avoid double registration
+            if (registeredFacilityIds.getValue() != null) {
+                List<String> current = new ArrayList<>(registeredFacilityIds.getValue());
+                current.add(patient.getFacilityId());
+                registeredFacilityIds.postValue(current);
+                Log.e("Reg","added "+patient.getFacilityId());
+            }
+
+            //then refresh the facility list for the new facility the patient just registered in
+            new NetworkDataCalls(mContext).fetchRegisteredFacilities(mContext, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
+        }
+
+        registeredPatient.postValue(patient);
+    }
 
     public void setPaidByName(PersonEntry personEntry) {
         paidByPerson.postValue(personEntry);

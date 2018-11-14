@@ -40,12 +40,13 @@ public class ViewFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointents));
-        optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
-        optionItems.add(new ModuleListModel(Constants.MEDICAL_RECORDS, R.drawable.ic_medical_records));
+        optionItems.add(new ModuleListModel(Constants.CLINICAL_DOCUMENTATION, R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel(Constants.PRESCRIPTION, R.drawable.ic_prescription));
         optionItems.add(new ModuleListModel(Constants.HEALTH_PROFILE, R.drawable.ic_health_profile));
-        optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
         optionItems.add(new ModuleListModel(Constants.DIAGNOSES, R.drawable.ic_diagnostic_report));
+
+        optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
+        optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
         optionItems.add(new ModuleListModel("REFERRAL", R.drawable.ic_referral));
         optionItems.add(new ModuleListModel("MENSTRUAL CYCLE", R.drawable.ic_menstrual));
         optionItems.add(new ModuleListModel("CARE TEAM", R.drawable.ic_care_team));
@@ -64,7 +65,7 @@ public class ViewFragment extends Fragment {
                 Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
 
                 switch (selectedOption.getmOption()) {
-                    case Constants.MEDICAL_RECORDS:
+                    case Constants.CLINICAL_DOCUMENTATION:
                         setFragment(new MedicalRecordsFragment());
                         break;
                     case "MEDICATION":

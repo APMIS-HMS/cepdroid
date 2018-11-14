@@ -1,5 +1,6 @@
 package ng.apmis.apmismobile.ui.dashboard.appointment;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
@@ -11,6 +12,7 @@ import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
 import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
+import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
@@ -18,7 +20,7 @@ import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
 public class AddAppointmentViewModel extends ViewModel {
 
-    private MutableLiveData<List<Patient>> mPatients;
+    private LiveData<List<Facility>> mFacilities;
     private MutableLiveData<List<ClinicSchedule>> mClinics;
     private MutableLiveData<List<Service>> mServices;
     private MutableLiveData<List<Employee>> mEmployees;
@@ -39,7 +41,7 @@ public class AddAppointmentViewModel extends ViewModel {
         appointmentTypes = apmisNetworkDataSource.getAppointmentTypes();
         orderStatuses = apmisNetworkDataSource.getOrderStatuses();
 
-        mPatients = apmisNetworkDataSource.getPatientDetailsForPerson();
+        mFacilities = apmisNetworkDataSource.getRegisteredFacilities();
         mClinics = apmisNetworkDataSource.getClinicsForFacility();
         mServices = apmisNetworkDataSource.getServicesForFacility();
         mEmployees = apmisNetworkDataSource.getEmployeesForFacility();
@@ -57,8 +59,8 @@ public class AddAppointmentViewModel extends ViewModel {
         return appointmentTypes;
     }
 
-    public MutableLiveData<List<Patient>> getPatientsForPerson() {
-        return mPatients;
+    public LiveData<List<Facility>> getRegisteredFacilities() {
+        return mFacilities;
     }
 
     public MutableLiveData<List<ClinicSchedule>> getClinics() {

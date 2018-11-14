@@ -22,7 +22,6 @@ public class PersonViewModel extends ViewModel {
     PersonViewModel(Context context, ApmisRepository apmisRepository) {
         this.apmisRepository = apmisRepository;
         mPersonEntry = apmisRepository.getUserData();
-
     }
 
     public LiveData<PersonEntry> getPersonEntry() {

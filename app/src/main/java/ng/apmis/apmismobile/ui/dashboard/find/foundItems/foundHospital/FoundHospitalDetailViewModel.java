@@ -3,9 +3,13 @@ package ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import java.util.List;
+
 import ng.apmis.apmismobile.data.ApmisRepository;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.data.database.personModel.Wallet;
 
 public class FoundHospitalDetailViewModel extends ViewModel {
 
@@ -13,6 +17,7 @@ public class FoundHospitalDetailViewModel extends ViewModel {
     private LiveData<Facility> facility;
     private LiveData<String> serviceCategoryId;
     private LiveData<BillManager> billManager;
+    private LiveData<Wallet> wallet;
 
     FoundHospitalDetailViewModel(ApmisRepository apmisRepository) {
         this.apmisRepository = apmisRepository;
@@ -34,6 +39,11 @@ public class FoundHospitalDetailViewModel extends ViewModel {
         return billManager;
     }
 
+    public LiveData<Wallet> getPersonWallet(String personId) {
+        wallet = apmisRepository.getNetworkDataSource().getPersonWallet(personId);
+        return wallet;
+    }
+
     public void clearFacilityData(){
         apmisRepository.getNetworkDataSource().clearFacilityData();
     }
@@ -44,5 +54,23 @@ public class FoundHospitalDetailViewModel extends ViewModel {
 
     public void clearBills(){
         apmisRepository.getNetworkDataSource().clearBillManager();
+    }
+
+    public void clearPersonWallet(){
+        apmisRepository.getNetworkDataSource().clearWallet();
+    }
+
+    public void clearPatientOnRegistration(){
+        apmisRepository.getNetworkDataSource().clearPatientOnRegistration();
+    }
+
+    public LiveData<Patient> registerPatient(String personId, String facilityId){
+        return apmisRepository.getNetworkDataSource().registerPatient(personId, facilityId);
+    }
+
+
+
+    public LiveData<List<String>> getRegisteredFacilityIds() {
+        return apmisRepository.getNetworkDataSource().getRegisteredFacilityIds();
     }
 }

@@ -286,10 +286,22 @@ public class Appointment implements Comparable<Appointment>{
 
     @Override
     public String toString() {
-        return "Appointments{" +
-                "facilityName='" + facilityName + '\'' +
-                ", clinicName='" + clinicId + '\'' +
-                ", startDate=" + startDate +
+        return "Appointment{" +
+                "id=" + id +
+                ", _id='" + _id + '\'' +
+                ", facilityName='" + facilityName + '\'' +
+                ", orderStatusId='" + orderStatusId + '\'' +
+                ", category='" + category + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", personId='" + personId + '\'' +
+                ", patientId='" + patientId + '\'' +
+                ", facilityId='" + facilityId + '\'' +
+                ", doctorId='" + doctorId + '\'' +
+                ", clinicId='" + clinicId + '\'' +
+                ", isActive=" + isActive +
+                ", age='" + age + '\'' +
+                ", patientDetails=" + patientDetails +
+                ", providerDetails=" + providerDetails +
                 '}';
     }
 

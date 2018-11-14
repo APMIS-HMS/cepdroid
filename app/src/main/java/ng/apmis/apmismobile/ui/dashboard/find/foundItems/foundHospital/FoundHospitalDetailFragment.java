@@ -1,11 +1,16 @@
 package ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.transition.TransitionManager;
 import android.util.Log;
@@ -27,18 +32,26 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.fundAccount.Price;
+import ng.apmis.apmismobile.data.database.patientModel.Patient;
+import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
+import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsActivity;
+import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,6 +63,8 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     private static String KEY_ID = "facilityIdKey";
     private static String KEY_NAME = "facilityNameKey";
+
+    public static final int FUND_WALLET_REQUEST = 1;
 
     private OnFragmentInteractionListener mListener;
     private String id, name;
@@ -95,6 +110,14 @@ public class FoundHospitalDetailFragment extends Fragment {
     private Service selectedService;
     private Price selectedPrice;
 
+    private SharedPreferencesManager pref;
+
+    private Observer<Wallet> walletObserver;
+    private Observer<Patient> patientObserver;
+    private int walletFunds;
+
+    private ProgressDialog progressDialog;
+
     public interface OnFragmentInteractionListener{
         void onPayClicked(String facilityId);
     }
@@ -116,6 +139,8 @@ public class FoundHospitalDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        pref = new SharedPreferencesManager(getContext());
+
         if (getArguments() != null) {
 
             if (getArguments().getSerializable(KEY_ID) != null) {
@@ -133,6 +158,8 @@ public class FoundHospitalDetailFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         initViewModel();
+
+        progressDialog = new ProgressDialog(getContext());
 
         registerButton.setOnClickListener(v -> {
             registrationBillManager = null;
@@ -176,12 +203,32 @@ public class FoundHospitalDetailFragment extends Fragment {
             }
         });
 
+        payButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPaymentDetailsDialog();
+            }
+        });
+
         return view;
     }
+
+    List<String> registeredIds = null;
 
     private void initViewModel(){
         FoundHospitalDetailViewModelFactory viewModelFactory = InjectorUtils.provideFoundHospitalDetailViewModelFactory(getContext());
         foundHospitalViewModel = ViewModelProviders.of(this, viewModelFactory).get(FoundHospitalDetailViewModel.class);
+
+        final Observer<List<String>> registeredFacilityIdsObserver = facilityIds -> {
+
+            if (facilityIds != null) {
+                registeredIds = new ArrayList<>(facilityIds);
+            }
+        };
+
+        //Get this value first, it should have been preloaded prior to this page
+        foundHospitalViewModel.getRegisteredFacilityIds().observe(this, registeredFacilityIdsObserver);
+
 
         final Observer<Facility> facilityObserver = facility -> {
 
@@ -219,7 +266,26 @@ public class FoundHospitalDetailFragment extends Fragment {
             if (s != null) {
                 registrationCategoryId = s;
                 priceLoader.setVisibility(View.GONE);
-                registerButton.setVisibility(View.VISIBLE);
+
+                if (registeredIds != null) {
+                    if (registeredIds.contains(id))
+                        AppUtils.showShortToast(getContext(), "You have already registered in this facility");
+                    else
+                        registerButton.setVisibility(View.VISIBLE);
+                } else {
+                    AppUtils.showShortToast(getContext(), "Could not fetch registration details. Please try again later");
+                }
+            }
+        };
+
+        patientObserver = patient -> {
+            if (patient != null){
+                //Show patient completion dialog
+                hideProgressDialog();
+                showRegistrationCompletedDialog();
+            } else {
+                //Show error dialog
+                displayErrorDialog();
             }
         };
 
@@ -229,6 +295,38 @@ public class FoundHospitalDetailFragment extends Fragment {
         foundHospitalViewModel.clearServiceCategoryId();
         foundHospitalViewModel.getServiceCategoryIdForFacility(id).observe(this, serviceIdObserver);
 
+    }
+
+    private void showRegistrationCompletedDialog(){
+        new android.support.v7.app.AlertDialog.Builder(getContext())
+                .setTitle("Success")
+                .setCancelable(false)
+                .setMessage("You have registered as a patient in this Hospital.\nWould you like to set an appointment now?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    dialog.dismiss();
+                    getActivity().onBackPressed();
+                })
+                .setNegativeButton("Maybe later", (dialog, which) -> {
+                    dialog.dismiss();
+                    getActivity().onBackPressed();
+                })
+                .show();
+    }
+
+    private void displayErrorDialog(){
+        new android.support.v7.app.AlertDialog.Builder(getContext())
+                .setTitle("Failed")
+                .setMessage("Could not create appointment.\nPlease try again")
+                .setPositiveButton("Close", (dialog, which) -> {
+                    hideProgressDialog();
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    private void hideProgressDialog(){
+        if (progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     private void initBillManagerObserver(){
@@ -249,7 +347,6 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     }
 
-
     private void setupSpinnerAdaptersWithBillManager(BillManager billManager) {
         List<Service> services = billManager.getServices();
 
@@ -265,8 +362,104 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     }
 
+    /**
+     * Show a bottom sheet fragment to display payment details
+     */
+    private void showPaymentDetailsDialog() {
+        final BottomSheetDialog builder = new BottomSheetDialog(getContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.bottom_dialog_reg_payment, null);
+        builder.setContentView(dialogView);
+
+        LinearLayout layout = dialogView.findViewById(R.id.bottom_dialog_layout);
+        TextView serviceText = dialogView.findViewById(R.id.service_text);
+        TextView priceText = dialogView.findViewById(R.id.price_text);
+        TextView apmisIdText = dialogView.findViewById(R.id.apmis_id_text);
+        TextView nameText = dialogView.findViewById(R.id.name_text);
+        TextView walletText = dialogView.findViewById(R.id.wallet_text);
+        Button registerOrFundButton = dialogView.findViewById(R.id.register_fund_button);
+        TextView warningText = dialogView.findViewById(R.id.warning_text);
+
+        serviceText.setText(selectedService.getName());
+        priceText.setText(String.format("₦%s", selectedPrice.getPrice()+""));
+
+        //Quickly fetch the user data from local db
+        LiveData<PersonEntry> entryLiveData = InjectorUtils.provideRepository(getContext()).getUserData();
+        Observer<PersonEntry> personEntryObserver = personEntry -> {
+            if (personEntry != null){
+                if (personEntry.getEmail() != null) {
+                    apmisIdText.setText(personEntry.getApmisId());
+                    nameText.setText(personEntry.getFirstName() + " " + personEntry.getLastName());
+                }
+            }
+        };
+        entryLiveData.removeObservers(this);
+        entryLiveData.observe(this, personEntryObserver);
 
 
+        walletObserver = wallet -> {
+            if (wallet != null){
+                Log.e("WALLET", "Observed");
+                walletFunds = wallet.getBalance();
+                walletText.setText(String.format("₦%s", walletFunds+""));
+
+                boolean isMoneyEnough = walletFunds >= selectedPrice.getPrice();
+
+                if (isMoneyEnough){
+                    registerOrFundButton.setText("Register");
+                } else {
+                    registerOrFundButton.setText("Fund Wallet");
+                    TransitionManager.beginDelayedTransition(layout);
+                    warningText.setVisibility(View.VISIBLE);
+                }
+
+                registerOrFundButton.setEnabled(true);
+                registerOrFundButton.setOnClickListener(v -> {
+                    if (isMoneyEnough){
+                        attemptFacilityRegistration();
+                        builder.cancel();
+                    } else {
+                        builder.cancel();
+                        Intent i = new Intent(getContext(), FundWalletActivity.class);
+                        startActivityForResult(i, FUND_WALLET_REQUEST);
+                    }
+                });
+
+            }
+        };
+
+        foundHospitalViewModel.clearPersonWallet();
+        foundHospitalViewModel.getPersonWallet(pref.getPersonId()).removeObservers(this);
+        foundHospitalViewModel.getPersonWallet(pref.getPersonId()).observe(this, walletObserver);
+
+        builder.show();
+    }
+
+    private void attemptFacilityRegistration(){
+        showProgressDialog("Registering", "Please wait while we connect you to "+name);
+
+        foundHospitalViewModel.clearPatientOnRegistration();
+        foundHospitalViewModel.registerPatient(pref.getPersonId(), id).observe(this, patientObserver);
+    }
+
+    private void showProgressDialog(String title, String message){
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(message);
+        progressDialog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case FUND_WALLET_REQUEST:
+                    showPaymentDetailsDialog();
+                    break;
+            }
+        }
+    }
 
     @Override
     public void onAttach(Context context) {

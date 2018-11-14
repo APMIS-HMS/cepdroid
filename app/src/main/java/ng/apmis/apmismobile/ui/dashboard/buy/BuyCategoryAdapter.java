@@ -23,6 +23,8 @@ public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
         super(fm);
     }
 
+
+
     @Override
     public Fragment getItem(int position) {
         switch (position) {
@@ -35,7 +37,6 @@ public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
             default:
                 return new FundAccountFragment();
         }
-
     }
 
     @Override
@@ -57,4 +58,5 @@ public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
                 return pageTitles[0];
         }
     }
+
 }
