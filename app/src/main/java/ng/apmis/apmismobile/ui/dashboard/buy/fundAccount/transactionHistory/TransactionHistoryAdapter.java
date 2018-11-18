@@ -1,5 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.transactionHistory;
 
+import android.app.Activity;
+import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -31,10 +33,9 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
     private ArrayList<Transaction> transactionList = new ArrayList<>();
     private Context context;
 
-    public TransactionHistoryAdapter(Context context, ArrayList<Transaction> transactionList) {
-        this.transactionList = transactionList;
-        this.context = context;
-        Log.e("TransactionList", transactionList.toString());
+    public TransactionHistoryAdapter() {
+        //TODO on instantiation, the first item {add button} is inflated by viewtype
+        this.transactionList = new ArrayList<>();
     }
 
     @NonNull
@@ -47,7 +48,6 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
     public void onBindViewHolder(@NonNull TransactionHistoryAdapter.MyViewHolder holder, int position) {
         Transaction transaction = transactionList.get(position);
 
-        //holder.name.setText(transaction.getPaidBy());
         holder.title.setText(transaction.getDescription());
         holder.amount.setTextColor(transaction.getTransactionType().equalsIgnoreCase("cr") ? ContextCompat.getColor(context, android.R.color.holo_green_light) : ContextCompat.getColor(context, android.R.color.holo_red_light));
         holder.amount.setText(context.getString(R.string.trx_amount_placeholder, String.valueOf(transaction.getAmount())));
@@ -79,7 +79,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
             View view = LayoutInflater.from(context).inflate(R.layout.transaction_detail, null);
 
             TextView paidBy = view.findViewById(R.id.paid_by);
-            InjectorUtils.provideNetworkData(context).getPaidByPersonData(trx.getPaidBy()).observeForever(personEntry -> {
+            InjectorUtils.provideNetworkData(context).getPaidByPersonData(trx.getPaidBy()).observe((LifecycleOwner) context, personEntry -> {
 
                 if (personEntry != null)
                     paidBy.setText(context.getString(R.string.paid_by, personEntry.getTitle(), personEntry.getFirstName(), personEntry.getLastName()));

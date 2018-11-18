@@ -5,11 +5,16 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -24,19 +29,22 @@ import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 
 public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdapter.MyViewHolder> {
 
-    private static final int ADD_BENEFICIARY = 0;
-    private static final int BENEFICIARY = 1;
     private ArrayList<Beneficiaries> allBeneficiaries = new ArrayList<>();
 
-    public BeneficiariesAdapter(ArrayList<Beneficiaries> beneficiaries) {
+    public BeneficiariesAdapter() {
+        //TODO on instantiation, the first item {add button} is inflated by viewtype
+        allBeneficiaries = new ArrayList<>();
+    }
+
+    public void setAllBeneficiaries (ArrayList<Beneficiaries> beneficiaries) {
         allBeneficiaries = beneficiaries;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.beneficiaries_item, parent, false);
-
         return new MyViewHolder(root);
     }
 
@@ -48,16 +56,11 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdap
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return super.getItemViewType(position);
-    }
-
-    @Override
     public int getItemCount() {
         return allBeneficiaries.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CircleImageView imageView;
         TextView userName;

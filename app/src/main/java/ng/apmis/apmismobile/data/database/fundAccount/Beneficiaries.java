@@ -9,6 +9,8 @@ public class Beneficiaries {
     private String name;
     private int image;
 
+    public Beneficiaries () {}
+
     public Beneficiaries(String name, int image) {
         this.name = name;
         this.image = image;
