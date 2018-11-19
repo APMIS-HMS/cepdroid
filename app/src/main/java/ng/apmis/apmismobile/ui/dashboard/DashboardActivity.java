@@ -45,9 +45,9 @@ public class DashboardActivity extends AppCompatActivity {
 
     @BindView(R.id.navigation)
     public BottomNavigationView mBottomNav;
+
     @BindView(R.id.img_profile)
     public CircleImageView profileImage;
-    PopupMenu popupMenu;
 
     @BindView(R.id.general_toolbar)
     Toolbar generalToolbar;
@@ -111,25 +111,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         profileImage.setOnClickListener((view) -> {
             startActivity(new Intent(this, ProfileActivity.class));
-//            popupMenu = new PopupMenu(this, view);
-//            MenuInflater inflater = popupMenu.getMenuInflater();
-//            inflater.inflate(R.menu.option_setttings, popupMenu.getMenu());
-//
-//            popupMenu.setOnMenuItemClickListener(item -> {
-//                switch (item.getItemId()) {
-//                    case R.id.profile:
-//                        startActivity(new Intent(this, ProfileActivity.class));
-//                        return true;
-//                    case R.id.sign_out:
-//                        new SharedPreferencesManager(this).storeLoggedInUserDetails("", "", "", "");
-//                        startActivity(new Intent(this, LoginActivity.class));
-//                        finish();
-//                        return true;
-//                }
-//                return false;
-//            });
-//
-//            popupMenu.show();
         });
 
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){

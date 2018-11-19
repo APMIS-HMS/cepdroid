@@ -19,10 +19,10 @@ public class DiagnosisViewModel extends ViewModel {
 
     public DiagnosisViewModel(ApmisRepository apmisRepository){
         networkDataSource = apmisRepository.getNetworkDataSource();
-        mLabRequests = networkDataSource.getLabRequestsForPerson();
     }
 
-    public MutableLiveData<List<LabRequest>> getLabRequestsForPerson() {
+    public MutableLiveData<List<LabRequest>> getLabRequestsForPerson(String personId) {
+        mLabRequests = networkDataSource.getLabRequestsForPerson(personId);
         return mLabRequests;
     }
 

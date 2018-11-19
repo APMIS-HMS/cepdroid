@@ -1,5 +1,6 @@
 package ng.apmis.apmismobile.ui.dashboard.healthProfile;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
@@ -20,10 +21,10 @@ public class HealthProfileViewModel extends ViewModel{
         this.apmisRepository = apmisRepository;
         this.apmisNetworkDataSource = apmisRepository.getNetworkDataSource();
 
-        mDocumentations = apmisNetworkDataSource.getDocumentationsForPerson();
     }
 
-    public MutableLiveData<List<Documentation>> getRecordsForPerson() {
+    public LiveData<List<Documentation>> getRecordsForPerson(String personId) {
+        mDocumentations = apmisNetworkDataSource.getDocumentationsForPerson(personId);
         return mDocumentations;
     }
 }

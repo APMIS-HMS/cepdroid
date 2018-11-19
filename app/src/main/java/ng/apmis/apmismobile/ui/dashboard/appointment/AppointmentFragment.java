@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,11 +18,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
@@ -36,7 +40,6 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 public class AppointmentFragment extends Fragment implements View.OnClickListener {
 
     AppointmentAdapter appointmentAdapter;
-    ProgressBar loadUpcomingProgress;
 
     private SharedPreferencesManager sharedPreferencesManager;
     private ArrayList<Appointment> appointments = new ArrayList<>();
@@ -44,6 +47,12 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
     @BindView(R.id.relative_layout)
     RelativeLayout relativeLayout;
+
+    @BindView(R.id.appointments_shimmer)
+    ShimmerFrameLayout appointmentsShimmer;
+
+    @BindView(R.id.empty_view)
+    RelativeLayout emptyView;
 
     RecyclerView appointmentRecycler;
 
@@ -54,14 +63,12 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
         ButterKnife.bind(this, rootView);
 
+        appointmentsShimmer.startShimmer();
+
         assert getActivity() != null;
         sharedPreferencesManager = new SharedPreferencesManager(getActivity());
         appointmentRecycler = rootView.findViewById(R.id.recently_booked_recycler);
         rootView.findViewById(R.id.appointment_add_fab).setOnClickListener(this);
-
-        loadUpcomingProgress = rootView.findViewById(R.id.recently_booked_loader);
-
-        InjectorUtils.provideNetworkData(getActivity()).fetchAppointmentsForPerson(sharedPreferencesManager.getPersonId());
 
         appointmentRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
@@ -69,8 +76,9 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
         TransitionManager.beginDelayedTransition(appointmentRecycler);
 
         if (appointmentAdapter != null){
+            appointmentsShimmer.stopShimmer();
+            appointmentsShimmer.setVisibility(View.GONE);
             appointmentRecycler.setAdapter(appointmentAdapter);
-            loadUpcomingProgress.setVisibility(View.GONE);
         }
 
         initViewModel();
@@ -86,6 +94,8 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
         final Observer<List<Appointment>> appointmentsObserver = appointments -> {
 
+            Log.e("Fetch", "Am i fetched initially");
+
             this.appointments.clear();
             this.appointments.addAll(appointments);
 
@@ -97,7 +107,6 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
                 appointmentRecycler.setAdapter(appointmentAdapter);
 
-                loadUpcomingProgress.setVisibility(View.GONE);
                 Log.d("Called fresh", this.appointments.size()+"");
 
             } else {
@@ -106,9 +115,49 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
                 appointmentAdapter.setAppointmentList(this.appointments);
                 appointmentAdapter.notifyDataSetChanged();
             }
+
+            if (appointmentAdapter.getItemCount() > 0) {
+                appointmentsShimmer.stopShimmer();
+                appointmentsShimmer.setVisibility(View.GONE);
+                emptyView.setVisibility(View.GONE);
+            }
         };
 
-        appointmentViewModel.getAppointmentsForPatient().observe(getActivity(), appointmentsObserver);
+        final Observer<List<Appointment>> appointmentLoadStatusObserver = appointments -> {
+            Log.e("Fetch", "Observed");
+
+            if (appointments != null){
+                //check size
+                if (appointments.size() == 0){
+                    //Clear appointment adapter, in case it was deleted online
+                    appointmentAdapter.clear();
+
+                    //clear from local storage as well
+                    APMISAPP.getInstance().diskIO().execute(() -> InjectorUtils.provideRepository(getActivity()).deleteAllAppointments());
+
+                    //show empty view
+                    emptyView.setVisibility(View.VISIBLE);
+                    appointmentsShimmer.stopShimmer();
+                    appointmentsShimmer.setVisibility(View.GONE);
+                }
+            } else {
+
+                //if null, show snack bar
+                // but first, just check if any
+                if (appointmentAdapter!= null && appointmentAdapter.getItemCount() == 0) {
+                    emptyView.setVisibility(View.VISIBLE);
+                    appointmentsShimmer.stopShimmer();
+                    appointmentsShimmer.setVisibility(View.GONE);
+                }
+                Snackbar.make(emptyView, "Failed to load appointments", Snackbar.LENGTH_LONG).show();
+            }
+        };
+
+        appointmentViewModel.getAppointmentsForPatient().observe(this, appointmentsObserver);
+
+        appointmentViewModel.clearLoadStatus();
+        appointmentViewModel.getAppointmentLoadStatus(sharedPreferencesManager.getPersonId())
+                .observe(this, appointmentLoadStatusObserver);
     }
 
 
@@ -117,7 +166,7 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
     public void onStop() {
         super.onStop();
         ((DashboardActivity)getActivity()).bottomNavVisibility(true);
-        appointmentViewModel.getAppointmentsForPatient().removeObservers(getActivity());
+        appointmentViewModel.getAppointmentsForPatient().removeObservers(this);
     }
 
     @Override

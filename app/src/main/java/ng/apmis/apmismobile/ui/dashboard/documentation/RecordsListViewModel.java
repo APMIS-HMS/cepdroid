@@ -20,11 +20,10 @@ public class RecordsListViewModel extends ViewModel {
     public RecordsListViewModel(ApmisRepository apmisRepository, Context context) {
         this.apmisRepository = apmisRepository;
         this.apmisNetworkDataSource = apmisRepository.getNetworkDataSource();
-
-        mDocumentations = apmisNetworkDataSource.getDocumentationsForPerson();
     }
 
-    public MutableLiveData<List<Documentation>> getRecordsForPerson() {
+    public MutableLiveData<List<Documentation>> getRecordsForPerson(String personId) {
+        mDocumentations = apmisNetworkDataSource.getDocumentationsForPerson(personId);
         return mDocumentations;
     }
 

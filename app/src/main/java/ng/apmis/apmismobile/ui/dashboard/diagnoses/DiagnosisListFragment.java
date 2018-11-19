@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -44,6 +46,9 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
     @BindView(R.id.diagnosis_recycler)
     RecyclerView diagnosisRecycler;
 
+    @BindView(R.id.empty_view)
+    RelativeLayout emptyView;
+
     @BindView(R.id.diagnosis_shimmer)
     ShimmerFrameLayout diagnosisShimmer;
 
@@ -69,9 +74,6 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
         investigationBodies = new ArrayList<>();
         preferencesManager = new SharedPreferencesManager(getContext());
 
-        //Fetch lab requests from the server
-        InjectorUtils.provideNetworkData(getActivity()).fetchLabRequestsForPerson(preferencesManager.getPersonId());
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         diagnosisRecycler.setLayoutManager(layoutManager);
 
@@ -94,6 +96,18 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
         diagnosisViewModel = ViewModelProviders.of(this, factory).get(DiagnosisViewModel.class);
 
         final Observer<List<LabRequest>> labRequestObserver = labRequests -> {
+
+            if (labRequests == null){
+                //if null, show snack bar
+                if ((diagnosisAdapter != null && diagnosisAdapter.getItemCount() == 0 ) ||
+                        diagnosisAdapter == null) {
+                    emptyView.setVisibility(View.VISIBLE);
+                }
+                diagnosisShimmer.stopShimmer();
+                diagnosisShimmer.setVisibility(View.GONE);
+                Snackbar.make(emptyView, "Failed to load Investigations", Snackbar.LENGTH_LONG).show();
+                return;
+            }
 
             //Populate the investigation body list
             populateInvestigations(labRequests);
@@ -120,10 +134,20 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
                 Log.d("init notify again", investigationBodies.size()+"");
                 diagnosisAdapter.notifyDataSetChanged();
             }
+
+            diagnosisShimmer.stopShimmer();
+            diagnosisShimmer.setVisibility(View.GONE);
+
+            if (diagnosisAdapter.getItemCount() > 0) {
+                emptyView.setVisibility(View.GONE);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+            }
+
         };
 
         //Observe the LabRequests(Investigations)
-        diagnosisViewModel.getLabRequestsForPerson().observe(this, labRequestObserver);
+        diagnosisViewModel.getLabRequestsForPerson(preferencesManager.getPersonId()).observe(this, labRequestObserver);
 
     }
 
@@ -169,7 +193,7 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
 
     @Override
     public void onStop() {
-        diagnosisViewModel.getLabRequestsForPerson().removeObservers(getActivity());
+        diagnosisViewModel.getLabRequestsForPerson(preferencesManager.getPersonId()).removeObservers(this);
         super.onStop();
     }
 

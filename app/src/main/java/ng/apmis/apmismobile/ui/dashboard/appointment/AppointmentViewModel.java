@@ -16,6 +16,8 @@ public class AppointmentViewModel extends ViewModel {
 
     private LiveData<List<Appointment>> mAppointments;
 
+    private LiveData<List<Appointment>> appointmentLoadStatus;
+
     private ApmisRepository apmisRepository;
 
     public AppointmentViewModel(ApmisRepository apmisRepository, Context context) {
@@ -27,6 +29,15 @@ public class AppointmentViewModel extends ViewModel {
 
     public LiveData<List<Appointment>> getAppointmentsForPatient() {
         return mAppointments;
+    }
+
+    public void clearLoadStatus(){
+        apmisRepository.getNetworkDataSource().clearFetchedAppointments();
+    }
+
+    public LiveData<List<Appointment>> getAppointmentLoadStatus(String personId){
+        appointmentLoadStatus = apmisRepository.getNetworkDataSource().getAllAppointments(personId);
+        return appointmentLoadStatus;
     }
 
 }

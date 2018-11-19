@@ -41,7 +41,7 @@ public class AddAppointmentViewModel extends ViewModel {
         appointmentTypes = apmisNetworkDataSource.getAppointmentTypes();
         orderStatuses = apmisNetworkDataSource.getOrderStatuses();
 
-        mFacilities = apmisNetworkDataSource.getRegisteredFacilities();
+
         mClinics = apmisNetworkDataSource.getClinicsForFacility();
         mServices = apmisNetworkDataSource.getServicesForFacility();
         mEmployees = apmisNetworkDataSource.getEmployeesForFacility();
@@ -60,6 +60,7 @@ public class AddAppointmentViewModel extends ViewModel {
     }
 
     public LiveData<List<Facility>> getRegisteredFacilities() {
+        mFacilities = apmisNetworkDataSource.getRegisteredFacilities();
         return mFacilities;
     }
 

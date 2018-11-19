@@ -182,6 +182,11 @@ public class ApmisRepository {
         return mApmisDao.getAppointmentById(id);
     }
 
+    public void deleteAllAppointments(){
+        mApmisDao.deleteAllAppointments();
+    }
+
+
 
 
 }

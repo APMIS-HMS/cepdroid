@@ -88,8 +88,6 @@ public class HealthProfileFragment extends Fragment {
 
         preferencesManager = new SharedPreferencesManager(getContext());
 
-        //fetch medical records from server
-        InjectorUtils.provideNetworkData(getActivity()).fetchMedicalRecordsForPerson(preferencesManager.getPersonId());
 
         //and initialize the view model to observe these records
         initViewModel();
@@ -102,6 +100,8 @@ public class HealthProfileFragment extends Fragment {
         healthProfileViewModel = ViewModelProviders.of(this, factory).get(HealthProfileViewModel.class);
 
         final Observer<List<Documentation>> vitalsObserver = documentations -> {
+
+            if (documentations == null) return;
 
             this.vitalsList.clear();
             //graphView.removeAllSeries();
@@ -124,10 +124,9 @@ public class HealthProfileFragment extends Fragment {
                 plotGraph(vitalsList);
 
             }
-
         };
 
-        healthProfileViewModel.getRecordsForPerson().observe(getActivity(), vitalsObserver);
+        healthProfileViewModel.getRecordsForPerson(preferencesManager.getPersonId()).observe(this, vitalsObserver);
     }
 
     /**
@@ -320,7 +319,7 @@ public class HealthProfileFragment extends Fragment {
 
     @Override
     public void onStop() {
-        healthProfileViewModel.getRecordsForPerson().removeObservers(getActivity());
+        healthProfileViewModel.getRecordsForPerson(preferencesManager.getPersonId()).removeObservers(this);
         super.onStop();
     }
 

@@ -3,6 +3,7 @@ package ng.apmis.apmismobile.ui.dashboard.documentation;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -37,6 +39,9 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
 
     @BindView(R.id.records_shimmer)
     ShimmerFrameLayout recordsShimmer;
+
+    @BindView(R.id.empty_view)
+    RelativeLayout emptyView;
 
     @BindView(R.id.records_recycler)
     public RecyclerView recordsRecycler;
@@ -68,12 +73,10 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
 
         preferencesManager = new SharedPreferencesManager(getContext());
 
-        //Fetch the medical records from the server
-        InjectorUtils.provideNetworkData(getActivity()).fetchMedicalRecordsForPerson(preferencesManager.getPersonId());
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recordsRecycler.setLayoutManager(layoutManager);
 
+        //Handle backstack popping creation
         if (recordsAdapter != null) {
             recordsRecycler.setAdapter(recordsAdapter);
             recordsShimmer.setVisibility(View.GONE);
@@ -90,14 +93,24 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
         recordsListViewModel = ViewModelProviders.of(this, factory).get(RecordsListViewModel.class);
 
         final Observer<List<Documentation>> documentationsObserver = documentations -> {
+            Log.e("Observer", "calls");
+
+            if (documentations == null){
+                //if null, show snack bar
+                if ((recordsAdapter != null && recordsAdapter.getItemCount() == 0) ||
+                        recordsAdapter == null) {
+                    emptyView.setVisibility(View.VISIBLE);
+                }
+                recordsShimmer.stopShimmer();
+                recordsShimmer.setVisibility(View.GONE);
+                Snackbar.make(emptyView, "Failed to load Clinical documentations", Snackbar.LENGTH_LONG).show();
+                return;
+            }
 
             this.datedDocumentationItems.clear();
             this.datedDocumentationItems = populateDocumentationRecordsWithDate(documentations);
 
             if (recordsAdapter == null) {
-
-                recordsShimmer.setVisibility(View.GONE);
-                recordsShimmer.stopShimmer();
 
                 recordsAdapter = new RecordsAdapter(getActivity(), datedDocumentationItems);
                 recordsAdapter.initiateCallbackListener(MedicalRecordsFragment.this);
@@ -110,10 +123,23 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
                 recordsAdapter.addAll(datedDocumentationItems);
                 recordsAdapter.notifyDataSetChanged();
             }
+
+
+            recordsShimmer.stopShimmer();
+            recordsShimmer.setVisibility(View.GONE);
+
+            if (recordsAdapter.getItemCount() > 0) {
+                emptyView.setVisibility(View.GONE);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+            }
+
+
+
         };
 
         //Get the LiveData records from the ViewModel and observe
-        recordsListViewModel.getRecordsForPerson().observe(getActivity(), documentationsObserver);
+        recordsListViewModel.getRecordsForPerson(preferencesManager.getPersonId()).observe(this, documentationsObserver);
     }
 
     /**
@@ -177,7 +203,7 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
 
     @Override
     public void onStop() {
-        recordsListViewModel.getRecordsForPerson().removeObservers(getActivity());
+        recordsListViewModel.getRecordsForPerson(preferencesManager.getPersonId()).removeObservers(this);
         super.onStop();
     }
 

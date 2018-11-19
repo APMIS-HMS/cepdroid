@@ -309,7 +309,7 @@ public class ApmisNetworkDataSource {
     public void fetchMedicalRecordsForPerson(String personId){
         apmisExecutors.networkIO().execute(() -> {
             Log.d(LOG_TAG, "Fetch Records started");
-            new NetworkDataCalls(mContext).fetchMedicalRecordForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
+            new NetworkDataCalls(mContext).fetchClinicalDocumentationForPerson(mContext, personId, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 
@@ -441,8 +441,33 @@ public class ApmisNetworkDataSource {
     //Registered Facility Ids and metadata
 
     public void setRegisteredFacilities(List<String> ids, List<Facility> facilities){
-        registeredFacilityIds.postValue(ids);
-        registeredFacilities.postValue(facilities);
+        List<String> previousIds = this.registeredFacilityIds.getValue();
+        List<Facility> previous = this.registeredFacilities.getValue();
+
+
+        if (ids != null)
+            this.registeredFacilityIds.postValue(ids);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.registeredFacilityIds.setValue(null);
+
+            if (previous != null)
+                this.registeredFacilityIds.postValue(previousIds);
+            else
+                this.registeredFacilityIds = new MutableLiveData<>();
+        }
+
+        if (facilities != null)
+            this.registeredFacilities.postValue(facilities);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.registeredFacilities.setValue(null);
+
+            if (previous != null)
+                this.registeredFacilities.postValue(previous);
+            else
+                this.registeredFacilities = new MutableLiveData<>();
+        }
     }
 
     public LiveData<List<String>> getRegisteredFacilityIds(){
@@ -450,9 +475,9 @@ public class ApmisNetworkDataSource {
     }
 
     public LiveData<List<Facility>> getRegisteredFacilities(){
+        new NetworkDataCalls(mContext).fetchRegisteredFacilities(mContext, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
         return registeredFacilities;
     }
-
 
 
 
@@ -470,10 +495,24 @@ public class ApmisNetworkDataSource {
     //Appointment Types
 
     public void setAppointmentTypes(List<AppointmentType> appointmentTypes){
-        this.appointmentTypes.postValue(appointmentTypes);
+        List<AppointmentType> previous = this.appointmentTypes.getValue();
+
+
+        if (appointmentTypes != null)
+            this.appointmentTypes.postValue(appointmentTypes);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.appointmentTypes.setValue(null);
+
+            if (previous != null)
+                this.appointmentTypes.postValue(appointmentTypes);
+            else
+                this.appointmentTypes = new MutableLiveData<>();
+        }
     }
 
     public MutableLiveData<List<AppointmentType>> getAppointmentTypes(){
+        fetchAppointmentTypes();
         return this.appointmentTypes;
     }
 
@@ -591,12 +630,29 @@ public class ApmisNetworkDataSource {
         return appointments;
     }
 
-    //Documentation
-    public void setDocumentationsForPerson(List<Documentation> documentations){
-        this.documentations.postValue(documentations);
+    public void clearFetchedAppointments(){
+        appointments = new MutableLiveData<>();
     }
 
-    public MutableLiveData<List<Documentation>> getDocumentationsForPerson(){
+    //Documentation
+    public void setDocumentationsForPerson(List<Documentation> documentations){
+        List<Documentation> previous = this.documentations.getValue();
+
+        if (documentations != null)
+            this.documentations.postValue(documentations);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.documentations.setValue(null);
+
+            if (previous != null)
+                this.documentations.postValue(previous);
+            else
+                this.documentations = new MutableLiveData<>();
+        }
+    }
+
+    public MutableLiveData<List<Documentation>> getDocumentationsForPerson(String personId){
+        fetchMedicalRecordsForPerson(personId);
         return this.documentations;
     }
 
@@ -604,20 +660,47 @@ public class ApmisNetworkDataSource {
     //Prescription
 
     public void setPrescriptionsForPerson(List<Prescription> prescriptions) {
-        this.prescriptions.postValue(prescriptions);
+        List<Prescription> previous = this.prescriptions.getValue();
+
+        if (prescriptions != null)
+            this.prescriptions.postValue(prescriptions);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.prescriptions.setValue(null);
+
+            if (previous != null)
+                this.prescriptions.postValue(previous);
+            else
+                this.prescriptions = new MutableLiveData<>();
+        }
     }
 
-    public MutableLiveData<List<Prescription>> getPrescriptionsForPerson(){
+    public MutableLiveData<List<Prescription>> getPrescriptionsForPerson(String personId){
+        fetchPrescriptionsForPerson(personId);
         return this.prescriptions;
     }
 
     //Laboratory Requests
 
     public void setLabRequestsForPerson(List<LabRequest> labRequests) {
-        this.labRequests.postValue(labRequests);
+        List<LabRequest> previous = this.labRequests.getValue();
+
+        if (labRequests != null)
+            this.labRequests.postValue(labRequests);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.labRequests.setValue(null);
+
+            if (previous != null)
+                this.labRequests.postValue(previous);
+            else
+                this.labRequests = new MutableLiveData<>();
+        }
+
     }
 
-    public MutableLiveData<List<LabRequest>> getLabRequestsForPerson(){
+    public MutableLiveData<List<LabRequest>> getLabRequestsForPerson(String personId){
+        fetchLabRequestsForPerson(personId);
         return this.labRequests;
     }
 
@@ -702,7 +785,6 @@ public class ApmisNetworkDataSource {
     public void clearPaymentVerificationData(){
         paymentVerificationData = new MutableLiveData<>();
     }
-
 
 
 

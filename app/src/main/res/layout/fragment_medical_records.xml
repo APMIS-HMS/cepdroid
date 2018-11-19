@@ -2,15 +2,46 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     tools:context=".ui.dashboard.documentation.MedicalRecordsFragment">
 
+    <RelativeLayout
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/empty_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:alpha="0.5"
+            app:srcCompat="@drawable/ic_apmis_vector_gray"/>
+
+        <TextView
+            android:id="@+id/empty_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/empty_image"
+            android:layout_margin="15dp"
+            android:padding="3dp"
+            android:gravity="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/empty_documentation_text" />
+
+    </RelativeLayout>
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/records_shimmer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -11,12 +11,62 @@
         android:layout_height="match_parent"
         android:background="#fff">
 
-        <ProgressBar
-            android:id="@+id/recently_booked_loader"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/divider_line" />
+        <RelativeLayout
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/empty_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:alpha="0.5"
+                app:srcCompat="@drawable/ic_apmis_vector_gray"/>
+
+            <TextView
+                android:id="@+id/empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/empty_image"
+                android:layout_margin="15dp"
+                android:padding="3dp"
+                android:gravity="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="@string/empty_appointments" />
+
+        </RelativeLayout>
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/appointments_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+                <include layout="@layout/shimmer_placeholder_6" />
+
+            </LinearLayout>
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recently_booked_recycler"
