@@ -28,13 +28,16 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionHistoryAdapter.MyViewHolder> {
 
-    private ArrayList<Transaction> transactionList = new ArrayList<>();
+    private ArrayList<Transaction> transactionList;
     private Context context;
 
-    public TransactionHistoryAdapter(Context context, ArrayList<Transaction> transactionList) {
-        this.transactionList = transactionList;
+    public TransactionHistoryAdapter(Context context) {
         this.context = context;
-        Log.e("TransactionList", transactionList.toString());
+        this.transactionList = new ArrayList<>();
+    }
+
+    public void setTransactionList (Transaction transactionList) {
+        this.transactionList.add(transactionList);
     }
 
     @NonNull

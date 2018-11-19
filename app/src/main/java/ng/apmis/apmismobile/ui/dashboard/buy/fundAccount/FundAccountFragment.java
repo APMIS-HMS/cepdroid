@@ -36,7 +36,7 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
     RecyclerView recyclerView;
     FundAccountAdapter adapter;
 
-    public interface OnWalletFundedListener{
+    public interface OnWalletFundedListener {
         void onWalletFunded();
     }
 
@@ -69,12 +69,13 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
 
         transactionViewModel.getPersonWallet(sharedPreferencesManager.getPersonId()).observe(this, wallet -> {
 
-                Log.e("trip count", String.valueOf(++tripCount));
-                allList.add(new Beneficiaries("Femi Alonge", R.drawable.apmis_profile));
+            Log.e("trip count", String.valueOf(++tripCount));
+            allList.add(new Beneficiaries("Femi Alonge", R.drawable.apmis_profile));
+            allList.add(new Beneficiaries("Femi Alonge", R.drawable.apmis_profile));
 
-                allList.addAll(wallet.getTransactions());
+            allList.addAll(wallet.getTransactions());
 
-                adapter.setItems(allList);
+            adapter.setItems(allList);
 
         });
 
@@ -89,8 +90,8 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case FUND_WALLET_REQUEST:
                     mListener.onWalletFunded();
                     break;
@@ -98,7 +99,7 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
         }
     }
 
-    public void instantiateOnWalletFundedListener(OnWalletFundedListener listener){
+    public void instantiateOnWalletFundedListener(OnWalletFundedListener listener) {
         this.mListener = listener;
     }
 
