@@ -372,15 +372,13 @@ public final class NetworkDataCalls {
 
             Log.v("Reg Facility response", String.valueOf(response));
 
-            List<String> facilityIds = null;
+            List<String> facilityIds = new ArrayList<>();
             List<Facility> facilities = new ArrayList<>();
 
             try {
                 JSONArray jsonArray = response.getJSONArray("data");
 
                 if (jsonArray.length()>0) {
-
-                    facilityIds = new ArrayList<>();
 
                     try {
 
@@ -411,23 +409,26 @@ public final class NetworkDataCalls {
 
                     Log.v("Reg Facility respEntry", response.toString());
 
+                    //return ids and facilities gotten
                     InjectorUtils.provideNetworkData(context).setRegisteredFacilities(facilityIds, facilities);
 
                 } else {
-
-                    InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, facilities);
+                    //return empty ids facility list
+                    InjectorUtils.provideNetworkData(context).setRegisteredFacilities(facilityIds, facilities);
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, facilities);
+                //return null ids and facilities
+                InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, null);
             }
 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Reg Facility error", String.valueOf(error.getMessage()));
-                InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, new ArrayList<>());
+                //return null ids and facilities
+                InjectorUtils.provideNetworkData(context).setRegisteredFacilities(null, null);
             }
         }) {
             @Override
@@ -624,16 +625,20 @@ public final class NetworkDataCalls {
 
                     InjectorUtils.provideNetworkData(context).setAppointmentTypes(appointmentTypes);
 
+                } else {
+                    InjectorUtils.provideNetworkData(context).setAppointmentTypes(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                InjectorUtils.provideNetworkData(context).setAppointmentTypes(null);
             }
 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Appointment error", String.valueOf(error.getMessage()));
+                InjectorUtils.provideNetworkData(context).setAppointmentTypes(null);
             }
         }) {
             @Override

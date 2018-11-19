@@ -441,8 +441,33 @@ public class ApmisNetworkDataSource {
     //Registered Facility Ids and metadata
 
     public void setRegisteredFacilities(List<String> ids, List<Facility> facilities){
-        registeredFacilityIds.postValue(ids);
-        registeredFacilities.postValue(facilities);
+        List<String> previousIds = this.registeredFacilityIds.getValue();
+        List<Facility> previous = this.registeredFacilities.getValue();
+
+
+        if (ids != null)
+            this.registeredFacilityIds.postValue(ids);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.registeredFacilityIds.setValue(null);
+
+            if (previous != null)
+                this.registeredFacilityIds.postValue(previousIds);
+            else
+                this.registeredFacilityIds = new MutableLiveData<>();
+        }
+
+        if (facilities != null)
+            this.registeredFacilities.postValue(facilities);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.registeredFacilities.setValue(null);
+
+            if (previous != null)
+                this.registeredFacilities.postValue(previous);
+            else
+                this.registeredFacilities = new MutableLiveData<>();
+        }
     }
 
     public LiveData<List<String>> getRegisteredFacilityIds(){
@@ -450,9 +475,9 @@ public class ApmisNetworkDataSource {
     }
 
     public LiveData<List<Facility>> getRegisteredFacilities(){
+        new NetworkDataCalls(mContext).fetchRegisteredFacilities(mContext, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
         return registeredFacilities;
     }
-
 
 
 
@@ -470,10 +495,24 @@ public class ApmisNetworkDataSource {
     //Appointment Types
 
     public void setAppointmentTypes(List<AppointmentType> appointmentTypes){
-        this.appointmentTypes.postValue(appointmentTypes);
+        List<AppointmentType> previous = this.appointmentTypes.getValue();
+
+
+        if (appointmentTypes != null)
+            this.appointmentTypes.postValue(appointmentTypes);
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.appointmentTypes.setValue(null);
+
+            if (previous != null)
+                this.appointmentTypes.postValue(appointmentTypes);
+            else
+                this.appointmentTypes = new MutableLiveData<>();
+        }
     }
 
     public MutableLiveData<List<AppointmentType>> getAppointmentTypes(){
+        fetchAppointmentTypes();
         return this.appointmentTypes;
     }
 

@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -61,14 +62,20 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class AddAppointmentFragment extends Fragment {
 
+    @BindView(R.id.select_hospital_spinner)
+    Spinner selectHospitalSpinner;
+
+    @BindView(R.id.select_hospital_progress)
+    ProgressBar selectHospitalProgress;
+
+    @BindView(R.id.select_hospital_refresh)
+    Button selectHospitalRefresh;
+
     @BindView(R.id.select_appt_type_spinner)
     Spinner selectAppointmentTypeSpinner;
 
     @BindView(R.id.book_appointment_button)
     Button bookAppointmentButton;
-
-    @BindView(R.id.select_hospital_spinner)
-    Spinner selectHospitalSpinner;
 
     @BindView(R.id.select_clinic_spinner)
     Spinner selectClinicSpinner;
@@ -146,7 +153,6 @@ public class AddAppointmentFragment extends Fragment {
 
         bookAppointmentButton.setOnClickListener((view) -> {
             if (validateAppointmentBody()) {
-
                 submitAppointment();
             }
         });
@@ -160,6 +166,40 @@ public class AddAppointmentFragment extends Fragment {
     private void initViewModel(){
         AddAppointmentViewModelFactory factory = InjectorUtils.provideAddAppointmentViewModelFactory(getActivity().getApplicationContext());
         appointmentViewModel = ViewModelProviders.of(this, factory).get(AddAppointmentViewModel.class);
+
+        Observer<List<Facility>> facilitiesObserver = facilities -> {
+            if (facilities == null){
+                selectHospitalProgress.setVisibility(View.GONE);
+                selectHospitalRefresh.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            mFacilities = facilities;
+
+            if (hospitalAdapter == null) {
+                hospitalAdapter = new FacilityAdapter(getContext(), 0, mFacilities);
+                selectHospitalSpinner.setAdapter(hospitalAdapter);
+            } else {
+                hospitalAdapter.notifyDataSetChanged();
+            }
+
+            selectHospitalProgress.setVisibility(View.GONE);
+        };
+
+        appointmentViewModel.getRegisteredFacilities().observe(this, facilitiesObserver);
+        selectHospitalRefresh.setOnClickListener(v -> {
+            //TODO prevent this double data fetch in "getRegisteredFacilities()"
+
+            selectHospitalProgress.setVisibility(View.VISIBLE);
+            selectHospitalRefresh.setVisibility(View.GONE);
+
+            appointmentViewModel.getRegisteredFacilities().removeObservers(AddAppointmentFragment.this);
+            appointmentViewModel.getRegisteredFacilities().observe(AddAppointmentFragment.this, facilitiesObserver);
+        });
+
+
+
+
 
         Observer<List<AppointmentType>> appointmentTypesObserver = appointmentTypes -> {
             mAppointmentTypes = appointmentTypes;
@@ -176,20 +216,6 @@ public class AddAppointmentFragment extends Fragment {
         };
 
         appointmentViewModel.getAppointmentTypes().observe(getActivity(), appointmentTypesObserver);
-
-
-        Observer<List<Facility>> facilitiesObserver = facilities -> {
-            mFacilities = facilities;
-
-            if (hospitalAdapter == null) {
-                hospitalAdapter = new FacilityAdapter(getContext(), 0, mFacilities);
-                selectHospitalSpinner.setAdapter(hospitalAdapter);
-            } else {
-                hospitalAdapter.notifyDataSetChanged();
-            }
-        };
-
-        appointmentViewModel.getRegisteredFacilities().observe(getActivity(), facilitiesObserver);
 
 
         Observer<List<ClinicSchedule>> clinicsObserver = clinics -> {

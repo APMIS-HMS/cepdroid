@@ -166,8 +166,6 @@
     </string-array>
 
     <string-array name="select_hospital">
-        <item>Select a Hospital g Hospital of Hospital Hospital</item>
-        <item>Select Hospital</item>
         <item>Select Hospital</item>
     </string-array>
 
