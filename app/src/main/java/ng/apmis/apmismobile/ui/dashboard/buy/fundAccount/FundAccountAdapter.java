@@ -9,14 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.fundAccount.Beneficiaries;
 import ng.apmis.apmismobile.data.database.personModel.Transaction;
@@ -35,13 +35,14 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int BENEFICIARIES_HEADER = 2;
     private final int TRANSACTION_HEADER = 3;
     private final int ALL_HEADERS_WITH_EMPTY_VIEW = 4;
+    private boolean isBeneficiaryInflated, isTransactionInflated = false;
 
     private Context context;
     private ArrayList<SegmentedObjects> segmentedObjectsList;
+    private ArrayList<Beneficiaries> beneficiaries;
+    private ArrayList<Transaction> transactions;
 
     private OnFundWalletClickedListener mListener;
-
-    private TransactionHistoryAdapter transactionHistoryAdapter;
 
 
     public interface OnFundWalletClickedListener {
@@ -51,12 +52,16 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public FundAccountAdapter(Context context) {
         this.context = context;
         this.segmentedObjectsList = new ArrayList<>();
-        this.transactionHistoryAdapter = new TransactionHistoryAdapter(context);
+        this.beneficiaries = new ArrayList<>();
+        this.transactions = new ArrayList<>();
     }
 
     void setItems(ArrayList<Object> newItems) {
         boolean isEnteredTransaction = false;
-        this.segmentedObjectsList.clear();
+        this.segmentedObjectsList = new ArrayList<>();
+        this.beneficiaries = new ArrayList<>();
+        this.transactions = new ArrayList<>();
+        filterObjects(newItems);
         for (int i = 0; i < newItems.size(); i++) {
             if (i == 0) {
                 segmentedObjectsList.add(new SegmentedObjects(Type.BEN_HEADER.typeName, null));
@@ -74,7 +79,19 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 segmentedObjectsList.add(new SegmentedObjects(Type.TRX.typeName, (Transaction) newItems.get(i)));
             }
         }
+        Log.e("Segmented items", String.valueOf(segmentedObjectsList));
         notifyDataSetChanged();
+    }
+
+    private void filterObjects (ArrayList<Object> items) {
+    Log.e("items to filter", String.valueOf(items));
+        for (Object x: items) {
+            if (x instanceof Beneficiaries) {
+                this.beneficiaries.add((Beneficiaries) x);
+            } else {
+                this.transactions.add((Transaction) x);
+            }
+        }
     }
 
     public void instantiateWalletFundListener(OnFundWalletClickedListener listener) {
@@ -90,28 +107,23 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         RecyclerView.ViewHolder holder;
         switch (viewType) {
             case BENEFICIARIES_HEADER:
-                view = inflater.inflate(R.layout.beneficiaries, parent, false);/*
-                Button fundWallet = view.findViewById(R.id.fund_wallet);
-
-                fundWallet.setOnClickListener((views) -> parent.getContext().startActivity(new Intent(view.getContext(), FundWalletActivity.class)));*/
+                view = inflater.inflate(R.layout.beneficiaries_header, parent, false);
                 holder = new BeneficiariesHeaderViewHolder(view);
                 return holder;
             case BENEFICIARIES:
-                view = inflater.inflate(R.layout.beneficiaries_item, parent, false);
+                view = inflater.inflate(R.layout.beneficiaries, parent, false);
                 holder = new BeneficiariesViewHolder(view);
                 return holder;
             case TRANSACTION_HEADER:
-                view = inflater.inflate(R.layout.transaction_history, parent, false);
+                view = inflater.inflate(R.layout.transaction_header, parent, false);
                 holder = new TransactionHistoryHeaderViewHolder(view);
                 return holder;
             case TRANSACTION:
-                view = inflater.inflate(R.layout.transaction_history_item, parent, false);
+                view = inflater.inflate(R.layout.transaction_history, parent, false);
                 holder = new TransactionHistoryViewHolder(view);
                 return holder;
             default:
-                view = inflater.inflate(R.layout.transaction_history, parent, false);
-                holder = null;
-                return holder;
+                return null;
         }
     }
 
@@ -120,8 +132,6 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         SegmentedObjects segmentedObjects = segmentedObjectsList.get(position);
         Log.e("segmentedObjects", String.valueOf(segmentedObjects.objectType));
-
-        if (segmentedObjects != null) {
 
             if (segmentedObjects.objectType.equals(Type.BEN_HEADER.typeName)) {
                 return BENEFICIARIES_HEADER;
@@ -135,36 +145,25 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (segmentedObjects.objectType.equals(Type.TRX.typeName)) {
                 return TRANSACTION;
             }
-
-        }
         return ALL_HEADERS_WITH_EMPTY_VIEW;
-
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        if (holder.getItemViewType() == BENEFICIARIES_HEADER) {
-            beneficiaryHeaderView((BeneficiariesHeaderViewHolder) holder);
-        }
-
-        if (holder.getItemViewType() == TRANSACTION_HEADER) {
-            transactionHeaderView((TransactionHistoryHeaderViewHolder) holder);
-        }
 
         if (holder.getItemViewType() == BENEFICIARIES) {
-            /*Beneficiaries beneficiary = (Beneficiaries) segmentedObjectsList.get(position).object;
-            beneficiariesAdapter.setBeneficiaryItem(beneficiary);*/
+            if (!isBeneficiaryInflated)
+                beneficiaryViewHolder((BeneficiariesViewHolder)holder);
+                isBeneficiaryInflated = true;
         }
 
         if (holder.getItemViewType() == TRANSACTION) {
-           /* Transaction transaction = (Transaction) segmentedObjectsList.get(position).object;
-            transactionHistoryAdapter.setTransactionList(transaction);*/
+            if (!isTransactionInflated)
+                transactionViewHolder((TransactionHistoryViewHolder)holder);
+                isTransactionInflated = true;
         }
 
-        if (holder.getItemViewType() == ALL_HEADERS_WITH_EMPTY_VIEW) {
-
-        }
     }
 
     @Override
@@ -172,46 +171,29 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return segmentedObjectsList.size();
     }
 
-    private void beneficiaryHeaderView(BeneficiariesHeaderViewHolder holder) {
-        BeneficiariesAdapter beneficiariesAdapter = new BeneficiariesAdapter(context);
-        holder.recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        holder.recyclerView.setAdapter(beneficiariesAdapter);
-        holder.fundWalletButton.setOnClickListener(v -> mListener.onFundWalletClicked());
+    private void beneficiaryViewHolder (BeneficiariesViewHolder holder) {
+        BeneficiariesAdapter beneficiariesAdapter = new BeneficiariesAdapter(context, beneficiaries);
+        holder.beneficiaryRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        holder.beneficiaryRecycler.setAdapter(beneficiariesAdapter);
     }
 
-    private void transactionHeaderView(TransactionHistoryHeaderViewHolder holder) {
-        holder.recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-        holder.recyclerView.setAdapter(transactionHistoryAdapter);
-        holder.recyclerView.setNestedScrollingEnabled(false);
+    private void transactionViewHolder (TransactionHistoryViewHolder holder) {
+        TransactionHistoryAdapter transactionHistoryAdapter = new TransactionHistoryAdapter(context, transactions);
+        holder.transactionRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        holder.transactionRecycler.setAdapter(transactionHistoryAdapter);
+        holder.transactionRecycler.setNestedScrollingEnabled(false);
     }
 
 
-    class BeneficiariesHeaderViewHolder extends RecyclerView.ViewHolder {
+    class BeneficiariesHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         @BindView(R.id.fund_wallet)
         Button fundWalletButton;
 
-        RecyclerView recyclerView;
-        public BeneficiariesHeaderViewHolder(View itemView) {
+        BeneficiariesHeaderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            recyclerView = itemView.findViewById(R.id.child_recyclerview);
-        }
-    }
-
-
-    class BeneficiariesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        CircleImageView imageView;
-        TextView userName;
-        Button fundButton;
-
-        public BeneficiariesViewHolder(View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.beneficiary_image);
-            userName = itemView.findViewById(R.id.beneficiary_name);
-            fundButton = itemView.findViewById(R.id.beneficiary_fund);
-            fundButton.setOnClickListener(this);
+            fundWalletButton.setOnClickListener(this);
         }
 
         @Override
@@ -222,18 +204,47 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     class TransactionHistoryHeaderViewHolder extends RecyclerView.ViewHolder {
 
-        RecyclerView recyclerView;
-        public TransactionHistoryHeaderViewHolder(View itemView) {
+        @BindView(R.id.select_month)
+        Spinner selectMonthSpinner;
+
+        TransactionHistoryHeaderViewHolder(View itemView) {
             super(itemView);
-            recyclerView = itemView.findViewById(R.id.child_recyclerview);
+            ButterKnife.bind(this, itemView);
+            selectMonthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
         }
     }
 
+    class BeneficiariesViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.beneficiary_recycler)
+        RecyclerView beneficiaryRecycler;
+
+        public BeneficiariesViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+    }
+
+
     class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.transaction_recycler)
+        RecyclerView transactionRecycler;
 
         public TransactionHistoryViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 

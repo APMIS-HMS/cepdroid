@@ -44,15 +44,12 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
     TransactionViewModel transactionViewModel;
     TransactionHistoryViewModelFactory transactionHistoryViewModelFactory;
     SharedPreferencesManager sharedPreferencesManager;
-    ArrayList<Object> allList;
-    int tripCount = 0;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_buys, container, false);
         sharedPreferencesManager = new SharedPreferencesManager(getActivity());
-        allList = new ArrayList<>();
         adapter = new FundAccountAdapter(getActivity());
 
         instantiateOnWalletFundedListener((OnWalletFundedListener) getParentFragment());
@@ -69,13 +66,15 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
 
         transactionViewModel.getPersonWallet(sharedPreferencesManager.getPersonId()).observe(this, wallet -> {
 
-            Log.e("trip count", String.valueOf(++tripCount));
-            allList.add(new Beneficiaries("Femi Alonge", R.drawable.apmis_profile));
-            allList.add(new Beneficiaries("Femi Alonge", R.drawable.apmis_profile));
+            ArrayList<Object> listItems = new ArrayList<>();
+            if(wallet != null)
+                listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
+                listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
+                listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));
 
-            allList.addAll(wallet.getTransactions());
+                listItems.addAll(wallet.getTransactions());
 
-            adapter.setItems(allList);
+                adapter.setItems(listItems);
 
         });
 

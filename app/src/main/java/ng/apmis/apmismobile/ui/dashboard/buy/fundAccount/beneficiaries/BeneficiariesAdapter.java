@@ -1,11 +1,9 @@
 package ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.beneficiaries;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +26,9 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdap
     private ArrayList<Beneficiaries> beneficiaries;
     private Context context;
 
-    public BeneficiariesAdapter(Context context) {
+    public BeneficiariesAdapter(Context context, ArrayList<Beneficiaries> beneficiaries) {
         this.context = context;
-        beneficiaries = new ArrayList<>();
-    }
-
-    public void setBeneficiaryItem (Beneficiaries beneficiaries) {
-        this.beneficiaries.add(beneficiaries);
-        notifyDataSetChanged();
+        this.beneficiaries = beneficiaries;
     }
 
     @NonNull
@@ -53,10 +46,6 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdap
         holder.userName.setText(beneficiary.getName());
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return super.getItemViewType(position);
-    }
 
     @Override
     public int getItemCount() {
