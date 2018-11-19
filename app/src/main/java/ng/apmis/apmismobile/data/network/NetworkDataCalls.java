@@ -762,7 +762,7 @@ public final class NetworkDataCalls {
      * @param accessToken The security access token obtained from login
      */
     public void fetchAppointmentsForPerson(Context context, String personId, String accessToken){
-        Log.d("Fetch appoints", "Started submit");
+        Log.d("Fetch appoints", "Started fetch");
 
 
         JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL + "get-patient-appointments?personId="+personId + REVERSE_QUERY, null, response -> {
@@ -781,16 +781,21 @@ public final class NetworkDataCalls {
                     InjectorUtils.provideNetworkData(context).setAppointments(appointments);
                     InjectorUtils.provideRepository(context).insertAppointmentsForPatient(appointments);
 
+                } else {
+                    //return an empty list if nothing is there
+                    InjectorUtils.provideRepository(context).insertAppointmentsForPatient(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
+                //return null in case of errors
+                InjectorUtils.provideNetworkData(context).setAppointments(null);
                 e.printStackTrace();
             }
 
         }, (VolleyError error) -> {
 
             //return null in case of errors
-            InjectorUtils.provideNetworkData(context).setAppointment(null);
+            InjectorUtils.provideNetworkData(context).setAppointments(null);
             Log.e("Fetch appoints error", error.toString());
 
         }) {
@@ -806,7 +811,6 @@ public final class NetworkDataCalls {
             }
         };
 
-        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
         APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 
@@ -854,13 +858,23 @@ public final class NetworkDataCalls {
 
                     InjectorUtils.provideNetworkData(context).setDocumentationsForPerson(documentations);
 
+                } else {
+                    //return an empty list if no documentations available
+                    InjectorUtils.provideNetworkData(context).setDocumentationsForPerson(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
+                InjectorUtils.provideNetworkData(context).setDocumentationsForPerson(null);
                 e.printStackTrace();
             }
 
-        }, error -> Log.e("Records error", String.valueOf(error.getMessage()))) {
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Records error", String.valueOf(error.getMessage()));
+                InjectorUtils.provideNetworkData(context).setDocumentationsForPerson(null);
+            }
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -872,7 +886,10 @@ public final class NetworkDataCalls {
             }
         };
 
+        APMISAPP.getInstance().getRequestQueue().getCache().clear();
+
         APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
+        APMISAPP.getInstance().getRequestQueue().getCache().clear();
     }
 
     /**
@@ -899,13 +916,23 @@ public final class NetworkDataCalls {
 
                     InjectorUtils.provideNetworkData(context).setPrescriptionsForPerson(prescriptions);
 
+                } else {
+                    //Return empty array list if empty
+                    InjectorUtils.provideNetworkData(context).setPrescriptionsForPerson(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
+                InjectorUtils.provideNetworkData(context).setPrescriptionsForPerson(null);
                 e.printStackTrace();
             }
 
-        }, error -> Log.e("Records error", String.valueOf(error.getMessage()))) {
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                InjectorUtils.provideNetworkData(context).setPrescriptionsForPerson(null);
+                Log.e("Records error", String.valueOf(error.getMessage()));
+            }
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -943,13 +970,23 @@ public final class NetworkDataCalls {
 
                     InjectorUtils.provideNetworkData(context).setLabRequestsForPerson(requests);
 
+                } else {
+                    //return empty list
+                    InjectorUtils.provideNetworkData(context).setLabRequestsForPerson(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
+                InjectorUtils.provideNetworkData(context).setLabRequestsForPerson(null);
                 e.printStackTrace();
             }
 
-        }, error -> Log.e("Lab Request error", String.valueOf(error.getMessage()))) {
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                InjectorUtils.provideNetworkData(context).setLabRequestsForPerson(null);
+                Log.e("Lab Request error", String.valueOf(error.getMessage()));
+            }
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -1029,11 +1066,13 @@ public final class NetworkDataCalls {
                     InjectorUtils.provideNetworkData(context).setCurrentPersonData(personEntry);
 
                 } catch (JSONException e) {
+                    InjectorUtils.provideNetworkData(context).setCurrentPersonData(null);
                     e.printStackTrace();
                 }
             }
 
         }, error -> {
+            InjectorUtils.provideNetworkData(context).setCurrentPersonData(null);
             Log.e("Image error", String.valueOf(error));
 
         }) {

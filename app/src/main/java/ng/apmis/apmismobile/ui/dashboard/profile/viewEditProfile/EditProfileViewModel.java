@@ -20,7 +20,6 @@ public class EditProfileViewModel extends ViewModel {
     EditProfileViewModel(Context context, ApmisRepository apmisRepository) {
         this.apmisRepository = apmisRepository;
         mPersonEntry = apmisRepository.getUserData();
-        mDownloadedPerson = apmisRepository.getNetworkDataSource().getCurrentPersonData();
 
     }
 
@@ -29,6 +28,7 @@ public class EditProfileViewModel extends ViewModel {
     }
 
     public LiveData<PersonEntry> getDownloadedPerson() {
+        mDownloadedPerson = apmisRepository.getNetworkDataSource().getCurrentPersonData();
         return mDownloadedPerson;
     }
 

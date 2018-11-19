@@ -125,7 +125,7 @@
     <string name="sign_out">Sign out</string>
     <string name="loading">Loading ...</string>
     <string name="view">View</string>
-    <string name="buy">Buy</string>
+    <string name="buy">Accounts</string>
     <string name="chat">Chat</string>
     <string name="read">Read</string>
     <string name="find">Find</string>
@@ -166,6 +166,8 @@
     </string-array>
 
     <string-array name="select_hospital">
+        <item>Select a Hospital g Hospital of Hospital Hospital</item>
+        <item>Select Hospital</item>
         <item>Select Hospital</item>
     </string-array>
 
@@ -234,5 +236,9 @@
     <string name="insufficient_funds">Insufficient funds in your wallet for this transaction</string>
     <string name="trx_amount_placeholder">NGN %s</string>
     <string name="paid_by">%s %s %s</string>
+    <string name="empty_appointments">You currently have no appointments. \nClick the \'+\' button to schedule one</string>
+    <string name="empty_documentation_text">No available records found. \nTry visiting a hospital</string>
+    <string name="empty_prescription_text">You currently have no pending prescriptions</string>
+    <string name="empty_diagnosis_text">You have no ongoing investigations at the moment</string>
 
 </resources>

@@ -42,4 +42,7 @@ public interface ApmisDao {
     @Query("SELECT * FROM appointments WHERE _id = :appointment_id")
     Appointment getAppointmentById(String appointment_id);
 
+    @Query("DELETE FROM appointments")
+    void deleteAllAppointments();
+
 }

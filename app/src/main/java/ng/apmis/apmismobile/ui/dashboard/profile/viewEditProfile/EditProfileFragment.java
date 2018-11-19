@@ -279,7 +279,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
                 onBackPressed();
             }
             else {
-                AppUtils.showShortToast(getContext(), "Unable to save details");
+                AppUtils.showShortToast(getContext(), "Unable to upload");
                 saveChangesProgress.setVisibility(View.GONE);
                 saveChangesButton.setClickable(true);
             }

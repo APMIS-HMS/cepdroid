@@ -54,6 +54,11 @@
         <item name="android:paddingRight">0dp</item>
     </style>
 
+    <style name="AddAppointmentSpinner">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
 
     <!-- Style for a tab that displays a category name -->
     <style name="CategoryTab" parent="Widget.Design.TabLayout">

@@ -18,10 +18,10 @@ public class PrescriptionViewModel extends ViewModel {
     public PrescriptionViewModel(ApmisRepository apmisRepository){
         this.networkDataSource = apmisRepository.getNetworkDataSource();
 
-        mPrescriptions = networkDataSource.getPrescriptionsForPerson();
     }
 
-    public MutableLiveData<List<Prescription>> getPrescriptionsForPerson() {
+    public MutableLiveData<List<Prescription>> getPrescriptionsForPerson(String personId) {
+        mPrescriptions = networkDataSource.getPrescriptionsForPerson(personId);
         return mPrescriptions;
     }
 }

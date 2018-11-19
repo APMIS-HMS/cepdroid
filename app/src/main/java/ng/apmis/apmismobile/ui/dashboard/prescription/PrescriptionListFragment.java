@@ -4,6 +4,7 @@ package ng.apmis.apmismobile.ui.dashboard.prescription;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,6 +45,9 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
     @BindView(R.id.prescriptions_shimmer)
     ShimmerFrameLayout prescriptionsShimmer;
 
+    @BindView(R.id.empty_view)
+    RelativeLayout emptyView;
+
     @BindView(R.id.prescriptionsRecycler)
     RecyclerView prescriptionsRecycler;
 
@@ -73,9 +77,6 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
 
         preferencesManager = new SharedPreferencesManager(getContext());
 
-        //Fetch prescriptions from the server
-        InjectorUtils.provideNetworkData(getActivity()).fetchPrescriptionsForPerson(preferencesManager.getPersonId());
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         prescriptionsRecycler.setLayoutManager(layoutManager);
 
@@ -99,13 +100,24 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
 
         final Observer<List<Prescription>> prescriptionsObserver = prescriptions -> {
 
+            if (prescriptions == null){
+                //if null, show snack bar
+                if ((prescriptionAdapter != null && prescriptionAdapter.getItemCount() == 0) ||
+                        prescriptionAdapter == null) {
+                    emptyView.setVisibility(View.VISIBLE);
+
+                }
+
+                prescriptionsShimmer.stopShimmer();
+                prescriptionsShimmer.setVisibility(View.GONE);
+                Snackbar.make(emptyView, "Failed to load Prescriptions", Snackbar.LENGTH_LONG).show();
+                return;
+            }
+
             //Populate the prescription item list
             populatePrescriptionItems(prescriptions);
 
             if (prescriptionAdapter == null) {
-
-                prescriptionsShimmer.setVisibility(View.GONE);
-                prescriptionsShimmer.stopShimmer();
 
                 prescriptionAdapter = new PrescriptionAdapter(getActivity(), prescriptionItems);
                 prescriptionAdapter.initAddToCartListener(this);
@@ -123,10 +135,21 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
                 Log.d("init notify again", prescriptionItems.size()+"");
                 prescriptionAdapter.notifyDataSetChanged();
             }
+
+
+            prescriptionsShimmer.stopShimmer();
+            prescriptionsShimmer.setVisibility(View.GONE);
+
+            if (prescriptionAdapter.getItemCount() > 0) {
+                emptyView.setVisibility(View.GONE);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+            }
+
         };
 
         //Observe the Prescriptions
-        prescriptionsViewModel.getPrescriptionsForPerson().observe(getActivity(), prescriptionsObserver);
+        prescriptionsViewModel.getPrescriptionsForPerson(preferencesManager.getPersonId()).observe(this, prescriptionsObserver);
 
     }
 
@@ -170,7 +193,7 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
 
     @Override
     public void onStop() {
-        prescriptionsViewModel.getPrescriptionsForPerson().removeObservers(getActivity());
+        prescriptionsViewModel.getPrescriptionsForPerson(preferencesManager.getPersonId()).removeObservers(this);
         super.onStop();
     }
 

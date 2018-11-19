@@ -177,6 +177,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void clear(){
         //this.appointmentList = new ArrayList<>();
         this.segmentedAppointmentItems.clear();
+        notifyDataSetChanged();
     }
 
 

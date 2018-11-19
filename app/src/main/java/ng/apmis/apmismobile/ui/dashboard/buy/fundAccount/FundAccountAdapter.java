@@ -173,6 +173,8 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 this.transactions.add((Transaction) x);
             }
         }
+
+        notifyDataSetChanged();
     }
 
 
