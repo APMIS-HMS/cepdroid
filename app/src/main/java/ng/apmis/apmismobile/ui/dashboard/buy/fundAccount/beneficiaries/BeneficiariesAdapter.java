@@ -1,6 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.beneficiaries;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -24,12 +25,17 @@ import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 
 public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdapter.MyViewHolder> {
 
-    private static final int ADD_BENEFICIARY = 0;
-    private static final int BENEFICIARY = 1;
-    private ArrayList<Beneficiaries> allBeneficiaries = new ArrayList<>();
+    private ArrayList<Beneficiaries> beneficiaries;
+    private Context context;
 
-    public BeneficiariesAdapter(ArrayList<Beneficiaries> beneficiaries) {
-        allBeneficiaries = beneficiaries;
+    public BeneficiariesAdapter(Context context) {
+        this.context = context;
+        beneficiaries = new ArrayList<>();
+    }
+
+    public void setBeneficiaryItem (Beneficiaries beneficiaries) {
+        this.beneficiaries.add(beneficiaries);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -42,7 +48,7 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Beneficiaries beneficiary = allBeneficiaries.get(position);
+        Beneficiaries beneficiary = this.beneficiaries.get(position);
         holder.imageView.setImageResource(beneficiary.getImage());
         holder.userName.setText(beneficiary.getName());
     }
@@ -54,7 +60,7 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdap
 
     @Override
     public int getItemCount() {
-        return allBeneficiaries.size();
+        return this.beneficiaries.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
