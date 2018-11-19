@@ -41,7 +41,6 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private OnFundWalletClickedListener mListener;
 
-    private BeneficiariesAdapter beneficiariesAdapter;
     private TransactionHistoryAdapter transactionHistoryAdapter;
 
 
@@ -52,7 +51,6 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public FundAccountAdapter(Context context) {
         this.context = context;
         this.segmentedObjectsList = new ArrayList<>();
-        this.beneficiariesAdapter = new BeneficiariesAdapter(context);
         this.transactionHistoryAdapter = new TransactionHistoryAdapter(context);
     }
 
@@ -155,13 +153,13 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         if (holder.getItemViewType() == BENEFICIARIES) {
-            Beneficiaries beneficiary = (Beneficiaries) segmentedObjectsList.get(position).object;
-            beneficiariesAdapter.setBeneficiaryItem(beneficiary);
+            /*Beneficiaries beneficiary = (Beneficiaries) segmentedObjectsList.get(position).object;
+            beneficiariesAdapter.setBeneficiaryItem(beneficiary);*/
         }
 
         if (holder.getItemViewType() == TRANSACTION) {
-            Transaction transaction = (Transaction) segmentedObjectsList.get(position).object;
-            transactionHistoryAdapter.setTransactionList(transaction);
+           /* Transaction transaction = (Transaction) segmentedObjectsList.get(position).object;
+            transactionHistoryAdapter.setTransactionList(transaction);*/
         }
 
         if (holder.getItemViewType() == ALL_HEADERS_WITH_EMPTY_VIEW) {
@@ -175,6 +173,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void beneficiaryHeaderView(BeneficiariesHeaderViewHolder holder) {
+        BeneficiariesAdapter beneficiariesAdapter = new BeneficiariesAdapter(context);
         holder.recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.recyclerView.setAdapter(beneficiariesAdapter);
         holder.fundWalletButton.setOnClickListener(v -> mListener.onFundWalletClicked());
