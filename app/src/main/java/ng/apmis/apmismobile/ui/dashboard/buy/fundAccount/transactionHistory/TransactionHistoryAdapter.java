@@ -31,13 +31,9 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
     private ArrayList<Transaction> transactionList;
     private Context context;
 
-    public TransactionHistoryAdapter(Context context) {
+    public TransactionHistoryAdapter(Context context, ArrayList<Transaction> transactionList) {
         this.context = context;
-        this.transactionList = new ArrayList<>();
-    }
-
-    public void setTransactionList (Transaction transactionList) {
-        this.transactionList.add(transactionList);
+        this.transactionList = transactionList;
     }
 
     @NonNull
