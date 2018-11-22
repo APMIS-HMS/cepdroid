@@ -186,7 +186,7 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
     public void onResume() {
         if (getActivity() != null) {
             ((DashboardActivity)getActivity()).profileImage.setVisibility(View.GONE);
-            ((DashboardActivity)getActivity()).setToolBarTitle(Constants.DIAGNOSES, false);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.INVESTIGATIONS, false);
         }
         super.onResume();
     }

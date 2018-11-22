@@ -17,6 +17,7 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.ModuleAdapter;
 import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
+import ng.apmis.apmismobile.utilities.Constants;
 
 public class ChatFragment extends Fragment {
 
@@ -49,7 +50,7 @@ public class ChatFragment extends Fragment {
                 Toast.makeText(getActivity(), selectedOption.getmOption(), Toast.LENGTH_SHORT).show();
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .add(R.id.fragment_container, new ChatContextFragment())
+                        .replace(R.id.fragment_container, new ChatContextFragment())
                         .addToBackStack("bot")
                         .commit();
             } else {
@@ -66,10 +67,9 @@ public class ChatFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-
-        ((DashboardActivity) getActivity()).setToolBarTitle(CLASSNAME, false);
-
-        super.onStart();
+    public void onResume() {
+        ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.CHAT, true);
+        ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.chat_menu).setChecked(true);
+        super.onResume();
     }
 }

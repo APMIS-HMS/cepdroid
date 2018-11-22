@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/home_menu"
+        android:title="@string/home"
+        app:showAsAction="always"
+        android:icon="@mipmap/ic_home" />
+
     <item android:id="@+id/view_menu"
         android:title="@string/view"
         app:showAsAction="always"
@@ -18,11 +23,6 @@
         android:title="@string/chat"
         app:showAsAction="always"
         android:icon="@drawable/ic_chat" />
-
-    <item android:id="@+id/read_menu"
-        android:title="@string/read"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_read" />
 
     <item android:id="@+id/find_menu"
         android:title="@string/find"

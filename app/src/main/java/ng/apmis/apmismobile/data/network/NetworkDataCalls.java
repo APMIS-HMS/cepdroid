@@ -447,7 +447,7 @@ public final class NetworkDataCalls {
     }
 
     /**
-     * Fetch {@link Clinic}s list within the provided facility.
+     * Fetch {@link ClinicSchedule}s list within the provided facility.
      * These clinics are those that have set out schedules in their data
      * @param context The calling context
      * @param facilityId The id of the facility which the clinic is located
@@ -471,16 +471,20 @@ public final class NetworkDataCalls {
 
                     InjectorUtils.provideNetworkData(context).setClinicsForFacility(clinicSchedules);
 
+                } else {
+                    InjectorUtils.provideNetworkData(context).setClinicsForFacility(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                InjectorUtils.provideNetworkData(context).setClinicsForFacility(null);
             }
 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Clinic error", String.valueOf(error.getMessage()));
+                InjectorUtils.provideNetworkData(context).setClinicsForFacility(null);
             }
         }) {
             @Override
@@ -521,21 +525,28 @@ public final class NetworkDataCalls {
                 if (categoryArray.length()>0) {
 
                     List<Category> categories = new ArrayList<>(Arrays.asList(gson.fromJson(categoryArray.toString(), Category[].class)));
+                    //Input facility ids in the categories
+                    for (Category category : categories)
+                        category.setFacilityId(facilityId);
 
                     Log.v("Services responseEntry", categories.get(0).toString());
 
                     InjectorUtils.provideNetworkData(context).setServicesForFacility(categories);
 
+                } else {
+                    InjectorUtils.provideNetworkData(context).setServicesForFacility(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                InjectorUtils.provideNetworkData(context).setServicesForFacility(null);
             }
 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Services error", String.valueOf(error.getMessage()));
+                InjectorUtils.provideNetworkData(context).setServicesForFacility(null);
             }
         }) {
             @Override
@@ -576,16 +587,20 @@ public final class NetworkDataCalls {
 
                     InjectorUtils.provideNetworkData(context).setEmployeesForFacility(employees);
 
+                } else {
+                    InjectorUtils.provideNetworkData(context).setEmployeesForFacility(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                InjectorUtils.provideNetworkData(context).setEmployeesForFacility(null);
             }
 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Employees error", String.valueOf(error.getMessage()));
+                InjectorUtils.provideNetworkData(context).setEmployeesForFacility(null);
             }
         }) {
             @Override

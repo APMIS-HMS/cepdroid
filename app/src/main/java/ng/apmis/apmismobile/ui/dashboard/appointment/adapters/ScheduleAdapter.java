@@ -28,7 +28,7 @@ public class ScheduleAdapter extends ArrayAdapter{
     public ScheduleAdapter(@NonNull Context context, int resource, List<ScheduleItem> scheduleItems) {
         super(context, resource);
         mContext = context;
-        mSchedules = scheduleItems;
+        mSchedules = new ArrayList<>(scheduleItems);
     }
 
     public void addAllSchedules(List<ScheduleItem> schedules){

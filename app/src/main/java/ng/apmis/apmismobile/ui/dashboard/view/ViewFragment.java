@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,9 @@ import ng.apmis.apmismobile.utilities.Constants;
 
 public class ViewFragment extends Fragment {
 
-    @BindView(R.id.list_items) ListView listItems;
+    @BindView(R.id.list_items)
+    ListView listItems;
+
     private static final String CLASSNAME = "VIEW";
 
     List<ModuleListModel> optionItems = new ArrayList<>();
@@ -42,8 +43,8 @@ public class ViewFragment extends Fragment {
         optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointents));
         optionItems.add(new ModuleListModel(Constants.CLINICAL_DOCUMENTATION, R.drawable.ic_medical_records));
         optionItems.add(new ModuleListModel(Constants.PRESCRIPTION, R.drawable.ic_prescription));
-        optionItems.add(new ModuleListModel(Constants.HEALTH_PROFILE, R.drawable.ic_health_profile));
-        optionItems.add(new ModuleListModel(Constants.DIAGNOSES, R.drawable.ic_diagnostic_report));
+        optionItems.add(new ModuleListModel(Constants.VITALS, R.drawable.ic_health_profile));
+        optionItems.add(new ModuleListModel(Constants.INVESTIGATIONS, R.drawable.ic_diagnostic_report));
 
         optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
         optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
@@ -61,8 +62,8 @@ public class ViewFragment extends Fragment {
         listItems.setOnItemClickListener((parent, view, position, id) -> {
             ModuleListModel selectedOption = (ModuleListModel) parent.getItemAtPosition(position);
 
-            if (!selectedOption.getmOption().equalsIgnoreCase(Constants.APPOINTMENTS))
-                Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
+            //if (!selectedOption.getmOption().equalsIgnoreCase(Constants.APPOINTMENTS))
+                //Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
 
                 switch (selectedOption.getmOption()) {
                     case Constants.CLINICAL_DOCUMENTATION:
@@ -74,7 +75,7 @@ public class ViewFragment extends Fragment {
                     case Constants.PRESCRIPTION:
                         setFragment(new PrescriptionListFragment());
                         break;
-                    case Constants.HEALTH_PROFILE:
+                    case Constants.VITALS:
                         setFragment(new HealthProfileFragment());
                         break;
                     case Constants.APPOINTMENTS:
@@ -83,7 +84,7 @@ public class ViewFragment extends Fragment {
                     case "HEALTH INSURANCE":
                         //setFragment(new AppointmentFragment());
                         break;
-                    case Constants.DIAGNOSES:
+                    case Constants.INVESTIGATIONS:
                         setFragment(new DiagnosisListFragment());
                         break;
                     case "REFERRAL":
@@ -116,7 +117,8 @@ public class ViewFragment extends Fragment {
     public void onResume() {
         if (getActivity() != null) {
             ((DashboardActivity)getActivity()).profileImage.setVisibility(View.VISIBLE);
-            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.VIEW, true);
+            ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.view_menu).setChecked(true);
         }
         super.onResume();
     }

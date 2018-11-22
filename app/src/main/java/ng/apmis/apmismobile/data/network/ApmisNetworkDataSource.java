@@ -414,6 +414,22 @@ public class ApmisNetworkDataSource {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //Person entry
     public LiveData<PersonEntry> getCurrentPersonData() {
         return mDownloadedPersonData;
@@ -475,7 +491,7 @@ public class ApmisNetworkDataSource {
     }
 
     public LiveData<List<Facility>> getRegisteredFacilities(){
-        new NetworkDataCalls(mContext).fetchRegisteredFacilities(mContext, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
+        fetchPersonDetails();
         return registeredFacilities;
     }
 
@@ -520,72 +536,86 @@ public class ApmisNetworkDataSource {
     //Employees
 
     public void setEmployeesForFacility(List<Employee> employees){
-        List<Employee> doctors = new ArrayList<>();
-        for (Employee employee : employees){
-            if (employee.getProfessionId().equalsIgnoreCase("Doctor"))
-                doctors.add(employee);
+        if (employees != null) {
+            List<Employee> doctors = new ArrayList<>();
+            for (Employee employee : employees){
+                if (employee.getProfessionId().equalsIgnoreCase("Doctor"))
+                    doctors.add(employee);
+            }
+            this.employees.postValue(doctors);
+
+        } else {//post null if a null value was received
+            this.employees.postValue(null);
         }
-        this.employees.postValue(doctors);
     }
 
-    public MutableLiveData<List<Employee>> getEmployeesForFacility() {
+    public MutableLiveData<List<Employee>> getEmployeesForFacility(String facilityId) {
+        fetchEmployeesForFacility(facilityId);
         return employees;
     }
 
-    public void refreshEmployees(){
-        this.employees.postValue(new ArrayList<>());
+    public void resetEmployees(){
+        this.employees = new MutableLiveData<>();
     }
 
 
 
-    //Clinics & Schedules
-
-    public void setSchedulesForClinic(ClinicSchedule clinic){
-        this.schedules.postValue(clinic.getSchedules());
-    }
-
-    public MutableLiveData<List<ScheduleItem>> getSchedulesForClinic() {
-        return schedules;
-    }
-
-    public void refreshSchedules(){
-        this.schedules.postValue(new ArrayList<>());
-    }
+    //Clinic schedules
 
     public void setClinicsForFacility(List<ClinicSchedule> clinics){
-        this.clinics.postValue(clinics);
+        if (clinics != null) {
+            this.clinics.postValue(clinics);
+
+        } else {//post null if a null value was received
+            this.clinics.postValue(null);
+        }
     }
 
-    public MutableLiveData<List<ClinicSchedule>> getClinicsForFacility() {
+    public MutableLiveData<List<ClinicSchedule>> getClinicsForFacility(String facilityId) {
+        fetchClinicSchedulesForFacility(facilityId);
         return clinics;
     }
 
-    public void refreshClinics(){
-        this.clinics.postValue(new ArrayList<>());
+    public void resetClinics(){
+        this.clinics = new MutableLiveData<>();
     }
 
 
     //Services
 
     public void setServicesForFacility(List<Category> categories) {
-        for (Category category : categories){
-            if (category.getName().equalsIgnoreCase("Appointment")) {
-                this.services.postValue(category.getServices());
-                break;
+        if (categories != null) {
+            for (Category category : categories){
+                if (category.getName().equalsIgnoreCase("Appointment")) {
+
+                    List<Service> services = category.getServices();
+
+                    for (Service service : services) //input the facilityId
+                        service.setFacilityId(category.getFacilityId());
+
+                    this.services.postValue(services);
+                    break;
+                }
             }
         }
+
+        else {//post null if a null value was received
+            this.services.postValue(null);
+        }
+
     }
 
-    public MutableLiveData<List<Service>> getServicesForFacility() {
+    public MutableLiveData<List<Service>> getServicesForFacility(String facilityId) {
+        fetchCategoriesForFacility(facilityId);
         return services;
     }
 
-    public void refreshServices(){
-        this.services.postValue(new ArrayList<>());
+    public void resetServices(){
+        this.services = new MutableLiveData<>();
     }
 
 
-    //Category
+    //Category Ids, looking for Registration
 
     public LiveData<String> getServiceCategoryIdForFacility(String id){
         fetchServiceCategoryForFacility(id);

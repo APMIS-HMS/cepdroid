@@ -34,8 +34,6 @@ import ng.apmis.apmismobile.data.database.documentationModel.DoubleTypeAdapter;
 import ng.apmis.apmismobile.data.database.documentationModel.IntegerTypeAdapter;
 import ng.apmis.apmismobile.data.database.documentationModel.Vitals;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
-import ng.apmis.apmismobile.utilities.AnnotationExclusionStrategy;
-import ng.apmis.apmismobile.utilities.Constants;
 
 /**
  * View for displaying details about Patient Medical Records,
@@ -145,7 +143,7 @@ public class MedicalRecordsDetailsFragment extends Fragment {
             else
                 documentTitle = "Laboratory Report";
 
-            ((DashboardActivity)getActivity()).setToolBarTitle(documentTitle.toUpperCase(), false);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(documentTitle.toUpperCase(), false);
 
         }
         super.onResume();

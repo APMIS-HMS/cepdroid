@@ -13,9 +13,7 @@ import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
-import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
-import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
 public class AddAppointmentViewModel extends ViewModel {
@@ -24,7 +22,6 @@ public class AddAppointmentViewModel extends ViewModel {
     private MutableLiveData<List<ClinicSchedule>> mClinics;
     private MutableLiveData<List<Service>> mServices;
     private MutableLiveData<List<Employee>> mEmployees;
-    private MutableLiveData<List<ScheduleItem>> mSchedules;
 
     private MutableLiveData<Appointment> mAppointment;
 
@@ -38,14 +35,7 @@ public class AddAppointmentViewModel extends ViewModel {
         this.apmisRepository = apmisRepository;
         this.apmisNetworkDataSource = apmisRepository.getNetworkDataSource();
 
-        appointmentTypes = apmisNetworkDataSource.getAppointmentTypes();
         orderStatuses = apmisNetworkDataSource.getOrderStatuses();
-
-
-        mClinics = apmisNetworkDataSource.getClinicsForFacility();
-        mServices = apmisNetworkDataSource.getServicesForFacility();
-        mEmployees = apmisNetworkDataSource.getEmployeesForFacility();
-        mSchedules = apmisNetworkDataSource.getSchedulesForClinic();
         mAppointment = apmisNetworkDataSource.getAppointment();
     }
 
@@ -56,27 +46,39 @@ public class AddAppointmentViewModel extends ViewModel {
     }
 
     public MutableLiveData<List<AppointmentType>> getAppointmentTypes() {
+        appointmentTypes = apmisNetworkDataSource.getAppointmentTypes();
         return appointmentTypes;
     }
 
-    public LiveData<List<Facility>> getRegisteredFacilities() {
-        mFacilities = apmisNetworkDataSource.getRegisteredFacilities();
+    public LiveData<List<Facility>> getRegisteredFacilities(boolean shouldFetch) {
+        if (shouldFetch)
+            mFacilities = apmisNetworkDataSource.getRegisteredFacilities();
+        else if (mFacilities == null)
+            mFacilities = new MutableLiveData<>();
         return mFacilities;
     }
 
-    public MutableLiveData<List<ClinicSchedule>> getClinics() {
+    public MutableLiveData<List<ClinicSchedule>> getClinics(String facilityId, boolean shouldFetch) {
+        if (shouldFetch)
+            mClinics = apmisNetworkDataSource.getClinicsForFacility(facilityId);
+        else if (mClinics == null)
+            mClinics = new MutableLiveData<>();
         return mClinics;
     }
 
-    public MutableLiveData<List<ScheduleItem>> getSchedules() {
-        return mSchedules;
-    }
-
-    public MutableLiveData<List<Service>> getServices() {
+    public MutableLiveData<List<Service>> getServices(String facilityId, boolean shouldFetch) {
+        if (shouldFetch)
+            mServices = apmisNetworkDataSource.getServicesForFacility(facilityId);
+        else if (mServices == null)
+            mServices = new MutableLiveData<>();
         return mServices;
     }
 
-    public MutableLiveData<List<Employee>> getEmployees() {
+    public MutableLiveData<List<Employee>> getEmployees(String facilityId, boolean shouldFetch) {
+        if (shouldFetch)
+            mEmployees = apmisNetworkDataSource.getEmployeesForFacility(facilityId);
+        else if (mEmployees == null)
+            mEmployees = new MutableLiveData<>();
         return mEmployees;
     }
 
@@ -86,26 +88,28 @@ public class AddAppointmentViewModel extends ViewModel {
 
 
 
-
-    public void setSchedules(ClinicSchedule clinic){
-        apmisNetworkDataSource.setSchedulesForClinic(clinic);
-    }
-
     public void resetClinics(){
-        apmisNetworkDataSource.refreshClinics();
+        apmisNetworkDataSource.resetClinics();
     }
 
     public void resetServices(){
-        apmisNetworkDataSource.refreshServices();
+        apmisNetworkDataSource.resetServices();
     }
 
     public void resetEmployees(){
-        apmisNetworkDataSource.refreshEmployees();
+        apmisNetworkDataSource.resetEmployees();
     }
 
-    public void resetSchedules(){
-        apmisNetworkDataSource.refreshSchedules();
+    public void tempRefreshFacilities(){
+        mFacilities = new MutableLiveData<>();
     }
+
+    public void tempRefreshApptTypes(){
+        appointmentTypes = new MutableLiveData<>();
+    }
+
+
+
 
 
     public void submitAppointment(Appointment appointment){

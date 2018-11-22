@@ -128,7 +128,7 @@
     <string name="buy">Accounts</string>
     <string name="chat">Chat</string>
     <string name="read">Read</string>
-    <string name="find">Find</string>
+    <string name="find">Search</string>
     <string name="welcome_header">APMIS CEP</string>
     <string name="reminders">Reminders</string>
     <string name="facilities">Facilities</string>
@@ -147,7 +147,7 @@
     <string name="new_item">New</string>
     <string name="follow_up">Follow up</string>
     <string name="appointment_description">Appointment Description:</string>
-    <string name="appointment_class">Appointment Class:</string>
+    <string name="appointment_reason">Appointment Reason:</string>
     <string name="clinic_schedule">Clinic Schedule:</string>
     <string name="your_schedule">Your Schedule:</string>
     <string name="set_reminder">Set Reminder:</string>
@@ -238,5 +238,6 @@
     <string name="empty_documentation_text">No available records found. \nTry visiting a hospital</string>
     <string name="empty_prescription_text">You currently have no pending prescriptions</string>
     <string name="empty_diagnosis_text">You have no ongoing investigations at the moment</string>
+    <string name="home">Home</string>
 
 </resources>

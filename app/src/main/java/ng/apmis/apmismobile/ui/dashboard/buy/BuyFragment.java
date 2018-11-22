@@ -23,6 +23,7 @@ import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.FundAccountFragment;
+import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class BuyFragment extends android.support.v4.app.Fragment implements FundAccountFragment.OnWalletFundedListener{
@@ -92,7 +93,8 @@ public class BuyFragment extends android.support.v4.app.Fragment implements Fund
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity) getActivity()).setToolBarTitle("Buy", false);
+            ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.ACCOUNT, true);
+            ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.buy_menu).setChecked(true);
         }
         super.onResume();
     }

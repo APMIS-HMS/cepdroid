@@ -1,73 +1,76 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Build;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.utilities.Constants;
+
+import static android.widget.RelativeLayout.BELOW;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link DashboardFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DashboardFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class DashboardFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
 
     @BindView(R.id.search_box)
     TextInputEditText searchBox;
 
+    @BindView(R.id.first_row)
+    TableRow firstRow;
+
+    @BindView(R.id.second_row)
+    TableRow secondRow;
+
+    @BindView(R.id.first)
+    CardView firstCard;
+
+    @BindView(R.id.second)
+    CardView secondCard;
+
+    @BindView(R.id.third)
+    CardView thirdCard;
+
+    @BindView(R.id.fourth)
+    CardView fourthCard;
+
+    @BindView(R.id.quick_links_group)
+    RelativeLayout quickLinksLayout;
+
+    @BindView(R.id.open_close_reminders)
+    Button openCloseReminders;
+
+    @BindView(R.id.reminder_recycler)
+    RecyclerView reminderRecycler;
+
     public DashboardFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DashboardFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DashboardFragment newInstance(String param1, String param2) {
-        DashboardFragment fragment = new DashboardFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
+
+    boolean areRemindersShowing = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,40 +78,132 @@ public class DashboardFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
         ButterKnife.bind(this, rootView);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            searchBox.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_find,0);
-        }
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+
+        firstRow.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, screenWidth/2));
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, screenWidth/2);
+        params.addRule(BELOW, R.id.first_row);
+        secondRow.setLayoutParams(params);
+
+        AnimatorSet out1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.out);
+        AnimatorSet out2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.out);
+        AnimatorSet out3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.out);
+        AnimatorSet out4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.out);
+        AnimatorSet out5 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.out);
+
+        out1.setTarget(firstCard);
+        out2.setTarget(secondCard);
+        out3.setTarget(thirdCard);
+        out4.setTarget(fourthCard);
+        out5.setTarget(openCloseReminders);
+
+        out1.start();
+        out2.start();
+        out3.start();
+        out4.start();
+        out5.start();
+
+        AnimatorSet set1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.bounce_in);
+        set1.setTarget(firstCard);
+        set1.setStartDelay(20);
+        set1.start();
+
+        AnimatorSet set2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.bounce_in);
+        set2.setTarget(secondCard);
+        set2.setStartDelay(120);
+        set2.start();
+
+        AnimatorSet set3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.bounce_in);
+        set3.setTarget(thirdCard);
+        set3.setStartDelay(220);
+        set3.start();
+
+        AnimatorSet set4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.bounce_in);
+        set4.setTarget(fourthCard);
+        set4.setStartDelay(320);
+        set4.start();
+
+
+        AnimatorSet floatIn = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.fade_in_float);
+        floatIn.setTarget(openCloseReminders);
+        floatIn.setStartDelay(1500);
+        floatIn.start();
+
+        AnimatorSet outRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                R.animator.out);
+        outRecycler.setTarget(reminderRecycler);
+        outRecycler.start();
+
+        ReminderAdapter adapter = new ReminderAdapter(getContext());
+        reminderRecycler.setAdapter(adapter);
+        reminderRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+
+        openCloseReminders.setOnClickListener(v -> {
+
+            if (areRemindersShowing) {
+                openCloseReminders.setText("View Reminders");
+                areRemindersShowing = false;
+
+                openCloseReminders.setCompoundDrawablesWithIntrinsicBounds(
+                        null, null,
+                        getContext().getResources().getDrawable(R.drawable.ic_expand_more_black), null);
+
+                AnimatorSet showQuickLinks = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                        R.animator.zoom_in);
+                showQuickLinks.setTarget(quickLinksLayout);
+                showQuickLinks.setStartDelay(400);
+                showQuickLinks.start();
+
+                AnimatorSet removeRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                        R.animator.top_to_bottom);
+                removeRecycler.setTarget(reminderRecycler);
+                removeRecycler.start();
+
+
+            } else {
+                openCloseReminders.setText("Close Reminders");
+                areRemindersShowing = true;
+
+                openCloseReminders.setCompoundDrawablesWithIntrinsicBounds(
+                        null, null,
+                        getContext().getResources().getDrawable(R.drawable.ic_close_black), null);
+
+                AnimatorSet removeQuickLinks = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                        R.animator.zoom_out);
+                removeQuickLinks.setTarget(quickLinksLayout);
+                removeQuickLinks.start();
+
+                AnimatorSet showRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+                        R.animator.bottom_to_top);
+                showRecycler.setTarget(reminderRecycler);
+                showRecycler.start();
+            }
+
+        });
 
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitle("WELCOME", true);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.WELCOME, true);
+            ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.home_menu).setChecked(true);
         }
+        areRemindersShowing = false;
         super.onResume();
     }
 }

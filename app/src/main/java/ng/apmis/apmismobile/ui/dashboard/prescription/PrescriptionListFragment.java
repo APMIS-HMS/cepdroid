@@ -221,7 +221,7 @@ public class PrescriptionListFragment extends Fragment implements PrescriptionAd
     public void onResume() {
         if (getActivity() != null) {
             ((DashboardActivity)getActivity()).profileImage.setVisibility(View.GONE);
-            ((DashboardActivity)getActivity()).setToolBarTitle(Constants.PRESCRIPTION, false);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.PRESCRIPTION, false);
         }
         super.onResume();
     }

@@ -28,7 +28,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginBottom="30dp">
+                android:layout_marginBottom="35dp">
 
                 <Spinner
                     android:id="@+id/select_hospital_spinner"
@@ -53,7 +53,7 @@
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginRight="33dp"
                     android:layout_marginEnd="33dp"
-                    android:background="@drawable/ic_refresh"
+                    android:background="@drawable/ic_error_refresh"
                     android:visibility="gone"/>
 
             </FrameLayout>
@@ -79,11 +79,22 @@
                     android:entries="@array/select_appt_type" />
 
                 <ProgressBar
+                    android:id="@+id/select_appt_type_progress"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginRight="35dp"
                     android:layout_marginEnd="35dp"/>
+
+                <Button
+                    android:id="@+id/select_appt_type_refresh"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginRight="33dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@drawable/ic_error_refresh"
+                    android:visibility="gone"/>
 
 
 
@@ -104,11 +115,23 @@
                     android:entries="@array/select_clinic" />
 
                 <ProgressBar
+                    android:id="@+id/select_clinic_progress"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"/>
+                    android:layout_marginEnd="35dp"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/select_clinic_refresh"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginRight="33dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@drawable/ic_error_refresh"
+                    android:visibility="gone"/>
 
             </FrameLayout>
 
@@ -126,18 +149,30 @@
                     android:entries="@array/select_service_category" />
 
                 <ProgressBar
+                    android:id="@+id/select_service_progress"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"/>
+                    android:layout_marginEnd="35dp"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/select_service_refresh"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginRight="33dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@drawable/ic_error_refresh"
+                    android:visibility="gone"/>
 
             </FrameLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="35dp">
 
                 <Spinner
                     android:id="@+id/whom_to_see_spinner"
@@ -148,11 +183,23 @@
                     android:entries="@array/select_whom_to_see" />
 
                 <ProgressBar
+                    android:id="@+id/select_employee_progress"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"/>
+                    android:layout_marginEnd="35dp"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/select_employee_refresh"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginRight="33dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@drawable/ic_error_refresh"
+                    android:visibility="gone"/>
 
             </FrameLayout>
 
@@ -160,17 +207,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/appointment_class"
+                android:text="@string/appointment_reason"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
 
             <EditText
                 android:id="@+id/appointment_reason_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                android:layout_height="wrap_content"
+                android:minHeight="40dp"
+                android:layout_marginBottom="35dp"
                 android:inputType="text"
-                android:lines="2"
                 android:hint="Enter your reason here"
                 android:background="@drawable/textview_background_no_background_color" />
 
@@ -183,7 +230,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="35dp">
 
                 <Spinner
                     android:id="@+id/clinic_schedule_spinner"
@@ -192,13 +239,6 @@
                     android:theme="@style/AddAppointmentSpinner"
                     android:background="@drawable/spinner_background_no_background_color"
                     android:entries="@array/select_schedule" />
-
-                <ProgressBar
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"/>
 
             </FrameLayout>
 

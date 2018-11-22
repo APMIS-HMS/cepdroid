@@ -39,8 +39,7 @@ public class ChatContextFragment extends Fragment {
 
         chatContextAdapter = new ChatContextAdapter(getActivity());
 
-        ((DashboardActivity)getActivity()).bottomNavVisibility(false);
-        ((DashboardActivity)getActivity()).setToolBarTitle("APMIS CEP", false);
+        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("APMIS CEP", false);
 
         existingChats.add(new Chats("Hi Thadeus.\nWhat do you want today?", "Other", R.drawable.ic_buy, new Date().getTime()));
         existingChats.add(new Chats("I feel feverish and have a runny nose.\nWhat could be wrong with me?", "me", R.drawable.ic_diagnostic_report, new Date().getTime()));
@@ -75,18 +74,17 @@ public class ChatContextFragment extends Fragment {
 
         return rootView;
     }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        ((DashboardActivity)getActivity()).bottomNavVisibility(true);
-        ((DashboardActivity)getActivity()).setToolBarTitle("CHAT", false);
-    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        ((DashboardActivity)getActivity()).bottomNavVisibility(true);
+//        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("CHAT", true);
+//    }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((DashboardActivity)getActivity()).bottomNavVisibility(false);
-        ((DashboardActivity)getActivity()).setToolBarTitle("APMIS CEP", false);
+        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("APMIS CEP", false);
     }
 }

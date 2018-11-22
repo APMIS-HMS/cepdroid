@@ -26,7 +26,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +42,6 @@ import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
-import ng.apmis.apmismobile.data.database.patientModel.Patient;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.ClinicAdapter;
 import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.EmployeeAdapter;
@@ -74,17 +72,41 @@ public class AddAppointmentFragment extends Fragment {
     @BindView(R.id.select_appt_type_spinner)
     Spinner selectAppointmentTypeSpinner;
 
+    @BindView(R.id.select_appt_type_progress)
+    ProgressBar selectAppointmentTypeProgress;
+
+    @BindView(R.id.select_appt_type_refresh)
+    Button selectAppointmentTypeRefresh;
+
     @BindView(R.id.book_appointment_button)
     Button bookAppointmentButton;
 
     @BindView(R.id.select_clinic_spinner)
     Spinner selectClinicSpinner;
 
+    @BindView(R.id.select_clinic_progress)
+    ProgressBar selectClinicProgress;
+
+    @BindView(R.id.select_clinic_refresh)
+    Button selectClinicRefresh;
+
     @BindView(R.id.select_service_spinner)
     Spinner selectServiceSpinner;
 
+    @BindView(R.id.select_service_progress)
+    ProgressBar selectServiceProgress;
+
+    @BindView(R.id.select_service_refresh)
+    Button selectServiceRefresh;
+
     @BindView(R.id.whom_to_see_spinner)
     Spinner whomToSeeSpinner;
+
+    @BindView(R.id.select_employee_progress)
+    ProgressBar selectEmployeeProgress;
+
+    @BindView(R.id.select_employee_refresh)
+    Button selectEmployeeRefresh;
 
     @BindView(R.id.clinic_schedule_spinner)
     Spinner clinicScheduleSpinner;
@@ -141,9 +163,6 @@ public class AddAppointmentFragment extends Fragment {
         //initialize the AppointmentViewModel
         initViewModel();
 
-        //Fetch the available appointment types from the server
-        InjectorUtils.provideNetworkData(getContext()).fetchAppointmentTypes();
-
         //TODO switch to LiveData
         //if (appointmentViewModel.getOrderStatuses().isEmpty())
         //InjectorUtils.provideNetworkData(getContext()).fetchOrderStatuses();
@@ -160,6 +179,10 @@ public class AddAppointmentFragment extends Fragment {
         return rootView;
     }
 
+    Observer<List<ClinicSchedule>> clinicsObserver;
+    Observer<List<Service>> serviceObserver;
+    Observer<List<Employee>> employeeObserver;
+
     /**
      * Initialize the AppointmentViewModel and set up all the observers
      */
@@ -167,10 +190,14 @@ public class AddAppointmentFragment extends Fragment {
         AddAppointmentViewModelFactory factory = InjectorUtils.provideAddAppointmentViewModelFactory(getActivity().getApplicationContext());
         appointmentViewModel = ViewModelProviders.of(this, factory).get(AddAppointmentViewModel.class);
 
+        //Fetch facilities
+
         Observer<List<Facility>> facilitiesObserver = facilities -> {
             if (facilities == null){
                 selectHospitalProgress.setVisibility(View.GONE);
                 selectHospitalRefresh.setVisibility(View.VISIBLE);
+                //allow facilities to reload if any fail occurs
+                appointmentViewModel.tempRefreshFacilities();
                 return;
             }
 
@@ -186,22 +213,28 @@ public class AddAppointmentFragment extends Fragment {
             selectHospitalProgress.setVisibility(View.GONE);
         };
 
-        appointmentViewModel.getRegisteredFacilities().observe(this, facilitiesObserver);
+        appointmentViewModel.getRegisteredFacilities(true).observe(this, facilitiesObserver);
         selectHospitalRefresh.setOnClickListener(v -> {
-            //TODO prevent this double data fetch in "getRegisteredFacilities()"
 
             selectHospitalProgress.setVisibility(View.VISIBLE);
             selectHospitalRefresh.setVisibility(View.GONE);
 
-            appointmentViewModel.getRegisteredFacilities().removeObservers(AddAppointmentFragment.this);
-            appointmentViewModel.getRegisteredFacilities().observe(AddAppointmentFragment.this, facilitiesObserver);
+            appointmentViewModel.getRegisteredFacilities(false).removeObservers(AddAppointmentFragment.this);
+            appointmentViewModel.getRegisteredFacilities(true).observe(AddAppointmentFragment.this, facilitiesObserver);
         });
 
 
 
-
+        //Fetch Appointment types
 
         Observer<List<AppointmentType>> appointmentTypesObserver = appointmentTypes -> {
+            if (appointmentTypes == null){
+                selectAppointmentTypeProgress.setVisibility(View.GONE);
+                selectAppointmentTypeRefresh.setVisibility(View.VISIBLE);
+                appointmentViewModel.tempRefreshApptTypes();
+                return;
+            }
+
             mAppointmentTypes = appointmentTypes;
 
             if (appointmentTypeArrayAdapter == null) {
@@ -213,12 +246,44 @@ public class AddAppointmentFragment extends Fragment {
             } else {
                 appointmentTypeArrayAdapter.notifyDataSetChanged();
             }
+
+            selectAppointmentTypeProgress.setVisibility(View.GONE);
         };
 
-        appointmentViewModel.getAppointmentTypes().observe(getActivity(), appointmentTypesObserver);
+        appointmentViewModel.getAppointmentTypes().observe(this, appointmentTypesObserver);
+        selectAppointmentTypeRefresh.setOnClickListener(v -> {
+            //TODO prevent this double data fetch here
+
+            selectAppointmentTypeProgress.setVisibility(View.VISIBLE);
+            selectAppointmentTypeRefresh.setVisibility(View.GONE);
+
+            appointmentViewModel.getAppointmentTypes().removeObservers(AddAppointmentFragment.this);
+            appointmentViewModel.getAppointmentTypes().observe(AddAppointmentFragment.this, appointmentTypesObserver);
+        });
 
 
-        Observer<List<ClinicSchedule>> clinicsObserver = clinics -> {
+        //Fetch Clinics
+
+        clinicsObserver = clinics -> {
+            //In case facility was reset before result came in
+            if (mSelectedFacility == null){
+                return;
+            }
+
+            //return in case a clinic from the wrong facility is returned from an earlier request
+            if (clinics != null && clinics.size() > 0){
+                if (!clinics.get(0).getFacilityId().equals(mSelectedFacility.getId()))
+                    return;
+            }
+
+            Log.e("TAG", "Times Called");
+            if (clinics == null){
+                selectClinicProgress.setVisibility(View.GONE);
+                selectClinicRefresh.setVisibility(View.VISIBLE);
+                appointmentViewModel.resetClinics();
+                return;
+            }
+
             mClinics = clinics;
 
             if (clinicAdapter == null) {
@@ -230,12 +295,41 @@ public class AddAppointmentFragment extends Fragment {
                 clinicAdapter.notifyDataSetChanged();
                 selectClinicSpinner.setSelection(0);
             }
+
+            selectClinicProgress.setVisibility(View.GONE);
         };
 
-        appointmentViewModel.getClinics().observe(getActivity(), clinicsObserver);
+        selectClinicRefresh.setOnClickListener(v -> {
+            appointmentViewModel.getClinics(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+
+            selectClinicProgress.setVisibility(View.VISIBLE);
+            selectClinicRefresh.setVisibility(View.GONE);
+
+            appointmentViewModel.getClinics(mSelectedFacility.getId(), true).observe(AddAppointmentFragment.this, clinicsObserver);
+        });
 
 
-        final Observer<List<Service>> serviceObserver = services -> {
+        //Services
+
+        serviceObserver = services -> {
+            //In case facility was reset before result came in
+            if (mSelectedFacility == null){
+                return;
+            }
+
+            //return in case a service from the wrong facility is returned from an earlier request
+            if (services != null && services.size() > 0){
+                if (!services.get(0).getFacilityId().equals(mSelectedFacility.getId()))
+                    return;
+            }
+
+            if (services == null){
+                selectServiceProgress.setVisibility(View.GONE);
+                selectServiceRefresh.setVisibility(View.VISIBLE);
+                appointmentViewModel.resetServices();
+                return;
+            }
+
             mServices = services;
 
             if (serviceAdapter == null) {
@@ -247,12 +341,43 @@ public class AddAppointmentFragment extends Fragment {
                 serviceAdapter.notifyDataSetChanged();
                 selectServiceSpinner.setSelection(0);
             }
+
+            selectServiceProgress.setVisibility(View.GONE);
         };
 
-        appointmentViewModel.getServices().observe(getActivity(), serviceObserver);
+        selectServiceRefresh.setOnClickListener(v -> {
+
+            appointmentViewModel.getServices(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+
+            selectServiceProgress.setVisibility(View.VISIBLE);
+            selectServiceRefresh.setVisibility(View.GONE);
+
+            appointmentViewModel.getServices(mSelectedFacility.getId(), true).observe(AddAppointmentFragment.this, serviceObserver);
+        });
 
 
-        final Observer<List<Employee>> employeeObserver = employees -> {
+
+        //Employees
+
+        employeeObserver = employees -> {
+            //In case facility was reset before result came in
+            if (mSelectedFacility == null){
+                return;
+            }
+
+            //return in case an employee from the wrong facility is returned from an earlier request
+            if (employees != null && employees.size() > 0){
+                if (!employees.get(0).getFacilityId().equals(mSelectedFacility.getId()))
+                    return;
+            }
+
+            if (employees == null){
+                selectEmployeeProgress.setVisibility(View.GONE);
+                selectEmployeeRefresh.setVisibility(View.VISIBLE);
+                appointmentViewModel.resetEmployees();
+                return;
+            }
+
             mEmployees = employees;
 
             if (employeeAdapter == null) {
@@ -264,26 +389,22 @@ public class AddAppointmentFragment extends Fragment {
                 employeeAdapter.notifyDataSetChanged();
                 whomToSeeSpinner.setSelection(0);
             }
+
+            selectEmployeeProgress.setVisibility(View.GONE);
         };
 
-        appointmentViewModel.getEmployees().observe(getActivity(), employeeObserver);
+        selectEmployeeRefresh.setOnClickListener(v -> {
+            appointmentViewModel.getEmployees(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+
+            selectEmployeeProgress.setVisibility(View.VISIBLE);
+            selectEmployeeRefresh.setVisibility(View.GONE);
+
+            appointmentViewModel.getEmployees(mSelectedFacility.getId(), true).observe(AddAppointmentFragment.this, employeeObserver);
+        });
 
 
-        final Observer<List<ScheduleItem>> scheduleObserver = schedules -> {
-            mScheduleItems = schedules;
 
-            if (scheduleAdapter == null) {
-                scheduleAdapter = new ScheduleAdapter(getContext(), 0, mScheduleItems);
-                clinicScheduleSpinner.setAdapter(scheduleAdapter);
-            } else {
-                scheduleAdapter.clear();
-                scheduleAdapter.addAllSchedules(mScheduleItems);
-                scheduleAdapter.notifyDataSetChanged();
-                clinicScheduleSpinner.setSelection(0);
-            }
-        };
-
-        appointmentViewModel.getSchedules().observe(getActivity(), scheduleObserver);
+        //Appointment
 
         final Observer<Appointment> appointmentObserver = appointment -> {
 
@@ -307,24 +428,8 @@ public class AddAppointmentFragment extends Fragment {
             }
         };
 
-        appointmentViewModel.getAppointment().observe(getActivity(), appointmentObserver);
+        appointmentViewModel.getAppointment().observe(this, appointmentObserver);
 
-    }
-
-    /**
-     * Populates the Facility List from the lists Patients observed upon app login
-     * @param patients list of the patients
-     * @return List of all facilities that the Person is currently part of
-     */
-    private List<Facility> getFacilitiesFromPatients(List<Patient> patients){
-
-        List<Facility> facilities = new ArrayList<>();
-
-        for (Patient patient : patients){
-            facilities.add(patient.getFacilityObj());
-        }
-
-        return facilities;
     }
 
     /**
@@ -430,20 +535,67 @@ public class AddAppointmentFragment extends Fragment {
                 //Get the facility id of the work by reducing position by 1
                 if (position > 0) {
 
+                    if (mSelectedFacility != null && mSelectedFacility != mFacilities.get(position - 1)){
+                        appointmentViewModel.resetClinics();
+                        appointmentViewModel.resetServices();
+                        appointmentViewModel.resetEmployees();
+
+                        if (clinicAdapter != null){
+                            clinicAdapter.clear();
+                            serviceAdapter.clear();
+                            employeeAdapter.clear();
+                        }
+
+                        Log.e("TAG", "I am refreshed");
+                    }
+
                     mSelectedFacility = mFacilities.get(position - 1);
 
-                    InjectorUtils.provideNetworkData(getContext()).fetchClinicSchedulesForFacility(mSelectedFacility.getId());
-                    InjectorUtils.provideNetworkData(getContext()).fetchCategoriesForFacility(mSelectedFacility.getId());
-                    InjectorUtils.provideNetworkData(getContext()).fetchEmployeesForFacility(mSelectedFacility.getId());
+                    selectClinicRefresh.setVisibility(View.GONE);
+                    selectServiceRefresh.setVisibility(View.GONE);
+                    selectEmployeeRefresh.setVisibility(View.GONE);
+
+                    selectClinicProgress.setVisibility(View.VISIBLE);
+                    selectServiceProgress.setVisibility(View.VISIBLE);
+                    selectEmployeeProgress.setVisibility(View.VISIBLE);
+
+                    appointmentViewModel.getClinics(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+                    appointmentViewModel.getClinics(mSelectedFacility.getId(), true).observe(AddAppointmentFragment.this, clinicsObserver);
+
+                    appointmentViewModel.getServices(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+                    appointmentViewModel.getServices(mSelectedFacility.getId(), true).observe(AddAppointmentFragment.this, serviceObserver);
+
+                    appointmentViewModel.getEmployees(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+                    appointmentViewModel.getEmployees(mSelectedFacility.getId(), true).observe(AddAppointmentFragment.this, employeeObserver);
 
                 } else {
+
+                    if (mSelectedFacility != null) {
+                        appointmentViewModel.getClinics(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+                        appointmentViewModel.getServices(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+                        appointmentViewModel.getEmployees(mSelectedFacility.getId(), false).removeObservers(AddAppointmentFragment.this);
+                    }
+
+                    selectClinicRefresh.setVisibility(View.GONE);
+                    selectServiceRefresh.setVisibility(View.GONE);
+                    selectEmployeeRefresh.setVisibility(View.GONE);
+
+                    selectClinicProgress.setVisibility(View.GONE);
+                    selectServiceProgress.setVisibility(View.GONE);
+                    selectEmployeeProgress.setVisibility(View.GONE);
+
                     resetAllSelectedFields();
                     yourScheduleTextView.setText("Select your schedule");
 
                     appointmentViewModel.resetClinics();
                     appointmentViewModel.resetServices();
                     appointmentViewModel.resetEmployees();
-                    appointmentViewModel.resetSchedules();
+
+                    if (clinicAdapter != null){
+                        clinicAdapter.clear();
+                        serviceAdapter.clear();
+                        employeeAdapter.clear();
+                    }
                 }
             }
 
@@ -452,6 +604,7 @@ public class AddAppointmentFragment extends Fragment {
 
             }
         });
+
 
         selectClinicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -460,33 +613,27 @@ public class AddAppointmentFragment extends Fragment {
                 //Get the clinic id of the work by reducing position by 1
                 if (position > 0) {
                     mSelectedClinic = mClinics.get(position-1);
-                    appointmentViewModel.setSchedules(mSelectedClinic);
+                    mScheduleItems = mSelectedClinic.getSchedules();
+
+                    if (scheduleAdapter == null) {
+                        scheduleAdapter = new ScheduleAdapter(getContext(), 0, mScheduleItems);
+                        clinicScheduleSpinner.setAdapter(scheduleAdapter);
+                    } else {
+                        scheduleAdapter.clear();
+                        scheduleAdapter.addAllSchedules(mScheduleItems);
+                        scheduleAdapter.notifyDataSetChanged();
+                        clinicScheduleSpinner.setSelection(0);
+                    }
 
                 } else {
+                    mSelectedClinic = null;
+                    mScheduleItems = null;
+
+                    if (scheduleAdapter != null)
+                        scheduleAdapter.clear();
+
                     mSelectedSchedule = null;
                     mYourSchedule = null;
-                    yourScheduleTextView.setText("Select your schedule");
-
-                    appointmentViewModel.resetSchedules();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        clinicScheduleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //Get the correct schedule by reducing position by 1
-                if (position > 0) {
-                    mSelectedSchedule = mScheduleItems.get(position-1);
-
-                } else {
-                    mSelectedSchedule = null;
                     yourScheduleTextView.setText("Select your schedule");
                 }
             }
@@ -526,6 +673,27 @@ public class AddAppointmentFragment extends Fragment {
 
                 } else {
                     mSelectedDoctor = null;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        clinicScheduleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Get the correct schedule by reducing position by 1
+                if (position > 0) {
+                    mSelectedSchedule = mScheduleItems.get(position-1);
+
+                } else {
+                    mSelectedSchedule = null;
+                    yourScheduleTextView.setText("Select your schedule");
                 }
             }
 
@@ -647,26 +815,24 @@ public class AddAppointmentFragment extends Fragment {
 
 
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        ((DashboardActivity)getActivity()).bottomNavVisibility(false);
-        ((DashboardActivity)getActivity()).setToolBarTitle("APPOINTMENTS", false);
-
-        //remove the observers now to avoid double observers when popped from back stack
-        appointmentViewModel.getAppointmentTypes().removeObservers(getActivity());
-        appointmentViewModel.getAppointment().removeObservers(getActivity());
-        appointmentViewModel.getSchedules().removeObservers(getActivity());
-        appointmentViewModel.getServices().removeObservers(getActivity());
-        appointmentViewModel.getClinics().removeObservers(getActivity());
-        appointmentViewModel.getRegisteredFacilities().removeObservers(getActivity());
-        appointmentViewModel.getEmployees().removeObservers(getActivity());
-    }
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("APPOINTMENTS", false);
+//
+//        //remove the observers now to avoid double observers when popped from back stack
+////        appointmentViewModel.getAppointmentTypes().removeObservers(getActivity());
+////        appointmentViewModel.getAppointment().removeObservers(getActivity());
+////        appointmentViewModel.getSchedules().removeObservers(getActivity());
+////        appointmentViewModel.getServices().removeObservers(getActivity());
+////        appointmentViewModel.getClinics().removeObservers(getActivity());
+////        appointmentViewModel.getRegisteredFacilities().removeObservers(getActivity());
+////        appointmentViewModel.getEmployees().removeObservers(getActivity());
+//    }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((DashboardActivity)getActivity()).bottomNavVisibility(false);
-        ((DashboardActivity)getActivity()).setToolBarTitle("NEW APPOINTMENT", false);
+        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("NEW APPOINTMENT", false);
     }
 }

@@ -52,7 +52,7 @@ public class ReadFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(CLASSNAME, false);
         }
         super.onResume();
     }

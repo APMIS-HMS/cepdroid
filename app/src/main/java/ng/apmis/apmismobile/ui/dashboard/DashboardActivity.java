@@ -102,9 +102,8 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new DashboardFragment())
+                .add(R.id.fragment_container, new DashboardFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
@@ -163,13 +162,12 @@ public class DashboardActivity extends AppCompatActivity {
 
     //TODO Remove default module selection, and set none on back pressed
 
-    public void setToolBarTitle(String title, boolean welcomeScreen) {
+    public void setToolBarTitleAndBottomNavVisibility(String title, boolean isTopLevel) {
         toolbarTitle.setText(title);
-        if (welcomeScreen) {
-            actionBar.setDisplayShowTitleEnabled(false);
-        } else {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        actionBar.setDisplayHomeAsUpEnabled(!isTopLevel);
+        bottomNavVisibility(isTopLevel);
     }
 
     public void bottomNavVisibility (boolean show) {
@@ -210,6 +208,9 @@ public class DashboardActivity extends AppCompatActivity {
     private void selectFragment(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.home_menu:
+                placeFragment(new DashboardFragment());
+                break;
             case R.id.view_menu:
                 placeFragment(new ViewFragment());
                 break;
@@ -218,9 +219,6 @@ public class DashboardActivity extends AppCompatActivity {
                 break;
             case R.id.chat_menu:
                 placeFragment(new ChatFragment());
-                break;
-            case R.id.read_menu:
-                placeFragment(new ReadFragment());
                 break;
             case R.id.find_menu:
                 placeFragment(new FindFragment());
@@ -244,7 +242,9 @@ public class DashboardActivity extends AppCompatActivity {
      */
     private void placeFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        getSupportFragmentManager().beginTransaction()
+
+        if (!(fragment instanceof DashboardFragment))
+            getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack("current")

@@ -51,8 +51,14 @@
         android:layout_above="@+id/navigation"
         android:layout_below="@+id/general_toolbar"/>
 
-    <android.support.design.widget.BottomNavigationView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <View
+        android:id="@+id/divider_line"
+        style="@style/HorizontalDivider"
+        android:layout_width="match_parent"
+        android:layout_above="@+id/navigation"
+        />
+
+    <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,6 +66,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="center"
+        android:background="#f3f3f3"
         app:menu="@menu/my_navigation_items" />
 
 </RelativeLayout>

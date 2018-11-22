@@ -34,6 +34,7 @@ import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.find.adapters.SearchTermsRowAdapter;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsActivity;
+import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 public class FindFragment extends Fragment {
@@ -56,8 +57,6 @@ public class FindFragment extends Fragment {
     private SearchTermsRowAdapter searchTermsRowAdapter;
 
     List<String> searchTerms = new ArrayList<>();
-
-    private static final String CLASSNAME = "FIND";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -246,7 +245,8 @@ public class FindFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitle(CLASSNAME, false);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.SEARCH, true);
+            ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.find_menu).setChecked(true);
         }
         super.onResume();
     }

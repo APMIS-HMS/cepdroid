@@ -13,6 +13,11 @@ public class Category {
     private String updatedAt;
 
     /**
+     * Facility Id of the facility that has this Category
+     */
+    private String facilityId;
+
+    /**
      * List of all Services in the Category
      */
     private List<Service> services = null;
@@ -68,6 +73,14 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(String facilityId) {
+        this.facilityId = facilityId;
     }
 }
 

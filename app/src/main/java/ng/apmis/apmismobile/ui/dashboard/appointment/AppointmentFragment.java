@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -165,15 +164,13 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStop() {
         super.onStop();
-        ((DashboardActivity)getActivity()).bottomNavVisibility(true);
         appointmentViewModel.getAppointmentsForPatient().removeObservers(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((DashboardActivity)getActivity()).bottomNavVisibility(false);
-        ((DashboardActivity)getActivity()).setToolBarTitle(Constants.APPOINTMENTS, false);
+        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.APPOINTMENTS, false);
         ((DashboardActivity)getActivity()).profileImage.setVisibility(View.GONE);
     }
 

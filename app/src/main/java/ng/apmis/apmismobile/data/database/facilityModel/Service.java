@@ -18,6 +18,11 @@ public class Service {
     private String updatedAt;
 
     /**
+     * Facility id for the facility rendering this service
+     */
+    private String facilityId;
+
+    /**
      * Name/title of the Service
      */
     private String name;
@@ -38,6 +43,7 @@ public class Service {
     public void setId(String _id) {
         this._id = _id;
     }
+
     public String getCreatedAt() {
         return createdAt;
     }
@@ -68,6 +74,14 @@ public class Service {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(String facilityId) {
+        this.facilityId = facilityId;
     }
 
     public List<Price> getPrices() {

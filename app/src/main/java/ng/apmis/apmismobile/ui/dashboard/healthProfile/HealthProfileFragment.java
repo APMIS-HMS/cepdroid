@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -312,7 +311,7 @@ public class HealthProfileFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitle(Constants.HEALTH_PROFILE, false);
+            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.VITALS, false);
         }
         super.onResume();
     }
