@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.fundAccount.Beneficiaries;
-import ng.apmis.apmismobile.data.database.personModel.Transaction;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.transactionHistory.TransactionHistoryViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.transactionHistory.TransactionViewModel;
 import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
@@ -56,7 +55,7 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
 
         recyclerView = root.findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
-        adapter.instantiateWalletFundListener(this);
+        adapter.instantiateFundWalletClickedListener(this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 

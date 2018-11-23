@@ -161,9 +161,9 @@ public class DashboardFragment extends Fragment {
                         getContext().getResources().getDrawable(R.drawable.ic_expand_more_black), null);
 
                 AnimatorSet showQuickLinks = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                        R.animator.zoom_in);
+                        R.animator.fade_zoom_in);
                 showQuickLinks.setTarget(quickLinksLayout);
-                showQuickLinks.setStartDelay(400);
+                showQuickLinks.setStartDelay(200);
                 showQuickLinks.start();
 
                 AnimatorSet removeRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
@@ -181,7 +181,7 @@ public class DashboardFragment extends Fragment {
                         getContext().getResources().getDrawable(R.drawable.ic_close_black), null);
 
                 AnimatorSet removeQuickLinks = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                        R.animator.zoom_out);
+                        R.animator.fade_zoom_out);
                 removeQuickLinks.setTarget(quickLinksLayout);
                 removeQuickLinks.start();
 

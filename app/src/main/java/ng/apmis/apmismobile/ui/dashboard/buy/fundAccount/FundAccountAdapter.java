@@ -94,7 +94,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public void instantiateWalletFundListener(OnFundWalletClickedListener listener) {
+    public void instantiateFundWalletClickedListener(OnFundWalletClickedListener listener) {
         this.mListener = listener;
     }
 
@@ -151,7 +151,6 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-
         if (holder.getItemViewType() == BENEFICIARIES) {
             if (!isBeneficiaryInflated)
                 beneficiaryViewHolder((BeneficiariesViewHolder)holder);
@@ -185,7 +184,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
-    class BeneficiariesHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class BeneficiariesHeaderViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.fund_wallet)
         Button fundWalletButton;
@@ -193,12 +192,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         BeneficiariesHeaderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            fundWalletButton.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            v.getContext().startActivity(new Intent(v.getContext(), FundWalletActivity.class));
+            fundWalletButton.setOnClickListener(v -> mListener.onFundWalletClicked());
         }
     }
 
