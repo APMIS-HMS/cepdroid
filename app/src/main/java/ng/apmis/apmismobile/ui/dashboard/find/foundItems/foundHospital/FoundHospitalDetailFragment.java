@@ -31,6 +31,12 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +46,7 @@ import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
+import ng.apmis.apmismobile.data.database.facilityModel.Geometry;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.fundAccount.Price;
@@ -101,6 +108,8 @@ public class FoundHospitalDetailFragment extends Fragment {
     @BindView(R.id.pay_button)
     Button payButton;
 
+    SupportMapFragment mapFragment;
+
     private BillManager registrationBillManager;
 
     private ArrayAdapter registrationServiceArrayAdapter;
@@ -117,6 +126,11 @@ public class FoundHospitalDetailFragment extends Fragment {
     private int walletFunds;
 
     private ProgressDialog progressDialog;
+
+    @BindView(R.id.map_group)
+    LinearLayout mapGroup;
+
+
 
     public interface OnFragmentInteractionListener{
         void onPayClicked(String facilityId);
@@ -156,6 +170,9 @@ public class FoundHospitalDetailFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_hospital_detail, container, false);
         ButterKnife.bind(this, view);
+
+        mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
 
         initViewModel();
 
@@ -233,6 +250,14 @@ public class FoundHospitalDetailFragment extends Fragment {
         final Observer<Facility> facilityObserver = facility -> {
 
             if (facility != null) {
+
+                mapFragment.getMapAsync(googleMap -> {
+
+                    LatLng hospitalLocation = new LatLng(facility.getAddress().getGeometry().getLocation().getLat(), facility.getAddress().getGeometry().getLocation().getLng());
+
+                    googleMap.addMarker(new MarkerOptions().position(hospitalLocation).title(facility.getName()));
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(hospitalLocation, 16.0f));
+                });
                 emailTextView.setText(facility.getEmail());
 
                 if (facility.getLogoObject() != null) {
@@ -271,7 +296,7 @@ public class FoundHospitalDetailFragment extends Fragment {
                     if (registeredIds.contains(id))
                         AppUtils.showShortToast(getContext(), "You have already registered in this facility");
                     else
-                        registerButton.setVisibility(View.VISIBLE);
+                        mapGroup.setVisibility(View.VISIBLE);
                 } else {
                     AppUtils.showShortToast(getContext(), "Could not fetch registration details. Please try again later");
                 }

@@ -138,6 +138,11 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (fieldsOk) {
+            if (rememberMe.isChecked()) {
+                sharedPreferencesManager.storeUserPassword(passwordEditText.getText().toString());
+            } else {
+                sharedPreferencesManager.storeUserPassword("");
+            }
             attemptLogin(apmisId, password);
         }
 
@@ -224,15 +229,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean checkApmisId(String apmisId) {
         String id = apmisId.trim();
-
-        if (id.length() < 8 || !id.contains("-") || id.equals("")) {
-            return false;
-        }
-        return true;
+        return !id.contains("-") || id.equals("");
     }
 
     private boolean checkPassword (String password) {
-        return !TextUtils.isEmpty(password);
+        return !TextUtils.isEmpty(password.trim());
     }
 
     public void forgotPassword(View view) {
