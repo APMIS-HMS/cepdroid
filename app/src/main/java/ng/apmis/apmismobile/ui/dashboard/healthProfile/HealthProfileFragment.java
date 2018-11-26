@@ -233,7 +233,8 @@ public class HealthProfileFragment extends Fragment {
         chart.getLegend().setTypeface(appFont);
 
         // animate both axes with easing
-        chart.animateY(3000, Easing.EasingOption.EaseOutBack);
+        //chart.animateY(3000, Easing.EasingOption.EaseOutBack);
+
         chart.invalidate(); // refresh
     }
 

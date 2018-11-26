@@ -82,7 +82,9 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
             diagnosisRecycler.setAdapter(diagnosisAdapter);
             diagnosisShimmer.setVisibility(View.GONE);
             diagnosisShimmer.stopShimmer();
-            frameLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.pale_cyan));
+
+            if (diagnosisAdapter.getItemCount() > 0)
+                frameLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.pale_cyan));
         }
 
         initViewModel();
@@ -116,7 +118,9 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
 
                 diagnosisShimmer.setVisibility(View.GONE);
                 diagnosisShimmer.stopShimmer();
-                frameLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.pale_cyan));
+
+                if (investigationBodies.size() > 0)
+                    frameLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.pale_cyan));
 
                 diagnosisAdapter = new DiagnosisAdapter(getActivity(), investigationBodies);
                 diagnosisAdapter.instantiateViewReportClickListener(this);

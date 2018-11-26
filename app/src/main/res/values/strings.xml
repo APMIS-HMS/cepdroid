@@ -229,7 +229,7 @@
     <string name="last_name">Last Name</string>
     <string name="e_mail">E-mail</string>
     <string name="apmis_id">APMIS ID</string>
-    <string name="search_hint">Enter search term</string>
+    <string name="search_hint">Search...</string>
     <string name="naira_sign">₦</string>
     <string name="insufficient_funds">Insufficient funds in your wallet for this transaction</string>
     <string name="trx_amount_placeholder">NGN %s</string>
@@ -239,5 +239,6 @@
     <string name="empty_prescription_text">You currently have no pending prescriptions</string>
     <string name="empty_diagnosis_text">You have no ongoing investigations at the moment</string>
     <string name="home">Home</string>
+    <string name="fund_with_card">Fund with Card</string>
 
 </resources>

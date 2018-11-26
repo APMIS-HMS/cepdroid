@@ -4,6 +4,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -34,7 +38,8 @@ import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
-public class FundWalletActivity extends AppCompatActivity {
+public class FundWalletActivity extends AppCompatActivity implements CardEntryFragment.OnPaymentCompletedListener,
+        CardsFragment.OnAddCardButtonClickedListener {
 
     @BindView(R.id.general_toolbar)
     Toolbar generalToolbar;
@@ -42,36 +47,12 @@ public class FundWalletActivity extends AppCompatActivity {
     @BindView(R.id.action_bar_title)
     TextView toolbarTitle;
 
+    @BindView(R.id.fragment_container)
+    FrameLayout fragmentContainer;
+
     ActionBar actionBar;
 
-    @BindView(R.id.amount_edit)
-    EditText amountEdit;
 
-    @BindView(R.id.email_edit)
-    EditText emailEdit;
-
-    @BindView(R.id.card_edit)
-    EditText cardEdit;
-
-    @BindView(R.id.expiration_edit)
-    EditText expirationEdit;
-
-    @BindView(R.id.cvv_edit)
-    EditText cvvEdit;
-
-    @BindView(R.id.save_card_radio)
-    RadioButton saveCardRadio;
-
-    @BindView(R.id.pay_button)
-    Button payButton;
-
-    private int amountPaid;
-
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
-
-    //4084084084084081
-    //408
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,238 +68,27 @@ public class FundWalletActivity extends AppCompatActivity {
 
         toolbarTitle.setText("Fund Account");
 
-        //Quickly fetch the email and pre-load the email edit text if one is available
-        LiveData<PersonEntry> entryLiveData = InjectorUtils.provideRepository(this).getUserData();
-        Observer<PersonEntry> personEntryObserver = personEntry -> {
-            if (personEntry != null){
-                if (personEntry.getEmail() != null)
-                    emailEdit.setText(personEntry.getEmail());
-            }
-        };
-        entryLiveData.observe(this, personEntryObserver);
-
-        initViewModel();
-
-
-        payButton.setOnClickListener(v -> validateCardForm());
-    }
-
-    FundWalletViewModel fundWalletViewModel;
-    Observer<String> verificationObserver;
-
-    private void initViewModel(){
-        FundWalletViewModelFactory viewModelFactory = InjectorUtils.provideFundWalletViewModelFactory(this);
-        fundWalletViewModel = ViewModelProviders.of(this, viewModelFactory).get(FundWalletViewModel.class);
-
-        verificationObserver = s -> {
-            if (s != null) {
-                AppUtils.showShortToast(this, s.toUpperCase());
-                dismissLoadingDialog();
-
-                presentCompletionDialog(s.equals("success"));
-
-            }
-        };
+        CardsFragment cardsFragment = new CardsFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, cardsFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
 
     }
 
-    private void presentCompletionDialog(boolean isSuccessful){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        AlertDialog dialog = builder.create();
-
-        dialog.setCancelable(false);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View view = inflater.inflate(R.layout.layout_fund_completed, null, false);
-
-        TextView textView = view.findViewById(R.id.fund_status_text);
-        ImageView imageIcon = view.findViewById(R.id.image_icon);
-
-        if (isSuccessful){
-            textView.setText(Html.fromHtml("Your wallet has successfully been funded with <b>&#8358;"+ amountPaid +"</b>"));
-        } else {
-            imageIcon.setImageResource(R.drawable.ic_error_red_24dp);
-            textView.setText("Something went wrong with the payment verification, please contact us within 24hrs to resolve the issue");
-        }
-
-        Button button = view.findViewById(R.id.complete_button);
-        button.setOnClickListener(v -> {
-            if (isSuccessful){
-                setResult(RESULT_OK);
-            } else {
-                setResult(RESULT_CANCELED);
-            }
-
-            finish();
-        });
-
-        dialog.setView(view);
-        dialog.show();
-
+    /**
+     * Replace the current fragment with another
+     * @param fragment Fragment used to replace
+     */
+    private void placeFragment(Fragment fragment) {
+        //getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack("current")
+                .commit();
     }
 
-    private void validateCardForm(){
-        //validate amount field
-        String amount = amountEdit.getText().toString().trim();
-
-        if (TextUtils.isEmpty(amount)){
-            amountEdit.setError("Please enter an amount to pay");
-            return;
-        }
-
-
-        //Validate email field
-        String email = emailEdit.getText().toString().trim();
-        if (TextUtils.isEmpty(email)){
-            emailEdit.setError("Please enter an email address");
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailEdit.setError("Please enter a valid email address");
-            return;
-        }
-
-
-        //validate card num field
-        String cardNum = cardEdit.getText().toString().trim();
-
-        if (TextUtils.isEmpty(cardNum)){
-            cardEdit.setError("Empty card number");
-            return;
-        }
-
-        String expiryString = expirationEdit.getText().toString().trim();
-        if (TextUtils.isEmpty(expiryString)){
-            expirationEdit.setError("Enter your expiration details");
-            return;
-        }
-
-        if (expiryString.length() != 5){
-            expirationEdit.setError("Please enter proper expiration details");
-            return;
-        }
-
-        String[] monthYear = expiryString.split("/");
-        String month = monthYear[0];
-        String year = monthYear[1];
-
-        int monthInt = Integer.parseInt(month);
-
-        if (monthInt > 12 || monthInt < 1){
-            expirationEdit.setError("Please enter valid month");
-            return;
-        }
-
-        int yearInt = Integer.parseInt(year);
-
-        if (yearInt < 0 || yearInt > 99){
-            expirationEdit.setError("Please enter valid year");
-            return;
-        }
-
-        String cvv = cvvEdit.getText().toString().trim();
-        if (TextUtils.isEmpty(cvv)){
-            cvvEdit.setError("Please enter cvv");
-            return;
-        }
-
-        if (cvv.length() != 3){
-            cvvEdit.setError("Please enter proper cvv");
-            return;
-        }
-
-        Card card = new Card(cardNum, monthInt, yearInt, cvv);
-        if (card.isValid()) {
-            // charge card
-            chargeCard(card, Integer.parseInt(amount), email);
-            showLoadingDialog();
-        } else {
-            if (!card.validNumber())
-                cardEdit.setError("Please enter valid card number");
-            if (!card.validCVC())
-                cvvEdit.setError("Please enter valid cvv");
-            if (!card.validExpiryDate())
-                expirationEdit.setError("Please enter a valid expiration date");
-        }
-
-    }
-
-    private void chargeCard(Card card, int amount, String email){
-
-        //create a Charge object
-        Charge charge = new Charge();
-        charge.setCard(card); //sets the card to charge
-        charge.setEmail(email);
-        charge.setAmount(amount*100);//kobo
-        charge.addParameter("Platform", "Android APMIS Mobile");
-
-        PaystackSdk.chargeCard(FundWalletActivity.this, charge, new Paystack.TransactionCallback() {
-            @Override
-            public void onSuccess(Transaction transaction) {
-                // This is called only after transaction is deemed successful.
-                // Retrieve the transaction, and send its reference to your server
-                // for verification.
-                AppUtils.showShortToast(FundWalletActivity.this, "Please Wait...");
-                Log.e("Pay", transaction.getReference());
-
-                fundWalletViewModel.clearVerification();
-
-                amountPaid = amount;
-                fundWalletViewModel.getPayData(transaction.getReference(), amount).observe(FundWalletActivity.this, verificationObserver);
-            }
-
-            @Override
-            public void beforeValidate(Transaction transaction) {
-                // This is called only before requesting OTP.
-                // Save reference so you may send to server. If
-                // error occurs with OTP, you should still verify on server.
-            }
-
-            @Override
-            public void onError(Throwable error, Transaction transaction) {
-                //handle error here
-
-                // If an access code has expired, simply ask your server for a new one
-                // and restart the charge instead of displaying error
-//                FundWalletActivity.this.transaction = transaction;
-//                Log.e("Pay On Error block", "Error");
-//                if (error instanceof ExpiredAccessCodeException) {
-//                    //FundWalletActivity.this.startAFreshCharge();
-//                    //FundWalletActivity.this.chargeCard(card, amount);
-//                    Log.e("Pay On expired", "Error");
-//                    return;
-//                }
-//
-                dismissLoadingDialog();
-                if (transaction.getReference() != null) {
-                    AppUtils.showShortToast(FundWalletActivity.this, transaction.getReference() + " concluded with error: " + error.getMessage());
-                    //Log.e("Pay", String.format("%s  concluded with error: %s %s", transaction.getReference(), error.getClass().getSimpleName(), error.getMessage()));
-                    //new verifyOnServer().execute(transaction.getReference());
-                } else {
-                    AppUtils.showShortToast(FundWalletActivity.this, error.getMessage());
-                    //Log.e("Pay null", String.format("Error: %s %s", error.getClass().getSimpleName(), error.getMessage()));
-                }
-            }
-
-        });
-    }
-
-    private void showLoadingDialog(){
-        builder = new AlertDialog.Builder(this);
-        dialog = builder.create();
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        dialog.setCancelable(false);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View view = inflater.inflate(R.layout.layout_full_screen_loader, null, false);
-        dialog.setView(view);
-        dialog.show();
-    }
-
-    private void dismissLoadingDialog(){
-        if (dialog != null) {
-            dialog.cancel();
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -326,5 +96,16 @@ public class FundWalletActivity extends AppCompatActivity {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPaymentComplete(int result) {
+        setResult(result);
+        finish();
+    }
+
+    @Override
+    public void onAddCardButtonClicked() {
+        placeFragment(new CardEntryFragment());
     }
 }

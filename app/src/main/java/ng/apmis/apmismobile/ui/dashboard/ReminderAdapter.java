@@ -22,6 +22,9 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
     private Context mContext;
     private List<Reminder> reminders = new ArrayList<>();
 
+    private static int REMINDER_VIEW_TYPE = 0;
+    private static int DATE_VIEW_TYPE = 1;
+
     public ReminderAdapter(Context mContext) {
         this.mContext = mContext;
 

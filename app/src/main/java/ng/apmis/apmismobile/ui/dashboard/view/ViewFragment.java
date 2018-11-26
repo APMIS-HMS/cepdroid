@@ -62,9 +62,6 @@ public class ViewFragment extends Fragment {
         listItems.setOnItemClickListener((parent, view, position, id) -> {
             ModuleListModel selectedOption = (ModuleListModel) parent.getItemAtPosition(position);
 
-            //if (!selectedOption.getmOption().equalsIgnoreCase(Constants.APPOINTMENTS))
-                //Toast.makeText(getActivity(), selectedOption.getmOption() , Toast.LENGTH_SHORT).show();
-
                 switch (selectedOption.getmOption()) {
                     case Constants.CLINICAL_DOCUMENTATION:
                         setFragment(new MedicalRecordsFragment());

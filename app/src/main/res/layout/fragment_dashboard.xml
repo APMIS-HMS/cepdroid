@@ -37,7 +37,10 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="10dp">
+                app:cardElevation="4dp"
+                android:layout_margin="12dp"
+                android:background="#00000000"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -60,7 +63,10 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="10dp">
+                app:cardElevation="4dp"
+                android:layout_margin="12dp"
+                android:background="#00000000"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -96,7 +102,10 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="10dp">
+                app:cardElevation="4dp"
+                android:layout_margin="12dp"
+                android:background="#00000000"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -119,7 +128,10 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="10dp">
+                app:cardElevation="4dp"
+                android:layout_margin="12dp"
+                android:background="#00000000"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="match_parent"

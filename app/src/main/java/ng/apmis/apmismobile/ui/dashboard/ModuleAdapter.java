@@ -1,5 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import java.util.List;
  */
 
 public class ModuleAdapter extends BaseAdapter {
+
+    private int lastPosition = -1;
 
     List<ModuleListModel> passedList;
     Context mContext;
@@ -48,6 +52,16 @@ public class ModuleAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(mContext).
                     inflate(R.layout.module_list_item, parent, false);
         }
+
+        if(position > lastPosition) {
+            AnimatorSet set1 = (AnimatorSet) AnimatorInflater.loadAnimator(mContext,
+                    R.animator.bounce_in);
+            set1.setTarget(convertView);
+            set1.setStartDelay(20);
+            set1.start();
+            lastPosition = position;
+        }
+
 
         // get current item to be displayed
         ModuleListModel currentItem = (ModuleListModel) getItem(position);

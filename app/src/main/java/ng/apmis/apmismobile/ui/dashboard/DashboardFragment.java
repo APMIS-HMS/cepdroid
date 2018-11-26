@@ -58,6 +58,8 @@ public class DashboardFragment extends Fragment {
     @BindView(R.id.reminder_recycler)
     RecyclerView reminderRecycler;
 
+    boolean areRemindersShowing;
+
     public DashboardFragment() {
         // Required empty public constructor
     }
@@ -70,13 +72,13 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-    boolean areRemindersShowing = false;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
         ButterKnife.bind(this, rootView);
+
+        areRemindersShowing = false;
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -138,7 +140,7 @@ public class DashboardFragment extends Fragment {
         AnimatorSet floatIn = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
                 R.animator.fade_in_float);
         floatIn.setTarget(openCloseReminders);
-        floatIn.setStartDelay(1500);
+        floatIn.setStartDelay(1000);
         floatIn.start();
 
         AnimatorSet outRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
@@ -203,7 +205,6 @@ public class DashboardFragment extends Fragment {
             ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.WELCOME, true);
             ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.home_menu).setChecked(true);
         }
-        areRemindersShowing = false;
         super.onResume();
     }
 }

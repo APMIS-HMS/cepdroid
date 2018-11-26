@@ -1550,7 +1550,7 @@ public final class NetworkDataCalls {
             e.printStackTrace();
         }
 
-        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "fund-wallet", params, response -> {
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "fund-wallet?isCardReused=false&saveCard=true", params, response -> {
 
             Log.v("Pay Verify response", String.valueOf(response));
 
