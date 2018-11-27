@@ -10,12 +10,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +22,11 @@ import android.widget.TextView;
 
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
 
-import java.util.Random;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.personModel.Wallet;
-import ng.apmis.apmismobile.ui.dashboard.buy.BuyViewModel;
-import ng.apmis.apmismobile.ui.dashboard.buy.BuyViewModelFactory;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
@@ -96,21 +89,23 @@ public class CardsFragment extends Fragment {
 
         amountEditText.addTextChangedListener(new TextWatcher() {
 
-            String pre;
+            String previousTextInBox;
 
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
-                pre = s.toString();
+                //keep reference to previous text
+                previousTextInBox = s.toString();
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
+                //if text entered (or removed) leaves the box empty...
                 if (TextUtils.isEmpty(s))
                     amountToPay = 0;
-                else
+                else //otherwise
                     amountToPay = Integer.parseInt(s.toString().replaceAll(",", ""));
 
 
@@ -123,8 +118,10 @@ public class CardsFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (TextUtils.isEmpty(pre) || !pre.equals(s.toString()))
+                if (TextUtils.isEmpty(previousTextInBox) || !previousTextInBox.equals(s.toString()))
                     amountEditText.setText(AppUtils.formatNumberWithCommas(amountToPay));
+
+                amountEditText.setSelection(amountEditText.getText().length());
             }
         });
 
@@ -166,15 +163,6 @@ public class CardsFragment extends Fragment {
                 cardListAdapter.clear();
                 cardListAdapter.addAll(wallet.getCards());
                 cardListAdapter.notifyDataSetChanged();
-            }
-
-
-            //Stop your shimmers here
-
-            if (cardListAdapter.getItemCount() > 0) {
-                //emptyView.setVisibility(View.GONE);
-            } else {
-                //emptyView.setVisibility(View.VISIBLE);
             }
         };
 

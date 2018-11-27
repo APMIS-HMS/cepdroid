@@ -129,6 +129,8 @@
                     android:minWidth="150dp"
                     android:layout_marginTop="10dp"
                     android:padding="5dp"
+                    android:inputType="number"
+                    android:gravity="center"
                     android:hint="₦"
                     android:background="@drawable/edittext_background"/>
 
@@ -140,7 +142,7 @@
                     android:layout_margin="16dp"
                     android:layout_gravity="center"
                     android:textColor="@color/action_button_text_color"
-                    android:text="Pay ₦12,000 with **** 6666"
+                    android:text="PAY"
                     android:background="@drawable/action_button"/>
 
 
