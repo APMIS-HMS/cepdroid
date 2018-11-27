@@ -240,5 +240,6 @@
     <string name="empty_diagnosis_text">You have no ongoing investigations at the moment</string>
     <string name="home">Home</string>
     <string name="fund_with_card">Fund with Card</string>
+    <string name="censored">&#9679;&#9679;&#9679;&#9679;</string>
 
 </resources>

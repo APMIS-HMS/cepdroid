@@ -6,6 +6,10 @@ import android.util.Log;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ng.apmis.apmismobile.utilities.AppUtils;
+
+import static org.junit.Assert.assertEquals;
+
 @RunWith(AndroidJUnit4.class)
 public class UtilityTests {
 
@@ -29,6 +33,17 @@ public class UtilityTests {
 
         Log.i(TAG, go);
         Log.i(TAG, testStr);
+    }
+
+    @Test
+    public void testNumberCommas(){
+        int testNum = 100;
+
+        String testString = AppUtils.formatNumberWithCommas(testNum);
+
+        Log.i("TEST", testString);
+
+        assertEquals("100", testString);
     }
 
 }

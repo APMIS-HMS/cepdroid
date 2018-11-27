@@ -388,10 +388,11 @@ public class ApmisNetworkDataSource {
         });
     }
 
-    private void fetchPaymentVerificationData(String referenceCode, int amountPaid){
+    private void fetchPaymentVerificationData(String referenceCode, int amountPaid, boolean isCardReused, boolean shouldSaveCard){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Found", "Fetch payment verification started");
-            new NetworkDataCalls(mContext).fetchPaymentVerificationData(mContext, referenceCode, amountPaid, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
+            new NetworkDataCalls(mContext).fetchPaymentVerificationData(mContext, referenceCode, amountPaid, sharedPreferencesManager.getPersonId(),
+                    sharedPreferencesManager.getStoredUserAccessToken(), isCardReused, shouldSaveCard);
         });
     }
 
@@ -798,8 +799,8 @@ public class ApmisNetworkDataSource {
 
 
     //Payment verification data
-    public LiveData<String> getPaymentVerificationData(String referenceCode, int amountPaid){
-        fetchPaymentVerificationData(referenceCode, amountPaid);
+    public LiveData<String> getPaymentVerificationData(String referenceCode, int amountPaid, boolean isCardReused, boolean shouldSaveCard){
+        fetchPaymentVerificationData(referenceCode, amountPaid, isCardReused, shouldSaveCard);
         return paymentVerificationData;
     }
 

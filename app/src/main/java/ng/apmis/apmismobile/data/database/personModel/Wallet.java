@@ -2,6 +2,8 @@ package ng.apmis.apmismobile.data.database.personModel;
 
 import java.util.List;
 
+import ng.apmis.apmismobile.data.database.cardModel.Card;
+
 public class Wallet {
 
     private Integer balance;
@@ -15,6 +17,8 @@ public class Wallet {
     private String updatedAt;
 
     private String _id;
+
+    private List<Card> cards;
 
     public Integer getBalance() {
         return balance;
@@ -62,6 +66,14 @@ public class Wallet {
 
     public void setId(String _id) {
         this._id = _id;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 
     @Override

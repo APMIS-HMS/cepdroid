@@ -25,6 +25,7 @@ import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.ModuleListModel;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.FundAccountFragment;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
@@ -84,7 +85,7 @@ public class BuyFragment extends android.support.v4.app.Fragment implements Fund
         walletObserver = wallet -> {
 
             if (wallet != null) {
-                balanceTextView.setText(String.format("₦%s", wallet.getBalance()+""));
+                balanceTextView.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(wallet.getBalance())));
             }
         };
 
