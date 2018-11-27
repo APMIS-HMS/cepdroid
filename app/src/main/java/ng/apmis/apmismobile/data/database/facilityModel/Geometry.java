@@ -22,7 +22,7 @@ public class Geometry {
     }
 
 
-    static class Location {
+    public static class Location {
 
         private Double lng;
         private Double lat;

@@ -4,8 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/apmismobile.iml" filepath="$PROJECT_DIR$/apmismobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cepdroid.iml" filepath="$PROJECT_DIR$/cepdroid.iml" />
-      <module fileurl="file://C:/Users/ainoj/Documents/Apmis/apmismobile/cepdroid.iml" filepath="C:/Users/ainoj/Documents/Apmis/apmismobile/cepdroid.iml" />
+      <module fileurl="file://C:\Users\ainoj\Documents\Apmis\apmismobile\cepdroid.iml" filepath="C:\Users\ainoj\Documents\Apmis\apmismobile\cepdroid.iml" />
     </modules>
   </component>
 </project>
