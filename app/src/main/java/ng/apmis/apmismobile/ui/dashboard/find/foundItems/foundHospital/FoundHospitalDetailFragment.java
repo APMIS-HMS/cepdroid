@@ -406,7 +406,7 @@ public class FoundHospitalDetailFragment extends Fragment {
         TextView warningText = dialogView.findViewById(R.id.warning_text);
 
         serviceText.setText(selectedService.getName());
-        priceText.setText(String.format("₦%s", selectedPrice.getPrice()+""));
+        priceText.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(selectedPrice.getPrice())));
 
         //Quickly fetch the user data from local db
         LiveData<PersonEntry> entryLiveData = InjectorUtils.provideRepository(getContext()).getUserData();
@@ -426,7 +426,7 @@ public class FoundHospitalDetailFragment extends Fragment {
             if (wallet != null){
                 Log.e("WALLET", "Observed");
                 walletFunds = wallet.getBalance();
-                walletText.setText(String.format("₦%s", walletFunds+""));
+                walletText.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(walletFunds)));
 
                 boolean isMoneyEnough = walletFunds >= selectedPrice.getPrice();
 

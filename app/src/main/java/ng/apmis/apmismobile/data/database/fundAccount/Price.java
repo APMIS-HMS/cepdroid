@@ -1,5 +1,7 @@
 package ng.apmis.apmismobile.data.database.fundAccount;
 
+import ng.apmis.apmismobile.utilities.AppUtils;
+
 public class Price {
 
     private String name;
@@ -74,6 +76,6 @@ public class Price {
 
     @Override
     public String toString() {
-        return name + " (₦" +price + ")";
+        return name + " (₦" + AppUtils.formatNumberWithCommas(price) + ")";
     }
 }

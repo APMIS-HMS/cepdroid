@@ -33,7 +33,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
 
     public TransactionHistoryAdapter(Context context, ArrayList<Transaction> transactionList) {
         this.context = context;
-        this.transactionList = transactionList;
+        this.transactionList = new ArrayList<>(transactionList);
     }
 
     @NonNull
@@ -49,7 +49,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
         //holder.name.setText(transaction.getPaidBy());
         holder.title.setText(transaction.getDescription());
         holder.amount.setTextColor(transaction.getTransactionType().equalsIgnoreCase("cr") ? ContextCompat.getColor(context, android.R.color.holo_green_light) : ContextCompat.getColor(context, android.R.color.holo_red_light));
-        holder.amount.setText(context.getString(R.string.trx_amount_placeholder, String.valueOf(transaction.getAmount())));
+        holder.amount.setText(context.getString(R.string.trx_amount_placeholder, AppUtils.formatNumberWithCommas(transaction.getAmount())));
         holder.date.setText(AppUtils.dateToReadableFullDateString(AppUtils.dbStringToLocalDate(transaction.getCreatedAt())));
     }
 
@@ -84,7 +84,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
                     paidBy.setText(context.getString(R.string.paid_by, personEntry.getTitle(), personEntry.getFirstName(), personEntry.getLastName()));
 
                     TextView trxAmount = view.findViewById(R.id.trx_amount);
-                    trxAmount.setText(context.getString(R.string.trx_amount_placeholder, trx.getAmount().toString()));
+                    trxAmount.setText(context.getString(R.string.trx_amount_placeholder, AppUtils.formatNumberWithCommas(trx.getAmount())));
 
                     TextView trxStatus = view.findViewById(R.id.trx_status);
                     trxStatus.setText(trx.getTransactionStatus());

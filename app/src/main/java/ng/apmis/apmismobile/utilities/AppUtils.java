@@ -483,5 +483,22 @@ public class AppUtils {
         return inSampleSize;
     }
 
+    public static String formatNumberWithCommas(int num){
+        String numString = String.valueOf(num);
+
+        StringBuilder builder = new StringBuilder(numString);
+        builder.reverse();
+
+        int commaCount = 0;
+
+        for (int i=0; i<numString.length()-1; ++i){
+            if ((i+1) % 3 == 0){
+                builder.insert(i + commaCount + 1,",");
+                ++commaCount;
+            }
+        }
+        return builder.reverse().toString();
+    }
+
 
 }

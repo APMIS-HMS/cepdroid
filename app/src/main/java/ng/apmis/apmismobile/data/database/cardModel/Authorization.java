@@ -11,9 +11,9 @@ public class Authorization {
     @SerializedName("authorization_code")
     @Expose
     private String authorizationCode;
-    @SerializedName("card_type")
+    @SerializedName("bin")
     @Expose
-    private String cardType;
+    private String bin;
     @SerializedName("last4")
     @Expose
     private String last4;
@@ -23,24 +23,27 @@ public class Authorization {
     @SerializedName("exp_year")
     @Expose
     private String expYear;
-    @SerializedName("bin")
-    @Expose
-    private String bin;
-    @SerializedName("bank")
-    @Expose
-    private String bank;
     @SerializedName("channel")
     @Expose
     private String channel;
-    @SerializedName("signature")
+    @SerializedName("card_type")
     @Expose
-    private String signature;
-    @SerializedName("reusable")
+    private String cardType;
+    @SerializedName("bank")
     @Expose
-    private Boolean reusable;
+    private String bank;
     @SerializedName("country_code")
     @Expose
     private String countryCode;
+    @SerializedName("brand")
+    @Expose
+    private String brand;
+    @SerializedName("reusable")
+    @Expose
+    private Boolean reusable;
+    @SerializedName("signature")
+    @Expose
+    private String signature;
 
     public String getAuthorizationCode() {
         return authorizationCode;
@@ -50,12 +53,12 @@ public class Authorization {
         this.authorizationCode = authorizationCode;
     }
 
-    public String getCardType() {
-        return cardType;
+    public String getBin() {
+        return bin;
     }
 
-    public void setCardType(String cardType) {
-        this.cardType = cardType;
+    public void setBin(String bin) {
+        this.bin = bin;
     }
 
     public String getLast4() {
@@ -82,12 +85,20 @@ public class Authorization {
         this.expYear = expYear;
     }
 
-    public String getBin() {
-        return bin;
+    public String getChannel() {
+        return channel;
     }
 
-    public void setBin(String bin) {
-        this.bin = bin;
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
     }
 
     public String getBank() {
@@ -98,20 +109,20 @@ public class Authorization {
         this.bank = bank;
     }
 
-    public String getChannel() {
-        return channel;
+    public String getCountryCode() {
+        return countryCode;
     }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
-    public String getSignature() {
-        return signature;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setSignature(String signature) {
-        this.signature = signature;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public Boolean getReusable() {
@@ -122,12 +133,11 @@ public class Authorization {
         this.reusable = reusable;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public String getSignature() {
+        return signature;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
-
 }

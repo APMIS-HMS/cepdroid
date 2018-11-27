@@ -21,7 +21,8 @@ import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsViewModelFact
 import ng.apmis.apmismobile.ui.dashboard.find.PreviousItemsViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital.FoundHospitalDetailViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
-import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.payment.cardEntry.CardEntryViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.payment.cards.CardsViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile.EditProfileViewModelFactory;
@@ -190,9 +191,9 @@ public class InjectorUtils {
      * @param context
      * @return
      */
-    public static FundWalletViewModelFactory provideFundWalletViewModelFactory(Context context){
+    public static CardEntryViewModelFactory provideCardEntryViewModelFactory(Context context){
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
-        return new FundWalletViewModelFactory(apmisRepository);
+        return new CardEntryViewModelFactory(apmisRepository);
     }
 
     public static TransactionHistoryViewModelFactory provideTransactionViewModelFactory(Context context) {
@@ -200,4 +201,8 @@ public class InjectorUtils {
         return new TransactionHistoryViewModelFactory(apmisNetworkDataSource);
     }
 
+    public static CardsViewModelFactory provideCardsViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new CardsViewModelFactory(apmisRepository);
+    }
 }

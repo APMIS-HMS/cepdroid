@@ -1526,7 +1526,7 @@ public final class NetworkDataCalls {
      * @param amountPaid
      * @param accessToken
      */
-    public void fetchPaymentVerificationData(Context context, String referenceCode, int amountPaid, String personId, String accessToken){
+    public void fetchPaymentVerificationData(Context context, String referenceCode, int amountPaid, String personId, String accessToken, boolean isCardReused, boolean shouldSaveCard){
         Log.d("Pay Verify", "Started verification");
 
         JSONObject params = new JSONObject();
@@ -1550,7 +1550,9 @@ public final class NetworkDataCalls {
             e.printStackTrace();
         }
 
-        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "fund-wallet?isCardReused=false&saveCard=true", params, response -> {
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL
+                + "fund-wallet?isCardReused="+ String.valueOf(isCardReused) +"&saveCard=" + String.valueOf(shouldSaveCard),
+                params, response -> {
 
             Log.v("Pay Verify response", String.valueOf(response));
 

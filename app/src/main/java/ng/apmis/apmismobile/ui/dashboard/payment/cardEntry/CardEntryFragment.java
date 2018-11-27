@@ -1,11 +1,10 @@
-package ng.apmis.apmismobile.ui.dashboard.payment;
+package ng.apmis.apmismobile.ui.dashboard.payment.cardEntry;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -110,12 +109,12 @@ public class CardEntryFragment extends Fragment {
         return view;
     }
 
-    FundWalletViewModel fundWalletViewModel;
+    CardEntryViewModel cardEntryViewModel;
     Observer<String> verificationObserver;
 
     private void initViewModel(){
-        FundWalletViewModelFactory viewModelFactory = InjectorUtils.provideFundWalletViewModelFactory(mContext);
-        fundWalletViewModel = ViewModelProviders.of(this, viewModelFactory).get(FundWalletViewModel.class);
+        CardEntryViewModelFactory viewModelFactory = InjectorUtils.provideCardEntryViewModelFactory(mContext);
+        cardEntryViewModel = ViewModelProviders.of(this, viewModelFactory).get(CardEntryViewModel.class);
 
         verificationObserver = s -> {
             if (s != null) {
@@ -141,10 +140,13 @@ public class CardEntryFragment extends Fragment {
         ImageView imageIcon = view.findViewById(R.id.image_icon);
 
         if (isSuccessful){
-            textView.setText(Html.fromHtml("Your wallet has successfully been funded with <b>&#8358;"+ amountPaid +"</b>"));
+            textView.setText(Html.fromHtml(
+                    "Your wallet has successfully been funded with <b>&#8358;"
+                            + AppUtils.formatNumberWithCommas(amountPaid) +"</b>"));
         } else {
             imageIcon.setImageResource(R.drawable.ic_error_red_24dp);
-            textView.setText("Something went wrong with the payment verification, please contact us within 24hrs to resolve the issue");
+            textView.setText("Something went wrong with the payment verification, " +
+                    "please contact us within 24hrs to resolve the issue");
         }
 
         Button button = view.findViewById(R.id.complete_button);
@@ -266,10 +268,10 @@ public class CardEntryFragment extends Fragment {
                 AppUtils.showShortToast(mContext, "Please Wait...");
                 Log.e("Pay", transaction.getReference());
 
-                fundWalletViewModel.clearVerification();
+                cardEntryViewModel.clearVerification();
 
                 amountPaid = amount;
-                fundWalletViewModel.getPayData(transaction.getReference(), amount).observe(CardEntryFragment.this, verificationObserver);
+                cardEntryViewModel.getPayData(transaction.getReference(), amount, false, saveCardRadio.isChecked()).observe(CardEntryFragment.this, verificationObserver);
             }
 
             @Override
