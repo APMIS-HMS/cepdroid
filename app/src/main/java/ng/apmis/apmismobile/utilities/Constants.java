@@ -17,4 +17,7 @@ public class Constants {
     public final static String CHAT = "Chat";
     public final static String SEARCH = "Search";
 
+    public final static String LOCATION = "My Location";
+    public final static String HELP = "help";
+
 }

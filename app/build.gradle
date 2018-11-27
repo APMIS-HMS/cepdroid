@@ -45,6 +45,7 @@ dependencies {
     implementation "com.android.support:design:$support_version"
     implementation "com.android.support:support-v4:$support_version"
     implementation "com.android.support:support-v4:$support_version"
+    implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -93,5 +94,6 @@ dependencies {
     //paystack
     compile 'co.paystack.android:paystack:3.0.10'
     compile 'com.google.android.gms:play-services-maps:16.0.0'
+    compile 'com.google.android.gms:play-services-location:16.0.0'
     compile 'com.github.rubensousa:gravitysnaphelper:1.3'
 }

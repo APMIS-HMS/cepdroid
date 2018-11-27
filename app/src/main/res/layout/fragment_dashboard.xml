@@ -40,21 +40,27 @@
                 app:cardElevation="4dp"
                 android:layout_margin="12dp"
                 android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="false"
+                android:focusable="false">
 
                 <ImageView
+                    android:id="@+id/appointment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="50dp"
                     android:src="@drawable/ic_add_appointment"
-                    />
+                    android:clickable="true"
+                    android:focusable="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginBottom="10dp"
-                    android:text="Set Appointments"/>
+                    android:text="Set Appointments"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </android.support.v7.widget.CardView>
 
@@ -66,21 +72,27 @@
                 app:cardElevation="4dp"
                 android:layout_margin="12dp"
                 android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="false"
+                android:focusable="false">
 
                 <ImageView
+                    android:id="@+id/vitals"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="50dp"
                     android:src="@drawable/ic_vitals_outline"
-                    />
+                    android:clickable="true"
+                    android:focusable="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginBottom="10dp"
-                    android:text="Check Vitals"/>
+                    android:text="Check Vitals"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </android.support.v7.widget.CardView>
 
@@ -105,21 +117,27 @@
                 app:cardElevation="4dp"
                 android:layout_margin="12dp"
                 android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="false"
+                android:focusable="false">
 
                 <ImageView
+                    android:id="@+id/location"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="50dp"
                     android:src="@drawable/ic_location_outline"
-                    />
+                    android:clickable="true"
+                    android:focusable="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginBottom="10dp"
-                    android:text="Locate Hospitals"/>
+                    android:text="Locate Hospitals"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </android.support.v7.widget.CardView>
 
@@ -131,21 +149,27 @@
                 app:cardElevation="4dp"
                 android:layout_margin="12dp"
                 android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="false"
+                android:focusable="false">
 
                 <ImageView
+                    android:id="@+id/help"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="50dp"
                     android:src="@drawable/ic_help"
-                    />
+                    android:clickable="true"
+                    android:focusable="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginBottom="10dp"
-                    android:text="Help"/>
+                    android:text="Help"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             </android.support.v7.widget.CardView>
 
@@ -180,11 +204,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/reminder_recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
 
     <Button

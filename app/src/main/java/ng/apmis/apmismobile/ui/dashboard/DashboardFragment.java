@@ -9,10 +9,12 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 
@@ -26,7 +28,7 @@ import static android.widget.RelativeLayout.BELOW;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements View.OnClickListener{
 
     @BindView(R.id.search_box)
     TextInputEditText searchBox;
@@ -59,6 +61,12 @@ public class DashboardFragment extends Fragment {
     RecyclerView reminderRecycler;
 
     boolean areRemindersShowing;
+
+    OnQuickLinkListener mListener;
+
+    public void initializeQuickLinkListener (OnQuickLinkListener listener) {
+        this.mListener = listener;
+    }
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -193,9 +201,39 @@ public class DashboardFragment extends Fragment {
                 showRecycler.start();
             }
 
+
         });
 
+        rootView.findViewById(R.id.appointment).setOnClickListener(this);
+        rootView.findViewById(R.id.vitals).setOnClickListener(this);
+        rootView.findViewById(R.id.location).setOnClickListener(this);
+        rootView.findViewById(R.id.help).setOnClickListener(this);
+
         return rootView;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.appointment:
+                mListener.onQuickLinkClicked(Constants.APPOINTMENTS);
+                break;
+            case R.id.vitals:
+                mListener.onQuickLinkClicked(Constants.VITALS);
+                break;
+            case R.id.location:
+                mListener.onQuickLinkClicked(Constants.LOCATION);
+                break;
+            case R.id.help:
+                mListener.onQuickLinkClicked(Constants.HELP);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public interface OnQuickLinkListener {
+        void onQuickLinkClicked(String link);
     }
 
 

@@ -31,6 +31,7 @@ import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
 import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
+import ng.apmis.apmismobile.ui.dashboard.places.FacilityLocationFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
@@ -39,7 +40,7 @@ import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity implements DashboardFragment.OnQuickLinkListener{
 
     PersonViewModel mPersonViewModel;
 
@@ -58,6 +59,9 @@ public class DashboardActivity extends AppCompatActivity {
     ActionBar actionBar;
 
     public String findSearchTerm = "Hospital";
+
+    DashboardFragment.OnQuickLinkListener mListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +93,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         profileImage.setVisibility(View.VISIBLE);
 
-        //TODO Setup recycler view list and pass to recycler in observer
-
         mPersonViewModel.getPersonEntry().observe(this, personEntry -> {
             if (personEntry != null) {
                 Log.v("personEntry", String.valueOf(personEntry));
@@ -102,10 +104,14 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+        DashboardFragment dashboardFragment = new DashboardFragment();
+
+        dashboardFragment.initializeQuickLinkListener(this);
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, new DashboardFragment())
+                .add(R.id.fragment_container, dashboardFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
+
 
 
         profileImage.setOnClickListener((view) -> {
@@ -254,5 +260,25 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onQuickLinkClicked(String link) {
+        switch (link) {
+            case Constants.APPOINTMENTS:
+                //placeFragment(new FacilityLocationFragment());
+                break;
+            case Constants.VITALS:
+                //placeFragment(new FacilityLocationFragment());
+                break;
+            case Constants.LOCATION:
+                placeFragment(new FacilityLocationFragment());
+                break;
+            case Constants.HELP:
+                //placeFragment(new FacilityLocationFragment());
+                break;
+            default:
+                break;
+        }
     }
 }

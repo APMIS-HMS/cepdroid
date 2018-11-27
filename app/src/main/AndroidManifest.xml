@@ -13,6 +13,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:name=".APMISAPP"
@@ -22,6 +27,11 @@
         android:roundIcon="@mipmap/ic_launcher_apmis_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity android:name=".ui.WelcomeScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -91,10 +101,11 @@
         </activity>
         <activity
             android:name=".ui.dashboard.payment.FundWalletActivity"
-            android:theme="@style/BackgroundTheme"/>
+            android:theme="@style/BackgroundTheme" />
+
         <meta-data
             android:name="co.paystack.android.PublicKey"
-            android:value="pk_test_3c53bcffeb3c889d04ea0f905c44d36fc342aa85"/>
+            android:value="pk_test_3c53bcffeb3c889d04ea0f905c44d36fc342aa85" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
