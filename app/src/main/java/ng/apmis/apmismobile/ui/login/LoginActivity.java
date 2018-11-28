@@ -229,7 +229,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean checkApmisId(String apmisId) {
         String id = apmisId.trim();
-        return !id.contains("-") || id.equals("");
+        return id.contains("-") || !id.equals("");
     }
 
     private boolean checkPassword (String password) {

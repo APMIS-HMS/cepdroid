@@ -2,13 +2,12 @@ package ng.apmis.apmismobile.ui.dashboard.places;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -18,96 +17,75 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.GeofenceTransitionsIntentService;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.utilities.Constants;
 
-import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FacilityLocationFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FacilityLocationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FacilityLocationFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
+public class FacilityLocationFragment extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment supportMapFragment;
-    GeofencingClient geofencingClient;
-    ArrayList<Geofence> geofenceList = new ArrayList<>();
-    GoogleApiClient googleApiClient;
-    LatLng latLng;
-    LocationRequest locationRequest;
+    GeoDataClient mGeoDataClient;
+    PlaceDetectionClient mPlaceDetectionClient;
+    FusedLocationProviderClient mFusedLocationProviderClient;
+    GoogleMap gMap;
+    GeofencingClient mGeofencingClient;
+    ArrayList<Geofence> mGeofenceList;
+    PendingIntent mGeofencePendingIntent;
+    private LatLngBounds.Builder mBounds;
 
     public FacilityLocationFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FacilityLocationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FacilityLocationFragment newInstance(String param1, String param2) {
-        FacilityLocationFragment fragment = new FacilityLocationFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_facility_location, container, false);
 
-        supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.place_map);
+        mGeoDataClient = Places.getGeoDataClient(getContext());
+        mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext());
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        mGeofencingClient = LocationServices.getGeofencingClient(getContext());
+        mGeofenceList = new ArrayList<>();
+        mBounds = new LatLngBounds.Builder();
 
+        supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.place_map);
+        supportMapFragment.getMapAsync(this);
 
         if (checkPermissions()) {
-            setUpGoogleApiClientAndLocation();
+            /*updateLocationUI();
+            getDeviceLocation();*/
+
         } else {
             requestPermissions();
         }
@@ -116,28 +94,128 @@ public class FacilityLocationFragment extends Fragment implements GoogleApiClien
         return rootView;
     }
 
-    void setUpGoogleApiClientAndLocation () {
-        geofencingClient = LocationServices.getGeofencingClient(getActivity());
-
-        googleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        googleApiClient.connect();
-
-      /*  geofenceList.add(new Geofence.Builder()
-        .setCircularRegion())*/
+    private void addPointToViewPort(LatLng newPoint) {
+        mBounds.include(newPoint);
+        gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mBounds.build(),
+                8));
     }
 
+    void updateLocationUI() {
+        if (gMap == null) return;
+        try {
+            gMap.setMyLocationEnabled(true);
+            gMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+            gMap.setMyLocationEnabled(true);
+            gMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+                @Override
+                public void onMyLocationChange(Location location) {
+                    LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
+                    gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds.Builder().include(ll).build(),16));
+                    // we only want to grab the location once, to allow the user to pan and zoom freely.
+                    gMap.setOnMyLocationChangeListener(null);
+                }
+            });
+
+        }catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
+        /*supportMapFragment.getMapAsync(googleMap -> {
+            googleMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+        });*/
+
+    }
+
+    void getDeviceLocation () {
+        try {
+            Task locationResult = mFusedLocationProviderClient.getLastLocation();
+            locationResult.addOnCompleteListener(getActivity(), task -> {
+                Location mLastKnowLocation = (Location) task.getResult();
+                LatLng ll = new LatLng(mLastKnowLocation.getLatitude(), mLastKnowLocation.getLongitude());
+                if (task.isSuccessful())
+
+                    addPointToViewPort(ll);
+                    // we only want to grab the location once, to allow the user to pan and zoom freely.
+                    gMap.setOnMyLocationChangeListener(null);
+
+                   /* mGeofenceList.add(new Geofence.Builder()
+                            // Set the request ID of the geofence. This is a string to identify this
+                            // geofence.
+                            .setRequestId("here")
+
+                            .setCircularRegion(
+                                    mLastKnowLocation.getLatitude(),
+                                    mLastKnowLocation.getLongitude(),
+                                    Constants.GEOFENCE_RADIUS_IN_METERS
+                            )
+                            .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                    Geofence.GEOFENCE_TRANSITION_EXIT)
+                            .build());
+
+
+                    mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.e("Geofence", "Successful");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e("Geofence", e.getMessage());
+                                }
+                            });
+                gMap.addMarker(new MarkerOptions().position(new LatLng(mLastKnowLocation.getLatitude(), mLastKnowLocation.getLongitude())).title("My Location"));
+                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnowLocation.getLatitude(), mLastKnowLocation.getLongitude()), 16.0f));
+*/
+            });
+
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (mGeofencePendingIntent != null) {
+            return mGeofencePendingIntent;
+        }
+        Intent intent = new Intent(getActivity(), GeofenceTransitionsIntentService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences().
+        mGeofencePendingIntent = PendingIntent.getService(getActivity(), 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+        return mGeofencePendingIntent;
+    }
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL);
+        builder.addGeofences(mGeofenceList);
+        return builder.build();
+    }
 
     boolean checkPermissions () {
-        return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(getContext().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
+     /*   if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }*/
+
     }
 
     void requestPermissions () {
-        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1000);
-        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
+        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     @Override
@@ -152,14 +230,13 @@ public class FacilityLocationFragment extends Fragment implements GoogleApiClien
 
     @Override
     public void onPause() {
-        if (googleApiClient.isConnected()) googleApiClient.disconnect();
         super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        setUpGoogleApiClientAndLocation();
+        //updateLocationUI();
         if (getActivity() != null) {
             ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.LOCATION, false);
             ((DashboardActivity)getActivity()).mBottomNav.setVisibility(View.GONE);
@@ -168,41 +245,16 @@ public class FacilityLocationFragment extends Fragment implements GoogleApiClien
 
     @SuppressLint("MissingPermission")
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.e("connected", "connected");
-        locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_LOW_POWER)
-                .setInterval(5000);
-        if (checkPermissions()) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-        }
-    }
+    public void onMapReady(GoogleMap googleMap) {
+        gMap = googleMap;
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("Failed", "failed");
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.e("location changed", location.toString());
-        latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        Log.e("Lat Lng", String.valueOf(latLng));
-        supportMapFragment.getMapAsync(googleMap -> {
-            googleMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+        gMap.setMyLocationEnabled(true);
+        gMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                getDeviceLocation();
+                return true;
+            }
         });
-    }
-
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

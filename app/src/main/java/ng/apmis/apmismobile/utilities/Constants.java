@@ -20,4 +20,7 @@ public class Constants {
     public final static String LOCATION = "My Location";
     public final static String HELP = "help";
 
+    public final static float GEOFENCE_RADIUS_IN_METERS = 5000;
+
+    public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = 50000;
 }

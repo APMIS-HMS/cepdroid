@@ -95,6 +95,7 @@ public class ApmisNetworkDataSource {
 
     //TODO Switch to LiveData later
     private List<OrderStatus> orderStatuses;
+    private MutableLiveData<Object> nearbyLocations;
 
 
     ApmisNetworkDataSource(Context context, APMISAPP executorThreads) {
@@ -126,6 +127,8 @@ public class ApmisNetworkDataSource {
 
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
+        nearbyLocations = new MutableLiveData<>();
+
     }
 
     public static ApmisNetworkDataSource getsInstance(Context context, APMISAPP executorThreads) {
@@ -815,6 +818,10 @@ public class ApmisNetworkDataSource {
 
     public void clearPaymentVerificationData(){
         paymentVerificationData = new MutableLiveData<>();
+    }
+
+    public void setNearbyLocations (Object[] nearbyLocations) {
+
     }
 
 

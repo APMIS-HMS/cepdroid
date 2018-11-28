@@ -1519,6 +1519,47 @@ public final class NetworkDataCalls {
         APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
 
+
+    public void fetchNearbyFacilities (Context  context, String accessToken) {
+        JsonObjectRequest nearbyFacilities = new JsonObjectRequest(Request.Method.POST, BASE_URL
+                + "facilities?$limit=null&$select[address.geometry.location]&$select[name]", null, response -> {
+
+            Log.v("Pay Verify response", String.valueOf(response));
+
+            String status = null;
+
+            try {
+                status = response.getString("status");
+            } catch (JSONException e) {
+                status = "error";
+                e.printStackTrace();
+            }
+
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData(status);
+
+        }, (VolleyError error) -> {
+
+            Log.e("Pay Verify error", String.valueOf(error.getMessage()));
+            //Return an error string
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData("error");
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        nearbyFacilities.setRetryPolicy(new DefaultRetryPolicy(120000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(nearbyFacilities);
+    }
+
     /**
      *
      * @param context
