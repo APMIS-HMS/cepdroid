@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        signinconfig {
+            keyAlias 'apmiscep'
+            keyPassword 'android2018'
+            storeFile file('C:/Users/ainoj/OneDrive - APMIS Health Management Systems Ltd/apmiscepkeystore')
+            storePassword 'android2018'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "ng.apmis.apmismobile"
@@ -24,6 +32,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.signinconfig
         }
     }
     compileOptions {
@@ -35,11 +44,9 @@ android {
         javaMaxHeapSize "4g"
     }
     buildToolsVersion '27.0.3'
-
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
-
 }
 
 dependencies {
