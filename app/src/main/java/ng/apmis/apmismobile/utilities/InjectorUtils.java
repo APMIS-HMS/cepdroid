@@ -23,6 +23,7 @@ import ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital.FoundHosp
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.payment.cardEntry.CardEntryViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.payment.cards.CardsViewModelFactory;
+import ng.apmis.apmismobile.ui.dashboard.places.FacilityLocationFactory;
 import ng.apmis.apmismobile.ui.dashboard.prescription.PrescriptionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.profileAction.ProfileActionViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.profile.viewEditProfile.EditProfileViewModelFactory;
@@ -205,4 +206,10 @@ public class InjectorUtils {
         ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
         return new CardsViewModelFactory(apmisRepository);
     }
+
+    public static FacilityLocationFactory provideFacilityLocationFactory (Context context) {
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new FacilityLocationFactory(apmisRepository);
+    }
+
 }

@@ -98,6 +98,5 @@ dependencies {
     compile 'co.paystack.android:paystack:3.0.10'
     compile 'com.google.android.gms:play-services-maps:16.0.0'
     compile 'com.google.android.gms:play-services-location:16.0.0'
-    compile 'com.google.android.gms:play-services-places:16.0.0'
     compile 'com.github.rubensousa:gravitysnaphelper:1.3'
 }

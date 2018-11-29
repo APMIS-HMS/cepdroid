@@ -3,6 +3,7 @@ package ng.apmis.apmismobile.ui.dashboard.places;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -22,9 +23,6 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,30 +30,28 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.GeofenceTransitionsIntentService;
+import ng.apmis.apmismobile.data.database.facilityModel.Address;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.utilities.Constants;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 
 public class FacilityLocationFragment extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment supportMapFragment;
-    GeoDataClient mGeoDataClient;
-    PlaceDetectionClient mPlaceDetectionClient;
     FusedLocationProviderClient mFusedLocationProviderClient;
     GoogleMap gMap;
     GeofencingClient mGeofencingClient;
     ArrayList<Geofence> mGeofenceList;
     PendingIntent mGeofencePendingIntent;
-    private LatLngBounds.Builder mBounds;
+    Address[] facilityAddresses = null;
+    Location currentLocation;
 
     public FacilityLocationFragment() {
         // Required empty public constructor
@@ -72,110 +68,39 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_facility_location, container, false);
 
-        mGeoDataClient = Places.getGeoDataClient(getContext());
-        mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext());
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
-        mGeofencingClient = LocationServices.getGeofencingClient(getContext());
-        mGeofenceList = new ArrayList<>();
-        mBounds = new LatLngBounds.Builder();
-
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.place_map);
         supportMapFragment.getMapAsync(this);
 
         if (checkPermissions()) {
-            /*updateLocationUI();
-            getDeviceLocation();*/
+
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+            mGeofencingClient = LocationServices.getGeofencingClient(getContext());
+            mGeofenceList = new ArrayList<>();
+
+            FacilityLocationFactory facilityLocationFactory = InjectorUtils.provideFacilityLocationFactory(getContext());
+            FacilityLocationViewModel facilityLocationViewModel = ViewModelProviders.of(this, facilityLocationFactory).get(FacilityLocationViewModel.class);
+
+            facilityLocationViewModel.getFacilityLocations().observe(this, facilityLocations -> {
+                LatLng latLng;
+                if (facilityLocations != null) {
+                    facilityAddresses = new Address[facilityLocations.length];
+                    for (int i = 0; i < facilityLocations.length; i++) {
+                        if (facilityLocations[i].getAddress() != null) {
+                            latLng = new LatLng(facilityLocations[i].getAddress().getGeometry().getLocation().getLat(), facilityLocations[i].getAddress().getGeometry().getLocation().getLng());
+                            facilityAddresses[i] = facilityLocations[i].getAddress();
+                            if (gMap != null) {
+                                gMap.addMarker(new MarkerOptions().position(latLng).title(facilityLocations[i].getName()));
+                            }
+                        }
+                    }
+                }
+            });
 
         } else {
             requestPermissions();
         }
 
-
         return rootView;
-    }
-
-    private void addPointToViewPort(LatLng newPoint) {
-        mBounds.include(newPoint);
-        gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mBounds.build(),
-                8));
-    }
-
-    void updateLocationUI() {
-        if (gMap == null) return;
-        try {
-            gMap.setMyLocationEnabled(true);
-            gMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-            gMap.setMyLocationEnabled(true);
-            gMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                @Override
-                public void onMyLocationChange(Location location) {
-                    LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
-                    gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds.Builder().include(ll).build(),16));
-                    // we only want to grab the location once, to allow the user to pan and zoom freely.
-                    gMap.setOnMyLocationChangeListener(null);
-                }
-            });
-
-        }catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage());
-        }
-        /*supportMapFragment.getMapAsync(googleMap -> {
-            googleMap.addMarker(new MarkerOptions().position(latLng).title("My Location"));
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
-        });*/
-
-    }
-
-    void getDeviceLocation () {
-        try {
-            Task locationResult = mFusedLocationProviderClient.getLastLocation();
-            locationResult.addOnCompleteListener(getActivity(), task -> {
-                Location mLastKnowLocation = (Location) task.getResult();
-                LatLng ll = new LatLng(mLastKnowLocation.getLatitude(), mLastKnowLocation.getLongitude());
-                if (task.isSuccessful())
-
-                    addPointToViewPort(ll);
-                    // we only want to grab the location once, to allow the user to pan and zoom freely.
-                    gMap.setOnMyLocationChangeListener(null);
-
-                   /* mGeofenceList.add(new Geofence.Builder()
-                            // Set the request ID of the geofence. This is a string to identify this
-                            // geofence.
-                            .setRequestId("here")
-
-                            .setCircularRegion(
-                                    mLastKnowLocation.getLatitude(),
-                                    mLastKnowLocation.getLongitude(),
-                                    Constants.GEOFENCE_RADIUS_IN_METERS
-                            )
-                            .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                                    Geofence.GEOFENCE_TRANSITION_EXIT)
-                            .build());
-
-
-                    mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.e("Geofence", "Successful");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.e("Geofence", e.getMessage());
-                                }
-                            });
-                gMap.addMarker(new MarkerOptions().position(new LatLng(mLastKnowLocation.getLatitude(), mLastKnowLocation.getLongitude())).title("My Location"));
-                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnowLocation.getLatitude(), mLastKnowLocation.getLongitude()), 16.0f));
-*/
-            });
-
-        } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage());
-        }
     }
 
     private PendingIntent getGeofencePendingIntent() {
@@ -198,22 +123,11 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
         return builder.build();
     }
 
-    boolean checkPermissions () {
+    boolean checkPermissions() {
         return ContextCompat.checkSelfPermission(getContext().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-
-     /*   if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }*/
-
     }
 
-    void requestPermissions () {
+    void requestPermissions() {
         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
         shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION);
     }
@@ -238,8 +152,8 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
         super.onResume();
         //updateLocationUI();
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.LOCATION, false);
-            ((DashboardActivity)getActivity()).mBottomNav.setVisibility(View.GONE);
+            ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.LOCATION, false);
+            ((DashboardActivity) getActivity()).mBottomNav.setVisibility(View.GONE);
         }
     }
 
@@ -248,13 +162,52 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
 
+        gMap.getUiSettings().setZoomControlsEnabled(true);
+        //gMap.setMinZoomPreference(15);
+
         gMap.setMyLocationEnabled(true);
-        gMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                getDeviceLocation();
-                return true;
-            }
-        });
+
+        mFusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        Log.e("Current location", String.valueOf(location));
+                        this.currentLocation = location;
+                        gMap.addMarker(new MarkerOptions().position(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude())).title("My Location"));
+
+                        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude()), 16));
+
+                        gMap.setOnMyLocationButtonClickListener(() -> {
+                            Log.e("gmap current location", String.valueOf(currentLocation));
+                            mGeofenceList.add(new Geofence.Builder()
+                                    .setRequestId("Here")
+                                    .setCircularRegion(this.currentLocation.getLatitude(),
+                                            this.currentLocation.getLongitude(),
+                                            Constants.GEOFENCE_RADIUS_IN_METERS)
+                                    .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_ENTER)
+                                    .setLoiteringDelay(10000)
+                                    .build()
+                            );
+
+                            mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                                    .addOnSuccessListener(success -> {
+                                        Log.e("geo fence added", "success");
+                                    })
+                                    .addOnFailureListener(failure -> {
+                                        Log.e("geo fence failed", "failed");
+                                    });
+
+                            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude()), 16));
+                            return true;
+
+                        });
+                    }
+                })
+                .addOnFailureListener(failed -> {
+                    Log.e("location failed", failed.getMessage());
+                });
+
+
     }
+
 }

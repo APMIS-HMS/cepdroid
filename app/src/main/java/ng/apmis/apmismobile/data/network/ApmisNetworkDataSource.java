@@ -95,7 +95,7 @@ public class ApmisNetworkDataSource {
 
     //TODO Switch to LiveData later
     private List<OrderStatus> orderStatuses;
-    private MutableLiveData<Object> nearbyLocations;
+    private MutableLiveData<Facility[]> nearbyLocations;
 
 
     ApmisNetworkDataSource(Context context, APMISAPP executorThreads) {
@@ -820,8 +820,20 @@ public class ApmisNetworkDataSource {
         paymentVerificationData = new MutableLiveData<>();
     }
 
-    public void setNearbyLocations (Object[] nearbyLocations) {
 
+    /**
+     * Fetch all Nearby Locations Object[]
+     */
+    public void setNearbyLocations (Facility[] nearbyLocations) {
+        this.nearbyLocations.postValue(nearbyLocations);
+    }
+
+    public LiveData<Facility[]> getNearbyLocations () {
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch NearbyFacilities started");
+            new NetworkDataCalls(mContext).fetchNearbyFacilities(mContext, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+        return nearbyLocations;
     }
 
 

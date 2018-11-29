@@ -1521,27 +1521,23 @@ public final class NetworkDataCalls {
 
 
     public void fetchNearbyFacilities (Context  context, String accessToken) {
-        JsonObjectRequest nearbyFacilities = new JsonObjectRequest(Request.Method.POST, BASE_URL
+        JsonObjectRequest nearbyFacilities = new JsonObjectRequest(Request.Method.GET, BASE_URL
                 + "facilities?$limit=null&$select[address.geometry.location]&$select[name]", null, response -> {
 
-            Log.v("Pay Verify response", String.valueOf(response));
-
-            String status = null;
-
+            Facility[] locationObject = null;
             try {
-                status = response.getString("status");
+                locationObject = gson.fromJson(response.getJSONArray("data").toString(), Facility[].class);
             } catch (JSONException e) {
-                status = "error";
                 e.printStackTrace();
             }
 
-            InjectorUtils.provideNetworkData(context).setPaymentVerificationData(status);
+            InjectorUtils.provideNetworkData(context).setNearbyLocations(locationObject);
 
         }, (VolleyError error) -> {
 
-            Log.e("Pay Verify error", String.valueOf(error.getMessage()));
+            Log.e("Nearby location error", String.valueOf(error.getMessage()));
             //Return an error string
-            InjectorUtils.provideNetworkData(context).setPaymentVerificationData("error");
+            InjectorUtils.provideNetworkData(context).setNearbyLocations(null);
 
         }) {
 

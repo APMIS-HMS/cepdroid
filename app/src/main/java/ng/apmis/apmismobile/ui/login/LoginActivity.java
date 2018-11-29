@@ -130,28 +130,20 @@ public class LoginActivity extends AppCompatActivity {
 
         if (!checkApmisId(apmisId)) {
             apmisIdEditText.setError("Check Apmis ID");
-            fieldsOk = false;
+            return;
+        }
 
+        if (!checkPassword(password)) {
+            passwordEditText.setError("Check password !!!");
+            return;
+        }
+
+        if (rememberMe.isChecked()) {
+            sharedPreferencesManager.storeUserPassword(passwordEditText.getText().toString());
         } else {
-            fieldsOk = true;
-
-            if (!checkPassword(password)) {
-                passwordEditText.setError("Check password !!!");
-                fieldsOk = false;
-            } else {
-                fieldsOk = true;
-            }
+            sharedPreferencesManager.storeUserPassword("");
         }
-
-
-        if (fieldsOk) {
-            if (rememberMe.isChecked()) {
-                sharedPreferencesManager.storeUserPassword(passwordEditText.getText().toString());
-            } else {
-                sharedPreferencesManager.storeUserPassword("");
-            }
-            attemptLogin(apmisId, password);
-        }
+        attemptLogin(apmisId, password);
 
     }
 
