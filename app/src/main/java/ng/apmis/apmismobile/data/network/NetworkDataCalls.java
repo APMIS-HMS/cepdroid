@@ -803,6 +803,7 @@ public final class NetworkDataCalls {
 
                 } else {
                     //return an empty list if nothing is there
+                    InjectorUtils.provideNetworkData(context).setAppointments(new ArrayList<>());
                     InjectorUtils.provideRepository(context).insertAppointmentsForPatient(new ArrayList<>());
                 }
 

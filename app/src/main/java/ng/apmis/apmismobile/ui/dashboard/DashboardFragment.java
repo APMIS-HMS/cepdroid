@@ -3,8 +3,11 @@ package ng.apmis.apmismobile.ui.dashboard;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +19,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableRow;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
 import static android.widget.RelativeLayout.BELOW;
@@ -29,6 +34,9 @@ import static android.widget.RelativeLayout.BELOW;
  * A simple {@link Fragment} subclass.
  */
 public class DashboardFragment extends Fragment implements View.OnClickListener{
+
+    @BindView(R.id.main_scroll)
+    NestedScrollView mainScroll;
 
     @BindView(R.id.search_box)
     TextInputEditText searchBox;
@@ -159,6 +167,7 @@ public class DashboardFragment extends Fragment implements View.OnClickListener{
         ReminderAdapter adapter = new ReminderAdapter(getContext());
         reminderRecycler.setAdapter(adapter);
         reminderRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        reminderRecycler.setNestedScrollingEnabled(false);
 
         openCloseReminders.setOnClickListener(v -> {
 

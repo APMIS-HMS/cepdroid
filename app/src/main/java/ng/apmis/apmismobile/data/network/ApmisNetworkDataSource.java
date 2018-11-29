@@ -655,8 +655,26 @@ public class ApmisNetworkDataSource {
         return appointment;
     }
 
+
+    //TODO add the empty sized change to all of them
     public void setAppointments(List<Appointment> appointments){
-        this.appointments.postValue(appointments);
+        List<Appointment> previous = this.appointments.getValue();
+
+        if (appointments != null ) {
+            this.appointments.postValue(appointments);
+
+            if (appointments.size() == 0)
+                this.appointments = new MutableLiveData<>();
+        }
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.appointments.setValue(null);
+
+            if (previous != null && previous.size() > 0)
+                this.appointments.postValue(previous);
+            else
+                this.appointments = new MutableLiveData<>();
+        }
     }
 
     public LiveData<List<Appointment>> getAllAppointments(String personId){
@@ -667,6 +685,9 @@ public class ApmisNetworkDataSource {
     public void clearFetchedAppointments(){
         appointments = new MutableLiveData<>();
     }
+
+
+
 
     //Documentation
     public void setDocumentationsForPerson(List<Documentation> documentations){

@@ -412,10 +412,10 @@ public class FoundHospitalDetailFragment extends Fragment {
         LiveData<PersonEntry> entryLiveData = InjectorUtils.provideRepository(getContext()).getUserData();
         Observer<PersonEntry> personEntryObserver = personEntry -> {
             if (personEntry != null){
-                if (personEntry.getEmail() != null) {
+                //if (personEntry.getEmail() != null) {
                     apmisIdText.setText(personEntry.getApmisId());
                     nameText.setText(personEntry.getFirstName() + " " + personEntry.getLastName());
-                }
+                //}
             }
         };
         entryLiveData.removeObservers(this);

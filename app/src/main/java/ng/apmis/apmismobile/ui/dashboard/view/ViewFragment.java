@@ -40,13 +40,13 @@ public class ViewFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_view, container, false);
         ButterKnife.bind(this, rootView);
 
-        optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointents));
-        optionItems.add(new ModuleListModel(Constants.CLINICAL_DOCUMENTATION, R.drawable.ic_medical_records));
+        optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointment));
+        optionItems.add(new ModuleListModel(Constants.CLINICAL_DOCUMENTATION, R.drawable.ic_documentation));
         optionItems.add(new ModuleListModel(Constants.PRESCRIPTION, R.drawable.ic_prescription));
-        optionItems.add(new ModuleListModel(Constants.VITALS, R.drawable.ic_health_profile));
-        optionItems.add(new ModuleListModel(Constants.INVESTIGATIONS, R.drawable.ic_diagnostic_report));
+        optionItems.add(new ModuleListModel(Constants.VITALS, R.drawable.ic_health_vitals));
+        optionItems.add(new ModuleListModel(Constants.INVESTIGATIONS, R.drawable.ic_investigations));
 
-        optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medications));
+        optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medication));
         optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
         optionItems.add(new ModuleListModel("REFERRAL", R.drawable.ic_referral));
         optionItems.add(new ModuleListModel("MENSTRUAL CYCLE", R.drawable.ic_menstrual));

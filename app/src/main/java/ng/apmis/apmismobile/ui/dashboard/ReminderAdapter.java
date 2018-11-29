@@ -22,17 +22,17 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
     private Context mContext;
     private List<Reminder> reminders = new ArrayList<>();
 
-    private static int REMINDER_VIEW_TYPE = 0;
-    private static int DATE_VIEW_TYPE = 1;
+    private final static String TYPE_APPOINTMENT = "appointment";
+    private final static String TYPE_DRUG = "drug";
 
     public ReminderAdapter(Context mContext) {
         this.mContext = mContext;
 
-        reminders.add(new Reminder("Appointment", "Sabaoth Clinic appointment", "Back pain", "4:00PM"));
-        reminders.add(new Reminder("Drug", "Panadol", "", "8:00AM"));
-        reminders.add(new Reminder("Drug", "Loratadine", "You'll probably die without these", "12:00PM"));
-        reminders.add(new Reminder("Appointment", "APMIS Hospital appointment", "Chest pain and chronic coughs", "4:00PM"));
-        reminders.add(new Reminder("Drug", "Panadol", "Eat first before taking", "4:00PM"));
+        reminders.add(new Reminder(TYPE_APPOINTMENT, "Sabaoth Clinic appointment", "Back pain", "4:00PM"));
+        reminders.add(new Reminder(TYPE_DRUG, "Panadol", "", "8:00AM"));
+        reminders.add(new Reminder(TYPE_DRUG, "Loratadine", "You'll probably die without these", "12:00PM"));
+        reminders.add(new Reminder(TYPE_APPOINTMENT, "APMIS Hospital appointment", "Chest pain and chronic coughs", "4:00PM"));
+        reminders.add(new Reminder(TYPE_DRUG, "Panadol", "Eat first before taking", "4:00PM"));
 
         notifyDataSetChanged();
     }
@@ -52,8 +52,21 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
 
         Reminder reminder = reminders.get(position);
 
-        holder.titleTimeText.setText(String.format("%s by %s", reminder.getName(), reminder.getTime()));
+        holder.titleText.setText(String.format("%s", reminder.getName()));
         holder.messageText.setText(reminder.getMessage());
+        holder.timeText.setText(String.format("%s", reminder.getTime()));
+
+        switch (reminder.getType()){
+            case TYPE_APPOINTMENT:
+                holder.typeImageView.setImageResource(R.drawable.ic_appointment_rem);
+                break;
+            case TYPE_DRUG:
+                holder.typeImageView.setImageResource(R.drawable.ic_pill);
+                break;
+            default:
+                holder.typeImageView.setImageResource(R.drawable.ic_pill);
+                break;
+        }
 
     }
 
@@ -67,11 +80,14 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         @BindView(R.id.type_image)
         ImageView typeImageView;
 
-        @BindView(R.id.title_time_text)
-        TextView titleTimeText;
+        @BindView(R.id.title_text)
+        TextView titleText;
 
         @BindView(R.id.message_text)
         TextView messageText;
+
+        @BindView(R.id.time_text)
+        TextView timeText;
 
         public ReminderViewHolder(View itemView) {
             super(itemView);

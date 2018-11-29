@@ -13,10 +13,9 @@
 
         <RelativeLayout
             android:id="@+id/empty_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:gravity="center"
             android:visibility="invisible">
 
             <ImageView
@@ -25,7 +24,7 @@
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
                 android:alpha="0.5"
-                app:srcCompat="@drawable/ic_apmis_vector_gray"/>
+                app:srcCompat="@drawable/ic_empty_appointment"/>
 
             <TextView
                 android:id="@+id/empty_text"
@@ -35,7 +34,7 @@
                 android:layout_margin="15dp"
                 android:padding="3dp"
                 android:gravity="center"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="#777"
                 android:text="@string/empty_appointments" />
 
         </RelativeLayout>
@@ -71,8 +70,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recently_booked_recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/divider_line" />
+            android:layout_height="match_parent"/>
 
     </RelativeLayout>
 

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -16,57 +17,12 @@
             android:orientation="vertical"
             android:padding="18dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="6dp"
-                    android:text="Amount"
-                    android:textSize="16sp"/>
-
-                <EditText
-                    android:id="@+id/amount_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:padding="5dp"
-                    android:inputType="number"
-                    android:hint="@string/naira_sign"
-                    android:background="@drawable/edittext_background" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="6dp"
-                    android:text="Email Address"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/email_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:inputType="textEmailAddress"
-                    android:padding="5dp"
-                    android:background="@drawable/edittext_background" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -153,11 +109,65 @@
 
             </LinearLayout>
 
-            <RadioButton
-                android:id="@+id/save_card_radio"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save card"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="Email Address"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/email_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:inputType="textEmailAddress"
+                    android:padding="5dp"
+                    android:background="@drawable/edittext_background" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:text="Amount"
+                    android:textSize="16sp"/>
+
+                <EditText
+                    android:id="@+id/amount_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="5dp"
+                    android:inputType="number"
+                    android:hint="@string/naira_sign"
+                    android:background="@drawable/edittext_background" />
+
+            </LinearLayout>
+
+
+
+
+
+            <Switch
+                android:id="@+id/save_card_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:switchPadding="10dp"
+                android:text="Save card?"
                 android:layout_marginTop="8dp" />
 
             <Button
@@ -167,7 +177,7 @@
                 android:layout_marginTop="12dp"
                 android:textColor="@color/action_button_text_color"
                 android:background="@drawable/action_button"
-                android:text="Fund" />
+                android:text="PAY" />
 
         </LinearLayout>
 
