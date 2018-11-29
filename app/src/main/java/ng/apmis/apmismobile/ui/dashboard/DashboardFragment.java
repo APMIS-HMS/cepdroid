@@ -3,8 +3,11 @@ package ng.apmis.apmismobile.ui.dashboard;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,12 +16,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableRow;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
 import static android.widget.RelativeLayout.BELOW;
@@ -27,6 +33,9 @@ import static android.widget.RelativeLayout.BELOW;
  * A simple {@link Fragment} subclass.
  */
 public class DashboardFragment extends Fragment {
+
+    @BindView(R.id.main_scroll)
+    NestedScrollView mainScroll;
 
     @BindView(R.id.search_box)
     TextInputEditText searchBox;
@@ -80,6 +89,20 @@ public class DashboardFragment extends Fragment {
 
         areRemindersShowing = false;
 
+        firstCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppUtils.showShortToast(getContext(), "First Card");
+            }
+        });
+
+        thirdCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppUtils.showShortToast(getContext(), "Locate Card");
+            }
+        });
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
@@ -89,68 +112,69 @@ public class DashboardFragment extends Fragment {
         params.addRule(BELOW, R.id.first_row);
         secondRow.setLayoutParams(params);
 
-        AnimatorSet out1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out5 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-
-        out1.setTarget(firstCard);
-        out2.setTarget(secondCard);
-        out3.setTarget(thirdCard);
-        out4.setTarget(fourthCard);
-        out5.setTarget(openCloseReminders);
-
-        out1.start();
-        out2.start();
-        out3.start();
-        out4.start();
-        out5.start();
-
-        AnimatorSet set1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set1.setTarget(firstCard);
-        set1.setStartDelay(20);
-        set1.start();
-
-        AnimatorSet set2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set2.setTarget(secondCard);
-        set2.setStartDelay(120);
-        set2.start();
-
-        AnimatorSet set3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set3.setTarget(thirdCard);
-        set3.setStartDelay(220);
-        set3.start();
-
-        AnimatorSet set4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set4.setTarget(fourthCard);
-        set4.setStartDelay(320);
-        set4.start();
-
-
-        AnimatorSet floatIn = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.fade_in_float);
-        floatIn.setTarget(openCloseReminders);
-        floatIn.setStartDelay(1000);
-        floatIn.start();
-
-        AnimatorSet outRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        outRecycler.setTarget(reminderRecycler);
-        outRecycler.start();
+//        AnimatorSet out1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.out);
+//        AnimatorSet out2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.out);
+//        AnimatorSet out3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.out);
+//        AnimatorSet out4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.out);
+//        AnimatorSet out5 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.out);
+//
+//        out1.setTarget(firstCard);
+//        out2.setTarget(secondCard);
+//        out3.setTarget(thirdCard);
+//        out4.setTarget(fourthCard);
+//        out5.setTarget(openCloseReminders);
+//
+//        out1.start();
+//        out2.start();
+//        out3.start();
+//        out4.start();
+//        out5.start();
+//
+//        AnimatorSet set1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.bounce_in);
+//        set1.setTarget(firstCard);
+//        set1.setStartDelay(20);
+//        set1.start();
+//
+//        AnimatorSet set2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.bounce_in);
+//        set2.setTarget(secondCard);
+//        set2.setStartDelay(120);
+//        set2.start();
+//
+//        AnimatorSet set3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.bounce_in);
+//        set3.setTarget(thirdCard);
+//        set3.setStartDelay(220);
+//        set3.start();
+//
+//        AnimatorSet set4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.bounce_in);
+//        set4.setTarget(fourthCard);
+//        set4.setStartDelay(320);
+//        set4.start();
+//
+//
+//        AnimatorSet floatIn = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.fade_in_float);
+//        floatIn.setTarget(openCloseReminders);
+//        floatIn.setStartDelay(1000);
+//        floatIn.start();
+//
+//        AnimatorSet outRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
+//                R.animator.out);
+//        outRecycler.setTarget(reminderRecycler);
+//        outRecycler.start();
 
         ReminderAdapter adapter = new ReminderAdapter(getContext());
         reminderRecycler.setAdapter(adapter);
         reminderRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        reminderRecycler.setNestedScrollingEnabled(false);
 
         openCloseReminders.setOnClickListener(v -> {
 
@@ -197,7 +221,6 @@ public class DashboardFragment extends Fragment {
 
         return rootView;
     }
-
 
     @Override
     public void onResume() {

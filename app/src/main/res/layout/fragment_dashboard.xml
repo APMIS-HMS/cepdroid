@@ -1,210 +1,249 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_scroll"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#fff"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="ng.apmis.apmismobile.ui.dashboard.DashboardFragment">
-
-    <TextView
-        android:id="@+id/app_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/welcome_header"
-        android:gravity="center_horizontal"
-        android:layout_margin="20dp"
-        android:layout_alignParentTop="true"
-        android:visibility="gone"/>
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/quick_links_group"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/app_text">
+        android:background="#fff"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context="ng.apmis.apmismobile.ui.dashboard.DashboardFragment">
 
-        <TableRow
-            android:id="@+id/first_row"
+        <TextView
+            android:id="@+id/app_text"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:paddingTop="10dp"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:paddingRight="10dp"
-            android:paddingEnd="10dp">
+            android:layout_height="wrap_content"
+            android:text="@string/welcome_header"
+            android:gravity="center_horizontal"
+            android:layout_margin="20dp"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"/>
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/first"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:cardElevation="4dp"
-                android:layout_margin="12dp"
-                android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
 
-                <ImageView
-                    android:layout_width="match_parent"
+
+        <RelativeLayout
+            android:id="@+id/quick_links_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/app_text">
+
+            <TableRow
+                android:id="@+id/first_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/first"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:padding="50dp"
-                    android:src="@drawable/ic_add_appointment"
-                    />
+                    android:layout_weight="1"
+                    app:cardElevation="4dp"
+                    android:layout_margin="12dp"
+                    android:background="#00000000"
+                    android:foreground="?android:attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="10dp"
-                    android:text="Set Appointments"/>
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="50dp"
+                        android:src="@drawable/ic_add_appointment"
+                        />
 
-            </android.support.v7.widget.CardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:text="Set Appointments"/>
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/second"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:cardElevation="4dp"
-                android:layout_margin="12dp"
-                android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
+                </android.support.v7.widget.CardView>
 
-                <ImageView
-                    android:layout_width="match_parent"
+                <android.support.v7.widget.CardView
+                    android:id="@+id/second"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:padding="50dp"
-                    android:src="@drawable/ic_vitals_outline"
-                    />
+                    android:layout_weight="1"
+                    app:cardElevation="4dp"
+                    android:layout_margin="12dp"
+                    android:background="#00000000"
+                    android:foreground="?android:attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="10dp"
-                    android:text="Check Vitals"/>
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="50dp"
+                        android:src="@drawable/ic_vitals_outline"
+                        />
 
-            </android.support.v7.widget.CardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:text="Check Vitals"/>
 
-        </TableRow>
+                </android.support.v7.widget.CardView>
 
-        <TableRow
-            android:id="@+id/second_row"
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/second_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/first_row"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/third"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:cardElevation="4dp"
+                    android:layout_margin="12dp"
+                    android:background="#00000000"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/locate_hospitals"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="50dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:src="@drawable/ic_location_outline"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:text="Locate Hospitals"/>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/fourth"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:cardElevation="4dp"
+                    android:layout_margin="12dp"
+                    android:background="#00000000"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="50dp"
+                        android:src="@drawable/ic_help"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:text="Help"/>
+
+                </android.support.v7.widget.CardView>
+
+            </TableRow>
+
+        </RelativeLayout>
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/search_bar"
+            android:layout_centerInParent="true"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_below="@+id/first_row"
-            android:paddingBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardElevation="8dp"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/search_box"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/welcome_text"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:gravity="end"
+                android:drawablePadding="16dp"
+                android:editable="false"
+                android:background="@android:color/white"/>
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/reminder_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/quick_links_group"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="Wednesday, 28th November, 2018"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reminder_date"
+            android:descendantFocusability="blocksDescendants">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/reminder_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:padding="5dp"
+                android:visibility="visible">
+
+
+
+            </android.support.v7.widget.RecyclerView>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/open_close_reminders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:text="View Reminders"
+            android:textColor="@color/almost_black"
+            android:textSize="12sp"
             android:paddingLeft="10dp"
-            android:paddingStart="10dp"
             android:paddingRight="10dp"
-            android:paddingEnd="10dp">
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/third"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:cardElevation="4dp"
-                android:layout_margin="12dp"
-                android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="50dp"
-                    android:src="@drawable/ic_location_outline"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="10dp"
-                    android:text="Locate Hospitals"/>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/fourth"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:cardElevation="4dp"
-                android:layout_margin="12dp"
-                android:background="#00000000"
-                android:foreground="?android:attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="50dp"
-                    android:src="@drawable/ic_help"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="10dp"
-                    android:text="Help"/>
-
-            </android.support.v7.widget.CardView>
-
-        </TableRow>
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:drawableRight="@drawable/ic_expand_more_black"
+            android:drawableEnd="@drawable/ic_expand_more_black"
+            android:drawablePadding="10dp"
+            android:background="@drawable/sleek_curve_button_outline"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/search_bar"
-        android:layout_centerInParent="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardElevation="8dp"
-        android:visibility="gone">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/search_box"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/welcome_text"
-            android:padding="@dimen/activity_horizontal_margin"
-            android:gravity="end"
-            android:drawablePadding="16dp"
-            android:editable="false"
-            android:background="@android:color/white"/>
-
-    </android.support.v7.widget.CardView>
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/reminder_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-
-    </android.support.v7.widget.RecyclerView>
-
-
-    <Button
-        android:id="@+id/open_close_reminders"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
-        android:text="View Reminders"
-        android:textColor="@color/almost_black"
-        android:textSize="12sp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:drawableRight="@drawable/ic_expand_more_black"
-        android:drawableEnd="@drawable/ic_expand_more_black"
-        android:drawablePadding="10dp"
-        android:background="@drawable/sleek_curve_button_outline"/>
-
-
-</RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

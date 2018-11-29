@@ -154,7 +154,7 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
 
         appointmentViewModel.getAppointmentsForPatient().observe(this, appointmentsObserver);
 
-        appointmentViewModel.clearLoadStatus();
+        //appointmentViewModel.clearLoadStatus();
         appointmentViewModel.getAppointmentLoadStatus(sharedPreferencesManager.getPersonId())
                 .observe(this, appointmentLoadStatusObserver);
     }

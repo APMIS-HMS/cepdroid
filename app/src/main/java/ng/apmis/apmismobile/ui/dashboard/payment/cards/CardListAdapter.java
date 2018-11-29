@@ -11,7 +11,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -23,6 +22,14 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
     private Context mContext;
     private List<Card> cards;
+
+    private Card selectedCard;
+
+    public OnCardSelectedListener mListener;
+
+    public interface OnCardSelectedListener {
+        void onCardSelected(Card card);
+    }
 
     public CardListAdapter(Context context, List<Card> cards){
         this.mContext = context;
@@ -50,7 +57,16 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
+
         Card card = cards.get(position);
+
+        if (selectedCard != null) {
+            if (card.getAuthorization().getSignature().equals(selectedCard.getAuthorization().getSignature()))
+                holder.cardBackground.setSelected(true);
+            else
+                holder.cardBackground.setSelected(false);
+        }
+
         holder.lastFourText.setText(card.getAuthorization().getLast4());
 
         if (card.getAuthorization().getCardType().contains("visa")){
@@ -73,17 +89,20 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
         holder.expiryText.setText(String.format("%s/%s", card.getAuthorization().getExpMonth(), expiryYear));
 
 
-        holder.cardBackground.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.cardBackground.setSelected(true);
-            }
+        holder.cardBackground.setOnClickListener(v -> {
+            selectedCard = card;
+            mListener.onCardSelected(selectedCard);
+            notifyDataSetChanged();
         });
     }
 
     @Override
     public int getItemCount() {
         return cards == null ? 0 : cards.size();
+    }
+
+    public void instantiateSelectionListener(OnCardSelectedListener listener){
+        this.mListener = listener;
     }
 
     class CardViewHolder extends RecyclerView.ViewHolder {

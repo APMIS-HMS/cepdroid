@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
@@ -26,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
+import ng.apmis.apmismobile.data.database.cardModel.Card;
 import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -33,7 +35,7 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CardsFragment extends Fragment {
+public class CardsFragment extends Fragment implements CardListAdapter.OnCardSelectedListener {
 
     @BindView(R.id.use_new_card)
     TextView fundWithCardButton;
@@ -50,12 +52,22 @@ public class CardsFragment extends Fragment {
     @BindView(R.id.fund_wallet_button)
     Button fundWalletButton;
 
+    @BindView(R.id.empty_card_view)
+    FrameLayout emptyCardView;
+
     private CardListAdapter cardListAdapter;
 
     CardsViewModel cardsViewModel;
     Observer<Wallet> walletObserver = null;
 
     private SnapHelper snapHelper;
+
+    private Card selectedCard;
+
+    private int amountToPay = 0;
+
+    private SharedPreferencesManager prefs;
+
 
     public CardsFragment() {
         // Required empty public constructor
@@ -66,10 +78,6 @@ public class CardsFragment extends Fragment {
     public interface OnAddCardButtonClickedListener {
         void onAddCardButtonClicked();
     }
-
-    private SharedPreferencesManager prefs;
-
-    int amountToPay = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,11 +94,11 @@ public class CardsFragment extends Fragment {
         snapHelper.attachToRecyclerView(cardsRecycler);
 
         fundWithCardButton.setOnClickListener(v -> mListener.onAddCardButtonClicked());
+        emptyCardView.setOnClickListener(v -> mListener.onAddCardButtonClicked());
 
         amountEditText.addTextChangedListener(new TextWatcher() {
 
             String previousTextInBox;
-
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
@@ -102,25 +110,39 @@ public class CardsFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
+
                 //if text entered (or removed) leaves the box empty...
                 if (TextUtils.isEmpty(s))
                     amountToPay = 0;
-                else //otherwise
-                    amountToPay = Integer.parseInt(s.toString().replaceAll(",", ""));
 
+                else {//otherwise, try checking the value entered
+                    try {
+                        amountToPay = Integer.parseInt(s.toString().replaceAll(",", ""));
+                        Integer.parseInt(amountToPay+"00");//Add two extra zeros for kobo conversion
+                    } catch (Exception e){
+                        amountEditText.setText(previousTextInBox);
+                        AppUtils.showShortToast(getContext(), "Invalid amount");
+                        return;
+                    }
+                }
 
-                if (amountToPay == 0)
-                    fundWalletButton.setText("PAY");
-                else
-                    fundWalletButton.setText("PAY ₦"+ AppUtils.formatNumberWithCommas(amountToPay));
-
+                formatButtonText(amountToPay, selectedCard);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                //Do nothing if value entered is invalid
+                try {
+                    int errCatch = Integer.parseInt(s.toString().replaceAll(",", ""));
+                    Integer.parseInt(errCatch+"00");//Add two extra zeros for kobo conversion
+                } catch (Exception e){
+                    return;
+                }
+
                 if (TextUtils.isEmpty(previousTextInBox) || !previousTextInBox.equals(s.toString()))
                     amountEditText.setText(AppUtils.formatNumberWithCommas(amountToPay));
 
+                //Move cursor to end of the word
                 amountEditText.setSelection(amountEditText.getText().length());
             }
         });
@@ -129,17 +151,30 @@ public class CardsFragment extends Fragment {
             cardsRecycler.setAdapter(cardListAdapter);
         }
 
-//        amountEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                return false;
-//            }
-//        });
-
         initViewModel();
 
         return view;
     }
+
+    @Override
+    public void onCardSelected(Card card) {
+        selectedCard = card;
+        formatButtonText(amountToPay, selectedCard);
+    }
+
+    private void formatButtonText(int amount, Card card){
+        if (amount == 0 && card == null)
+            fundWalletButton.setText("PAY");
+        else if (amount == 0 && card != null)
+            fundWalletButton.setText("PAY WITH ****" + card.getAuthorization().getLast4());
+        else if (amount > 0 && card == null)
+            fundWalletButton.setText("PAY ₦"+ AppUtils.formatNumberWithCommas(amount));
+        else if (amount > 0 && card != null)
+            fundWalletButton.setText("PAY ₦"+ AppUtils.formatNumberWithCommas(amount) +
+                    " WITH **** " + card.getAuthorization().getLast4());
+    }
+
+
 
     private void initViewModel(){
         CardsViewModelFactory viewModelFactory = InjectorUtils.provideCardsViewModelFactory(getContext().getApplicationContext());
@@ -151,12 +186,23 @@ public class CardsFragment extends Fragment {
                 return;
             }
 
+            balanceTextView.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(wallet.getBalance())));
+
             if (cardListAdapter == null) {
-                balanceTextView.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(wallet.getBalance())));
 
                 if (wallet.getCards() != null) {
                     cardListAdapter = new CardListAdapter(getActivity(), wallet.getCards());
+                    cardListAdapter.instantiateSelectionListener(this);
                     cardsRecycler.setAdapter(cardListAdapter);
+                    cardsRecycler.setVisibility(View.VISIBLE);
+                    fundWithCardButton.setVisibility(View.VISIBLE);
+                    emptyCardView.setVisibility(View.GONE);
+                }
+
+                if (wallet.getCards() == null || wallet.getCards().size() == 0){
+                    cardsRecycler.setVisibility(View.GONE);
+                    fundWithCardButton.setVisibility(View.INVISIBLE);
+                    emptyCardView.setVisibility(View.VISIBLE);
                 }
 
             } else {

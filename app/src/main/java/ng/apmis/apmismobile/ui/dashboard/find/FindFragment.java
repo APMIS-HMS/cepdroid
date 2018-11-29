@@ -216,13 +216,15 @@ public class FindFragment extends Fragment {
     }
 
     private void initViewModel() {
-        PreviousItemsViewModelFactory previousItemsViewModelFactory = InjectorUtils.providePreviousItemsViewModelFactory(getContext());
+        PreviousItemsViewModelFactory previousItemsViewModelFactory = InjectorUtils.providePreviousItemsViewModelFactory(getContext().getApplicationContext());
         previousItemsViewModel = ViewModelProviders.of(this, previousItemsViewModelFactory).get(PreviousItemsViewModel.class);
 
         final Observer<List<Appointment>> appointmentObserver = appointments -> {
 
             if (appointments != null && appointments.size() > 0) {
                 searchTermsRowAdapter.notifySubLists(appointments);
+            } else {
+                searchTermsRowAdapter.notifySubLists(new ArrayList<>());
             }
         };
 

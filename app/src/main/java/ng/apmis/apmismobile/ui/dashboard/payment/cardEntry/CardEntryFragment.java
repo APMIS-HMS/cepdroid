@@ -8,8 +8,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -18,7 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -56,12 +58,13 @@ public class CardEntryFragment extends Fragment {
     @BindView(R.id.cvv_edit)
     EditText cvvEdit;
 
-    @BindView(R.id.save_card_radio)
-    RadioButton saveCardRadio;
+    @BindView(R.id.save_card_switch)
+    Switch saveCardSwitch;
 
     @BindView(R.id.pay_button)
     Button payButton;
 
+    private int amountToPay;
     private int amountPaid;
 
     private AlertDialog.Builder builder;
@@ -101,12 +104,71 @@ public class CardEntryFragment extends Fragment {
         };
         entryLiveData.observe(this, personEntryObserver);
 
+
+        amountEdit.addTextChangedListener(new TextWatcher() {
+
+            String previousTextInBox;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                //keep reference to previous text
+                previousTextInBox = s.toString();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before,
+                                      int count) {
+
+                //if text entered (or removed) leaves the box empty...
+                if (TextUtils.isEmpty(s))
+                    amountToPay = 0;
+
+                else {//otherwise, try checking the value entered
+                    try {
+                        amountToPay = Integer.parseInt(s.toString().replaceAll(",", ""));
+                        Integer.parseInt(amountToPay+"00");//Add two extra zeros for kobo conversion
+                    } catch (Exception e){
+                        amountEdit.setText(previousTextInBox);
+                        AppUtils.showShortToast(getContext(), "Invalid amount");
+                        return;
+                    }
+                }
+
+                formatButtonText(amountToPay);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Do nothing if value entered is invalid
+                try {
+                    int errCatch = Integer.parseInt(s.toString().replaceAll(",", ""));
+                    Integer.parseInt(errCatch+"00");//Add two extra zeros for kobo conversion
+                } catch (Exception e){
+                    return;
+                }
+
+                if (TextUtils.isEmpty(previousTextInBox) || !previousTextInBox.equals(s.toString()))
+                    amountEdit.setText(AppUtils.formatNumberWithCommas(amountToPay));
+
+                //Move cursor to end of the word
+                amountEdit.setSelection(amountEdit.getText().length());
+            }
+        });
+
         initViewModel();
 
 
         payButton.setOnClickListener(v -> validateCardForm());
 
         return view;
+    }
+
+    private void formatButtonText(int amount){
+        if (amount == 0)
+            payButton.setText("PAY");
+        else if (amount > 0)
+            payButton.setText("PAY ₦"+ AppUtils.formatNumberWithCommas(amount));
     }
 
     CardEntryViewModel cardEntryViewModel;
@@ -237,7 +299,7 @@ public class CardEntryFragment extends Fragment {
         Card card = new Card(cardNum, monthInt, yearInt, cvv);
         if (card.isValid()) {
             // charge card
-            chargeCard(card, Integer.parseInt(amount), email);
+            chargeCard(card, Integer.parseInt(amount.replaceAll(",", "")), email);
             showLoadingDialog();
         } else {
             if (!card.validNumber())
@@ -271,7 +333,7 @@ public class CardEntryFragment extends Fragment {
                 cardEntryViewModel.clearVerification();
 
                 amountPaid = amount;
-                cardEntryViewModel.getPayData(transaction.getReference(), amount, false, saveCardRadio.isChecked()).observe(CardEntryFragment.this, verificationObserver);
+                cardEntryViewModel.getPayData(transaction.getReference(), amount, false, saveCardSwitch.isChecked()).observe(CardEntryFragment.this, verificationObserver);
             }
 
             @Override

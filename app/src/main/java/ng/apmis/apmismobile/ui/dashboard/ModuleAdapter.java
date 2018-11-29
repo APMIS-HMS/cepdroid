@@ -53,14 +53,14 @@ public class ModuleAdapter extends BaseAdapter {
                     inflate(R.layout.module_list_item, parent, false);
         }
 
-        if(position > lastPosition) {
-            AnimatorSet set1 = (AnimatorSet) AnimatorInflater.loadAnimator(mContext,
-                    R.animator.bounce_in);
-            set1.setTarget(convertView);
-            set1.setStartDelay(20);
-            set1.start();
-            lastPosition = position;
-        }
+//        if(position > lastPosition) {
+//            AnimatorSet set1 = (AnimatorSet) AnimatorInflater.loadAnimator(mContext,
+//                    R.animator.bounce_in);
+//            set1.setTarget(convertView);
+//            set1.setStartDelay(20);
+//            set1.start();
+//            lastPosition = position;
+//        }
 
 
         // get current item to be displayed
