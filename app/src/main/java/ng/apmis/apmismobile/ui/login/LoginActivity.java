@@ -39,11 +39,16 @@ import ng.apmis.apmismobile.utilities.Constants;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    @BindView(R.id.apmis_id) TextInputEditText apmisIdEditText;
-    @BindView(R.id.password) TextInputEditText passwordEditText;
-    @BindView(R.id.email_sign_in_button) Button submitButton;
-    @BindView(R.id.remember_me) CheckBox rememberMe;
-    @BindView(R.id.create_account) TextView createAccount;
+    @BindView(R.id.apmis_id)
+    TextInputEditText apmisIdEditText;
+    @BindView(R.id.password)
+    TextInputEditText passwordEditText;
+    @BindView(R.id.email_sign_in_button)
+    Button submitButton;
+    @BindView(R.id.remember_me)
+    CheckBox rememberMe;
+    @BindView(R.id.create_account)
+    TextView createAccount;
 
     private static final String BASE_URL = Constants.BASE_URL;
     RequestQueue queue;
@@ -76,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
-
         queue = Volley.newRequestQueue(this.getApplicationContext());
 
         sharedPreferencesManager = new SharedPreferencesManager(this.getApplicationContext());
@@ -91,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        createAccount.setOnClickListener( (view) -> startActivity (new Intent(this, SignupActivity.class)) );
+        createAccount.setOnClickListener((view) -> startActivity(new Intent(this, SignupActivity.class)));
 
         passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -126,16 +130,19 @@ public class LoginActivity extends AppCompatActivity {
 
         if (!checkApmisId(apmisId)) {
             apmisIdEditText.setError("Check Apmis ID");
+            fieldsOk = false;
+
         } else {
             fieldsOk = true;
+
+            if (!checkPassword(password)) {
+                passwordEditText.setError("Check password !!!");
+                fieldsOk = false;
+            } else {
+                fieldsOk = true;
+            }
         }
 
-        if (!checkPassword(password)) {
-            passwordEditText.setError("Check password !!!");
-            fieldsOk = false;
-        } else {
-            fieldsOk = true;
-        }
 
         if (fieldsOk) {
             if (rememberMe.isChecked()) {
@@ -218,10 +225,11 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Pass extra values if app was launched via notification
+     *
      * @param intent Thee intent to which the data would be passed to
      */
-    private void provideNotificationExtras(Intent intent){
-        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
+    private void provideNotificationExtras(Intent intent) {
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)) {
             intent.putExtra(Constants.NOTIFICATION_ACTION, Constants.APPOINTMENTS);
         }
     }
@@ -229,10 +237,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean checkApmisId(String apmisId) {
         String id = apmisId.trim();
-        return id.contains("-") || !id.equals("");
+        return id.contains("-") && !TextUtils.isEmpty(id);
     }
 
-    private boolean checkPassword (String password) {
+    private boolean checkPassword(String password) {
         return !TextUtils.isEmpty(password.trim());
     }
 
