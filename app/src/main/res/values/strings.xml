@@ -232,7 +232,7 @@
     <string name="search_hint">Search...</string>
     <string name="naira_sign">₦</string>
     <string name="insufficient_funds">Insufficient funds in your wallet for this transaction</string>
-    <string name="trx_amount_placeholder">NGN %s</string>
+    <string name="trx_amount_placeholder">₦ . . .</string>
     <string name="paid_by">%s %s %s</string>
     <string name="empty_appointments">You currently have no appointments. \nClick the \'+\' button to schedule one</string>
     <string name="empty_documentation_text">No available records found. \nTry visiting a hospital</string>

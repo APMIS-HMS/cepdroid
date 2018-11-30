@@ -40,7 +40,7 @@ public class FoundHospitalDetailViewModel extends ViewModel {
     }
 
     public LiveData<Wallet> getPersonWallet(String personId) {
-        wallet = apmisRepository.getNetworkDataSource().getPersonWallet(personId);
+        wallet = apmisRepository.getNetworkDataSource().getPersonWallet(personId, true);
         return wallet;
     }
 

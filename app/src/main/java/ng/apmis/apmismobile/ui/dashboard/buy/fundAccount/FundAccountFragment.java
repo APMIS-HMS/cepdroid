@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,8 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
+
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.fundAccount.Beneficiaries;
@@ -32,8 +37,18 @@ import static android.app.Activity.RESULT_OK;
 public class FundAccountFragment extends Fragment implements FundAccountAdapter.OnFundWalletClickedListener {
 
     public static final int FUND_WALLET_REQUEST = 1;
+
+    @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+
+    @BindView(R.id.history_shimmer)
+    ShimmerFrameLayout transactionHistoryShimmer;
+
+    @BindView(R.id.beneficiary_shimmer)
+    ShimmerFrameLayout beneficiaryShimmer;
+
     FundAccountAdapter adapter;
+
 
     public interface OnWalletFundedListener {
         void onWalletFunded();
@@ -48,12 +63,16 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_buys, container, false);
+        ButterKnife.bind(this, root);
+
+        transactionHistoryShimmer.startShimmer();
+        beneficiaryShimmer.startShimmer();
+
         sharedPreferencesManager = new SharedPreferencesManager(getActivity());
         adapter = new FundAccountAdapter(getActivity());
 
         instantiateOnWalletFundedListener((OnWalletFundedListener) getParentFragment());
 
-        recyclerView = root.findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
         adapter.instantiateFundWalletClickedListener(this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -65,15 +84,25 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
 
         transactionViewModel.getPersonWallet(sharedPreferencesManager.getPersonId()).observe(this, wallet -> {
 
+            if (wallet == null){
+                Snackbar.make(recyclerView, "Failed to load Account details ", Snackbar.LENGTH_LONG).show();
+                return;
+            }
+
             ArrayList<Object> listItems = new ArrayList<>();
-            if(wallet != null)
-                listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
-                listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
-                listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));
+            listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
+            listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
+            listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));
 
-                listItems.addAll(wallet.getTransactions());
+            listItems.addAll(wallet.getTransactions());
 
-                adapter.setItems(listItems);
+            adapter.setItems(listItems);
+
+            transactionHistoryShimmer.stopShimmer();
+            beneficiaryShimmer.stopShimmer();
+
+            transactionHistoryShimmer.setVisibility(View.GONE);
+            beneficiaryShimmer.setVisibility(View.GONE);
 
         });
 

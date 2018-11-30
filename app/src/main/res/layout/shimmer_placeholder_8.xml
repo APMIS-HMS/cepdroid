@@ -3,27 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/appointmnent_shimmer_background"
+    android:background="#ddd"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
     android:layout_marginRight="10dp"
     android:layout_marginLeft="10dp"
-    android:minHeight="100dp"
-    android:layout_margin="7dp"
+    android:minHeight="70dp"
     android:orientation="horizontal">
 
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="30"
-        android:background="@drawable/appointment_shimmer_background_inner">
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="70"
+        android:layout_weight="1"
         android:padding="10dp">
 
         <View
@@ -32,18 +23,7 @@
             android:layout_height="16dp"
             android:background="#ddd"
             android:layout_marginTop="8dp"
-            android:layout_alignLeft="@+id/clinic_name_tv"
-            android:layout_alignStart="@+id/clinic_name_tv"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
-
-        <View
-            android:id="@+id/clinic_name_tv"
-            android:layout_width="match_parent"
-            android:layout_height="12dp"
-            android:background="#ddd"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/facility_name_tv"/>
-
 
 
     </RelativeLayout>

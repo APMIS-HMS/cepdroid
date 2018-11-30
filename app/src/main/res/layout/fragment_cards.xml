@@ -31,10 +31,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:drawableLeft="@drawable/ic_account_balance_wallet"
-                    android:drawableStart="@drawable/ic_account_balance_wallet"
+                    android:drawableLeft="@drawable/ic_account_balance"
+                    android:drawableStart="@drawable/ic_account_balance"
                     android:drawablePadding="5dp"
-                    android:text="Wallet Balance"/>
+                    android:text="Account Balance"/>
 
                 <TextView
                     android:id="@+id/balance_text"
