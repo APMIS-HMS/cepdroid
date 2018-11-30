@@ -17,7 +17,7 @@ public class CardsViewModel extends ViewModel {
     }
 
     public LiveData<Wallet> getWallet(String personId) {
-        wallet = repository.getNetworkDataSource().getPersonWallet(personId);
+        wallet = repository.getNetworkDataSource().getPersonWallet(personId, true);
         return wallet;
     }
 }

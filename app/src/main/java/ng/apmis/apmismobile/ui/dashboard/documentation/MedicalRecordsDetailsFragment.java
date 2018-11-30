@@ -138,9 +138,13 @@ public class MedicalRecordsDetailsFragment extends Fragment {
 
             String documentTitle;
 
-            if (isDocumentationAvailable)
-                documentTitle = documentation.getDocument().getDocumentType().getTitle();
-            else
+            if (isDocumentationAvailable) {
+                try {
+                    documentTitle = documentation.getDocument().getDocumentType().getTitle();
+                } catch (Exception e){
+                    documentTitle = "General";
+                }
+            } else
                 documentTitle = "Laboratory Report";
 
             ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(documentTitle.toUpperCase(), false);

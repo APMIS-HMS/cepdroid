@@ -1493,6 +1493,7 @@ public final class NetworkDataCalls {
                 InjectorUtils.provideNetworkData(context).setPersonWallet(wallet);
 
             } catch (JSONException e){
+                InjectorUtils.provideNetworkData(context).setPersonWallet(null);
                 e.printStackTrace();
             }
 
@@ -1500,7 +1501,7 @@ public final class NetworkDataCalls {
 
 
         }, (VolleyError error) -> {
-
+            InjectorUtils.provideNetworkData(context).setPersonWallet(null);
             Log.e("Fetch wallet error", error.toString());
 
         }) {

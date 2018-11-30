@@ -174,7 +174,11 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Documentation documentation = datedDocumentationItems.get(position).getDocumentation();
 
             ((RecordsViewHolder) holder).facilityTextView.setText(documentation.getFacilityName());
-            ((RecordsViewHolder) holder).recordTitleTextView.setText(documentation.getDocument().getDocumentType().getTitle());
+
+            try {
+                ((RecordsViewHolder) holder).recordTitleTextView.setText(documentation.getDocument().getDocumentType().getTitle());
+            } catch (Exception ignored){}
+
             ((RecordsViewHolder) holder).doctorTextView.setText(documentation.getCreatedBy());
             ((RecordsViewHolder) holder).dateTextView.setText(
                     AppUtils.dateToShortDateString(AppUtils.dbStringToLocalDate(documentation.getUpdatedAt()))

@@ -805,13 +805,27 @@ public class ApmisNetworkDataSource {
 
 
     //Wallet
-    public LiveData<Wallet> getPersonWallet(String personId){
-        fetchPersonWallet(personId);
+    public LiveData<Wallet> getPersonWallet(String personId, boolean shouldQuery){
+        if (shouldQuery)
+            fetchPersonWallet(personId);
         return personWallet;
     }
 
     public void setPersonWallet(Wallet wallet){
-        personWallet.postValue(wallet);
+        Wallet previous = personWallet.getValue();
+
+        if (wallet != null ) {
+            this.personWallet.postValue(wallet);
+        }
+
+        else {//set null if a null value was received, but post back the original value afterwards
+            this.personWallet.setValue(null);
+
+            if (previous != null)
+                this.personWallet.postValue(previous);
+            else
+                this.personWallet = new MutableLiveData<>();
+        }
     }
 
     public void clearWallet(){

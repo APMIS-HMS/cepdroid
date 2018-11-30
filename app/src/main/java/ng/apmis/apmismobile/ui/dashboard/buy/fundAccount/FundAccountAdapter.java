@@ -13,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
+
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -218,6 +220,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+
     class BeneficiariesViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.beneficiary_recycler)
@@ -241,6 +244,8 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ButterKnife.bind(this, itemView);
         }
     }
+
+
 
     class SegmentedObjects {
         private String objectType;

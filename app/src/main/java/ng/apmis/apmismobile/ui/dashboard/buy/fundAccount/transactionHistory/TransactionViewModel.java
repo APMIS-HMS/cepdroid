@@ -20,7 +20,7 @@ public class TransactionViewModel extends ViewModel {
     }
 
     public LiveData<Wallet> getPersonWallet(String personId) {
-        wallet = apmisNetworkDataSource.getPersonWallet(personId);
+        wallet = apmisNetworkDataSource.getPersonWallet(personId, false);
         return wallet;
     }
 
