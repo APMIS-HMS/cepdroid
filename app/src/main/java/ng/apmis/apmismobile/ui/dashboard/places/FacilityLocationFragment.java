@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.GeofenceTransitionsIntentService;
@@ -62,45 +63,40 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
         super.onCreate(savedInstanceState);
     }
 
-    @SuppressLint("MissingPermission")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_facility_location, container, false);
 
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.place_map);
         supportMapFragment.getMapAsync(this);
 
-        if (checkPermissions()) {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mGeofencingClient = LocationServices.getGeofencingClient(getActivity());
+        mGeofenceList = new ArrayList<>();
 
-            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
-            mGeofencingClient = LocationServices.getGeofencingClient(getContext());
-            mGeofenceList = new ArrayList<>();
+        return rootView;
+    }
 
-            FacilityLocationFactory facilityLocationFactory = InjectorUtils.provideFacilityLocationFactory(getContext());
-            FacilityLocationViewModel facilityLocationViewModel = ViewModelProviders.of(this, facilityLocationFactory).get(FacilityLocationViewModel.class);
+    void initViewModel() {
+        FacilityLocationFactory facilityLocationFactory = InjectorUtils.provideFacilityLocationFactory(getContext());
+        FacilityLocationViewModel facilityLocationViewModel = ViewModelProviders.of(this, facilityLocationFactory).get(FacilityLocationViewModel.class);
 
-            facilityLocationViewModel.getFacilityLocations().observe(this, facilityLocations -> {
-                LatLng latLng;
-                if (facilityLocations != null) {
-                    facilityAddresses = new Address[facilityLocations.length];
-                    for (int i = 0; i < facilityLocations.length; i++) {
-                        if (facilityLocations[i].getAddress() != null) {
-                            latLng = new LatLng(facilityLocations[i].getAddress().getGeometry().getLocation().getLat(), facilityLocations[i].getAddress().getGeometry().getLocation().getLng());
-                            facilityAddresses[i] = facilityLocations[i].getAddress();
-                            if (gMap != null) {
-                                gMap.addMarker(new MarkerOptions().position(latLng).title(facilityLocations[i].getName()));
-                            }
+        facilityLocationViewModel.getFacilityLocations().observe(this, facilityLocations -> {
+            LatLng latLng;
+            if (facilityLocations != null) {
+                facilityAddresses = new Address[facilityLocations.length];
+                for (int i = 0; i < facilityLocations.length; i++) {
+                    if (facilityLocations[i].getAddress() != null) {
+                        latLng = new LatLng(facilityLocations[i].getAddress().getGeometry().getLocation().getLat(), facilityLocations[i].getAddress().getGeometry().getLocation().getLng());
+                        facilityAddresses[i] = facilityLocations[i].getAddress();
+                        if (gMap != null) {
+                            gMap.addMarker(new MarkerOptions().position(latLng).title(facilityLocations[i].getName()));
                         }
                     }
                 }
-            });
-
-        } else {
-            requestPermissions();
-        }
-
-        return rootView;
+            }
+        });
     }
 
     private PendingIntent getGeofencePendingIntent() {
@@ -128,29 +124,23 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
     }
 
     void requestPermissions() {
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
-        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION);
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode != 1000 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-            checkPermissions();
+        if (requestCode != 1000 || grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            Toast.makeText(getActivity(), "Grant permission to use this activity", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this.getActivity(), "Accessing Location", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Permission granted", Toast.LENGTH_SHORT).show();
+            setupMap();
         }
     }
 
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        //updateLocationUI();
         if (getActivity() != null) {
             ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.LOCATION, false);
             ((DashboardActivity) getActivity()).mBottomNav.setVisibility(View.GONE);
@@ -158,56 +148,69 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
     }
 
     @SuppressLint("MissingPermission")
+    void setupMap() {
+
+        if (checkPermissions()) {
+
+            Toast.makeText(this.getActivity(), "Accessing Location", Toast.LENGTH_SHORT).show();
+
+            initViewModel();
+
+            gMap.getUiSettings().setZoomControlsEnabled(true);
+            //gMap.setMinZoomPreference(15);
+
+            gMap.setMyLocationEnabled(true);
+
+            mFusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            Log.e("Current location", String.valueOf(location));
+                            this.currentLocation = location;
+                            gMap.addMarker(new MarkerOptions().position(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude())).title("My Location"));
+
+                            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude()), 16));
+
+                            gMap.setOnMyLocationButtonClickListener(() -> {
+                                Log.e("gmap current location", String.valueOf(currentLocation));
+                                mGeofenceList.add(new Geofence.Builder()
+                                        .setRequestId("Here")
+                                        .setCircularRegion(this.currentLocation.getLatitude(),
+                                                this.currentLocation.getLongitude(),
+                                                Constants.GEOFENCE_RADIUS_IN_METERS)
+                                        .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_ENTER)
+                                        .setLoiteringDelay(10000)
+                                        .build()
+                                );
+
+                                mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                                        .addOnSuccessListener(success -> {
+                                            Log.e("geo fence added", "success");
+                                        })
+                                        .addOnFailureListener(failure -> {
+                                            Log.e("geo fence failed", "failed");
+                                        });
+
+                                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude()), 16));
+                                return true;
+
+                            });
+                        }
+                    })
+                    .addOnFailureListener(failed -> {
+                        Log.e("location failed", failed.getMessage());
+                    });
+
+        } else {
+            requestPermissions();
+        }
+    }
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
-
-        gMap.getUiSettings().setZoomControlsEnabled(true);
-        //gMap.setMinZoomPreference(15);
-
-        gMap.setMyLocationEnabled(true);
-
-        mFusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
-                        Log.e("Current location", String.valueOf(location));
-                        this.currentLocation = location;
-                        gMap.addMarker(new MarkerOptions().position(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude())).title("My Location"));
-
-                        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude()), 16));
-
-                        gMap.setOnMyLocationButtonClickListener(() -> {
-                            Log.e("gmap current location", String.valueOf(currentLocation));
-                            mGeofenceList.add(new Geofence.Builder()
-                                    .setRequestId("Here")
-                                    .setCircularRegion(this.currentLocation.getLatitude(),
-                                            this.currentLocation.getLongitude(),
-                                            Constants.GEOFENCE_RADIUS_IN_METERS)
-                                    .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_ENTER)
-                                    .setLoiteringDelay(10000)
-                                    .build()
-                            );
-
-                            mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
-                                    .addOnSuccessListener(success -> {
-                                        Log.e("geo fence added", "success");
-                                    })
-                                    .addOnFailureListener(failure -> {
-                                        Log.e("geo fence failed", "failed");
-                                    });
-
-                            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.currentLocation.getLatitude(), this.currentLocation.getLongitude()), 16));
-                            return true;
-
-                        });
-                    }
-                })
-                .addOnFailureListener(failed -> {
-                    Log.e("location failed", failed.getMessage());
-                });
-
-
+        setupMap();
     }
 
 }
