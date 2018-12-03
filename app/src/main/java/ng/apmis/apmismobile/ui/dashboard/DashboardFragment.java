@@ -105,65 +105,6 @@ public class DashboardFragment extends Fragment implements View.OnClickListener{
         params.addRule(BELOW, R.id.first_row);
         secondRow.setLayoutParams(params);
 
-        AnimatorSet out1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        AnimatorSet out5 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-
-        out1.setTarget(firstCard);
-        out2.setTarget(secondCard);
-        out3.setTarget(thirdCard);
-        out4.setTarget(fourthCard);
-        out5.setTarget(openCloseReminders);
-
-        out1.start();
-        out2.start();
-        out3.start();
-        out4.start();
-        out5.start();
-
-        AnimatorSet set1 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set1.setTarget(firstCard);
-        set1.setStartDelay(20);
-        set1.start();
-
-        AnimatorSet set2 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set2.setTarget(secondCard);
-        set2.setStartDelay(120);
-        set2.start();
-
-        AnimatorSet set3 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set3.setTarget(thirdCard);
-        set3.setStartDelay(220);
-        set3.start();
-
-        AnimatorSet set4 = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.bounce_in);
-        set4.setTarget(fourthCard);
-        set4.setStartDelay(320);
-        set4.start();
-
-
-        AnimatorSet floatIn = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.fade_in_float);
-        floatIn.setTarget(openCloseReminders);
-        floatIn.setStartDelay(1000);
-        floatIn.start();
-
-        AnimatorSet outRecycler = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(),
-                R.animator.out);
-        outRecycler.setTarget(reminderRecycler);
-        outRecycler.start();
-
         ReminderAdapter adapter = new ReminderAdapter(getContext());
         reminderRecycler.setAdapter(adapter);
         reminderRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
