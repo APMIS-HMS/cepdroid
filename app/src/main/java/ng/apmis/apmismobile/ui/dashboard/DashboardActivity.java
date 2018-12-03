@@ -27,10 +27,13 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
+import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
+import ng.apmis.apmismobile.ui.dashboard.chat.ChatContextFragment;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
 import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
+import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileFragment;
 import ng.apmis.apmismobile.ui.dashboard.places.FacilityLocationFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
@@ -122,6 +125,11 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
             jumpToNotifiedFragment();
         }
 
+    }
+
+    void initializeQuickLinkListener () {
+        DashboardFragment dbFrag = new DashboardFragment();
+        dbFrag.initializeQuickLinkListener(this);
     }
 
     private void attemptLoadImage(PersonEntry person){
@@ -266,16 +274,33 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
     public void onQuickLinkClicked(String link) {
         switch (link) {
             case Constants.APPOINTMENTS:
-                //placeFragment(new FacilityLocationFragment());
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new DashboardFragment())
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .commit();
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new AppointmentFragment())
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .commit();
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new AddAppointmentFragment())
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .commit();
                 break;
             case Constants.VITALS:
-                //placeFragment(new FacilityLocationFragment());
+                placeFragment(new HealthProfileFragment());
                 break;
             case Constants.LOCATION:
                 placeFragment(new FacilityLocationFragment());
                 break;
             case Constants.HELP:
-                //placeFragment(new FacilityLocationFragment());
+                placeFragment(new ChatFragment());
                 break;
             default:
                 break;

@@ -2,12 +2,14 @@ package ng.apmis.apmismobile.ui.dashboard;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +35,7 @@ import static android.widget.RelativeLayout.BELOW;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DashboardFragment extends Fragment implements View.OnClickListener{
+public class DashboardFragment extends Fragment implements View.OnClickListener {
 
     @BindView(R.id.main_scroll)
     NestedScrollView mainScroll;
@@ -71,8 +73,9 @@ public class DashboardFragment extends Fragment implements View.OnClickListener{
     boolean areRemindersShowing;
 
     OnQuickLinkListener mListener;
+    DashboardActivity activity;
 
-    public void initializeQuickLinkListener (OnQuickLinkListener listener) {
+    public void initializeQuickLinkListener(OnQuickLinkListener listener) {
         this.mListener = listener;
     }
 
@@ -95,13 +98,14 @@ public class DashboardFragment extends Fragment implements View.OnClickListener{
         ButterKnife.bind(this, rootView);
 
         areRemindersShowing = false;
+        activity.initializeQuickLinkListener();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
 
-        firstRow.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, screenWidth/2));
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, screenWidth/2);
+        firstRow.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, screenWidth / 2));
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, screenWidth / 2);
         params.addRule(BELOW, R.id.first_row);
         secondRow.setLayoutParams(params);
 
@@ -163,6 +167,15 @@ public class DashboardFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (activity == null) {
+            activity = (DashboardActivity) context;
+        }
+    }
+
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.appointment:
@@ -190,9 +203,10 @@ public class DashboardFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.WELCOME, true);
-            ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.home_menu).setChecked(true);
+            ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.WELCOME, true);
+            ((DashboardActivity) getActivity()).mBottomNav.getMenu().findItem(R.id.home_menu).setChecked(true);
         }
+        activity.initializeQuickLinkListener();
         super.onResume();
     }
 }
