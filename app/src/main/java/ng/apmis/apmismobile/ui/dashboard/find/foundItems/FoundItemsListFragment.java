@@ -262,7 +262,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
           //      hostActivity.searchQuery).removeObservers(this);
 
         foundItemsViewModel.clearFoundItems();
-        foundItemsAdapter.clear();
+        if (foundItemsAdapter != null)
+            foundItemsAdapter.clear();
 
         searchShimmer.startShimmer();
         searchShimmer.setVisibility(View.VISIBLE);
