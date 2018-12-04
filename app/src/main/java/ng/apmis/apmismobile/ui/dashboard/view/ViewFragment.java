@@ -31,6 +31,20 @@ public class ViewFragment extends Fragment {
     private static final String CLASSNAME = "VIEW";
 
     List<ModuleListModel> optionItems = new ArrayList<>();
+    {
+        optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointment));
+        optionItems.add(new ModuleListModel(Constants.CLINICAL_DOCUMENTATION, R.drawable.ic_documentation));
+        optionItems.add(new ModuleListModel(Constants.PRESCRIPTION, R.drawable.ic_prescription));
+        optionItems.add(new ModuleListModel(Constants.VITALS, R.drawable.ic_health_vitals));
+        optionItems.add(new ModuleListModel(Constants.INVESTIGATIONS, R.drawable.ic_investigations));
+
+        optionItems.add(new ModuleListModel(Constants.MEDICATION, R.drawable.ic_medication));
+        optionItems.add(new ModuleListModel(Constants.HEALTH_INSURANCE, R.drawable.ic_health_insurance));
+        optionItems.add(new ModuleListModel(Constants.REFERRAL, R.drawable.ic_referral));
+        optionItems.add(new ModuleListModel(Constants.MENSTRUAL_CYCLE, R.drawable.ic_menstrual));
+        optionItems.add(new ModuleListModel(Constants.CARE_TEAM, R.drawable.ic_care_team));
+        optionItems.add(new ModuleListModel(Constants.CARE_PROVIDERS, R.drawable.ic_care_providers));
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,18 +54,9 @@ public class ViewFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_view, container, false);
         ButterKnife.bind(this, rootView);
 
-        optionItems.add(new ModuleListModel(Constants.APPOINTMENTS, R.drawable.ic_appointment));
-        optionItems.add(new ModuleListModel(Constants.CLINICAL_DOCUMENTATION, R.drawable.ic_documentation));
-        optionItems.add(new ModuleListModel(Constants.PRESCRIPTION, R.drawable.ic_prescription));
-        optionItems.add(new ModuleListModel(Constants.VITALS, R.drawable.ic_health_vitals));
-        optionItems.add(new ModuleListModel(Constants.INVESTIGATIONS, R.drawable.ic_investigations));
 
-        optionItems.add(new ModuleListModel("MEDICATION", R.drawable.ic_medication));
-        optionItems.add(new ModuleListModel("HEALTH INSURANCE", R.drawable.ic_health_insurance));
-        optionItems.add(new ModuleListModel("REFERRAL", R.drawable.ic_referral));
-        optionItems.add(new ModuleListModel("MENSTRUAL CYCLE", R.drawable.ic_menstrual));
-        optionItems.add(new ModuleListModel("CARE TEAM", R.drawable.ic_care_team));
-        optionItems.add(new ModuleListModel("CARE PROVIDERS", R.drawable.ic_care_providers));
+
+
 
         ModuleAdapter moduleAdapter = new ModuleAdapter(getActivity(), optionItems);
 

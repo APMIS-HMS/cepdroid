@@ -23,9 +23,13 @@ public class ChatFragment extends Fragment {
 
     @BindView(R.id.list_items)
     ListView listItems;
-    private static final String CLASSNAME = "CHAT";
 
     List<ModuleListModel> optionItems = new ArrayList<>();
+    {
+        optionItems.add(new ModuleListModel(Constants.FORUMS, R.drawable.ic_medical_records));
+        optionItems.add(new ModuleListModel(Constants.MEDICAL_BOT, R.drawable.drugs));
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,9 +37,6 @@ public class ChatFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.bind(this, rootView);
-
-        optionItems.add(new ModuleListModel("FORUMS", R.drawable.ic_medical_records));
-        optionItems.add(new ModuleListModel("MEDICAL BOT", R.drawable.drugs));
 
         ModuleAdapter moduleAdapter = new ModuleAdapter(getActivity(), optionItems);
 

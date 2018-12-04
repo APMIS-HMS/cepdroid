@@ -16,6 +16,14 @@ public class Constants {
     public final static String VIEW = "View";
     public final static String CHAT = "Chat";
     public final static String SEARCH = "Search";
+    public final static String MEDICATION = "Medication";
+    public final static String HEALTH_INSURANCE = "Health Insurance";
+    public final static String REFERRAL = "Referral";
+    public final static String MENSTRUAL_CYCLE = "Menstrual Cycle";
+    public final static String CARE_TEAM = "Care Team";
+    public final static String CARE_PROVIDERS = "Care Providers";
+    public final static String FORUMS = "Forums";
+    public final static String MEDICAL_BOT = "Medical Bot";
 
     public final static String LOCATION = "My Location";
     public final static String HELP = "help";
