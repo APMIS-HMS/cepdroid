@@ -1,6 +1,5 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
-import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -30,15 +28,12 @@ import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentFragment;
 import ng.apmis.apmismobile.ui.dashboard.buy.BuyFragment;
-import ng.apmis.apmismobile.ui.dashboard.chat.ChatContextFragment;
 import ng.apmis.apmismobile.ui.dashboard.chat.ChatFragment;
 import ng.apmis.apmismobile.ui.dashboard.find.FindFragment;
 import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileFragment;
 import ng.apmis.apmismobile.ui.dashboard.places.FacilityLocationFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
-import ng.apmis.apmismobile.ui.dashboard.read.ReadFragment;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
-import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -62,8 +57,6 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
     ActionBar actionBar;
 
     public String findSearchTerm = "Hospital";
-
-    DashboardFragment.OnQuickLinkListener mListener;
 
 
     @Override
@@ -109,7 +102,7 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
 
         DashboardFragment dashboardFragment = new DashboardFragment();
 
-        dashboardFragment.initializeQuickLinkListener(this);
+        initializeFragmentListener(dashboardFragment);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, dashboardFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -127,9 +120,8 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
 
     }
 
-    void initializeQuickLinkListener () {
-        DashboardFragment dbFrag = new DashboardFragment();
-        dbFrag.initializeQuickLinkListener(this);
+    void initializeFragmentListener (Fragment fragment) {
+        ((DashboardFragment)fragment).initializeQuickLinkListener(this);
     }
 
     private void attemptLoadImage(PersonEntry person){

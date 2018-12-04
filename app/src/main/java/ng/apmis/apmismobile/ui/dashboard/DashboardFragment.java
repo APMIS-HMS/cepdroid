@@ -4,12 +4,9 @@ import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,15 +16,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TableRow;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
-import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 
 import static android.widget.RelativeLayout.BELOW;
@@ -73,7 +67,6 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
     boolean areRemindersShowing;
 
     OnQuickLinkListener mListener;
-    DashboardActivity activity;
 
     public void initializeQuickLinkListener(OnQuickLinkListener listener) {
         this.mListener = listener;
@@ -98,7 +91,6 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         ButterKnife.bind(this, rootView);
 
         areRemindersShowing = false;
-        activity.initializeQuickLinkListener();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -166,14 +158,6 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         return rootView;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (activity == null) {
-            activity = (DashboardActivity) context;
-        }
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -199,14 +183,18 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         void onQuickLinkClicked(String link);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
 
     @Override
     public void onResume() {
         if (getActivity() != null) {
             ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.WELCOME, true);
             ((DashboardActivity) getActivity()).mBottomNav.getMenu().findItem(R.id.home_menu).setChecked(true);
+            ((DashboardActivity) getActivity()).initializeFragmentListener(this);
         }
-        activity.initializeQuickLinkListener();
         super.onResume();
     }
 }
