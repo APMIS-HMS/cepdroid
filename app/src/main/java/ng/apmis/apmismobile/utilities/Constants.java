@@ -16,9 +16,8 @@ public class Constants {
     public final static String VIEW = "View";
     public final static String CHAT = "Chat";
     public final static String SEARCH = "Search";
-
     public final static String LOCATION = "My Location";
-    public final static String HELP = "help";
+    public final static String HELP = "Help";
 
     public final static int GEOFENCE_RADIUS_IN_METERS = 5000;
 

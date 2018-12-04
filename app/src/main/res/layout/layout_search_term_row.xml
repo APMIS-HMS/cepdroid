@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true">
@@ -10,8 +12,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:padding="5dp"
         android:textSize="16sp"
         android:text="Hospital"/>
+
+    <TextView
+        android:id="@+id/view_all_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/colorPrimary"
+        android:visibility="gone"
+        android:text="See All"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -48,7 +64,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:fadingEdgeLength="30dp"
-            android:requiresFadingEdge="horizontal">
+            android:requiresFadingEdge="horizontal"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/layout_previous_item">
 
         </android.support.v7.widget.RecyclerView>
 

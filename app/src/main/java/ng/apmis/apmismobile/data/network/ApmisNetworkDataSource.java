@@ -407,14 +407,18 @@ public class ApmisNetworkDataSource {
     }
 
 
-
-
     private void fetchPaidByPerson(String paidById) {
         apmisExecutors.networkIO().execute(() -> {
             new NetworkDataCalls(mContext).getPaidBy(mContext, paidById, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 
+    private void fetchNearbyLocations(){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Fetch NearbyFacilities started");
+            new NetworkDataCalls(mContext).fetchNearbyFacilities(mContext, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
 
 
 
@@ -458,6 +462,7 @@ public class ApmisNetworkDataSource {
     }
 
 
+
     //Registered Facility Ids and metadata
 
     public void setRegisteredFacilities(List<String> ids, List<Facility> facilities){
@@ -465,25 +470,33 @@ public class ApmisNetworkDataSource {
         List<Facility> previous = this.registeredFacilities.getValue();
 
 
-        if (ids != null)
+        if (ids != null) {
             this.registeredFacilityIds.postValue(ids);
+
+            if (ids.size() == 0)
+                this.registeredFacilityIds = new MutableLiveData<>();
+        }
 
         else {//set null if a null value was received, but post back the original value afterwards
             this.registeredFacilityIds.setValue(null);
 
-            if (previous != null)
+            if (previousIds != null && previousIds.size() > 0)
                 this.registeredFacilityIds.postValue(previousIds);
             else
                 this.registeredFacilityIds = new MutableLiveData<>();
         }
 
-        if (facilities != null)
+        if (facilities != null) {
             this.registeredFacilities.postValue(facilities);
+
+            if (facilities.size() == 0)
+                this.registeredFacilities = new MutableLiveData<>();
+        }
 
         else {//set null if a null value was received, but post back the original value afterwards
             this.registeredFacilities.setValue(null);
 
-            if (previous != null)
+            if (previous != null && previous.size() > 0)
                 this.registeredFacilities.postValue(previous);
             else
                 this.registeredFacilities = new MutableLiveData<>();
@@ -512,20 +525,25 @@ public class ApmisNetworkDataSource {
     }
 
 
+
     //Appointment Types
 
     public void setAppointmentTypes(List<AppointmentType> appointmentTypes){
         List<AppointmentType> previous = this.appointmentTypes.getValue();
 
 
-        if (appointmentTypes != null)
+        if (appointmentTypes != null) {
             this.appointmentTypes.postValue(appointmentTypes);
+
+            if (appointmentTypes.size() == 0)
+                this.appointmentTypes = new MutableLiveData<>();
+        }
 
         else {//set null if a null value was received, but post back the original value afterwards
             this.appointmentTypes.setValue(null);
 
-            if (previous != null)
-                this.appointmentTypes.postValue(appointmentTypes);
+            if (previous != null && previous.size() > 0)
+                this.appointmentTypes.postValue(previous);
             else
                 this.appointmentTypes = new MutableLiveData<>();
         }
@@ -535,6 +553,8 @@ public class ApmisNetworkDataSource {
         fetchAppointmentTypes();
         return this.appointmentTypes;
     }
+
+
 
 
     //Employees
@@ -619,7 +639,7 @@ public class ApmisNetworkDataSource {
     }
 
 
-    //Category Ids, looking for Registration
+    //Category Ids, looking for Registration services
 
     public LiveData<String> getServiceCategoryIdForFacility(String id){
         fetchServiceCategoryForFacility(id);
@@ -655,8 +675,6 @@ public class ApmisNetworkDataSource {
         return appointment;
     }
 
-
-    //TODO add the empty sized change to all of them
     public void setAppointments(List<Appointment> appointments){
         List<Appointment> previous = this.appointments.getValue();
 
@@ -677,6 +695,7 @@ public class ApmisNetworkDataSource {
         }
     }
 
+
     public LiveData<List<Appointment>> getAllAppointments(String personId){
         fetchAppointmentsForPerson(personId);
         return appointments;
@@ -693,13 +712,17 @@ public class ApmisNetworkDataSource {
     public void setDocumentationsForPerson(List<Documentation> documentations){
         List<Documentation> previous = this.documentations.getValue();
 
-        if (documentations != null)
+        if (documentations != null) {
             this.documentations.postValue(documentations);
+
+            if (documentations.size() == 0)
+                this.documentations = new MutableLiveData<>();
+        }
 
         else {//set null if a null value was received, but post back the original value afterwards
             this.documentations.setValue(null);
 
-            if (previous != null)
+            if (previous != null && previous.size() > 0)
                 this.documentations.postValue(previous);
             else
                 this.documentations = new MutableLiveData<>();
@@ -712,18 +735,23 @@ public class ApmisNetworkDataSource {
     }
 
 
+
     //Prescription
 
     public void setPrescriptionsForPerson(List<Prescription> prescriptions) {
         List<Prescription> previous = this.prescriptions.getValue();
 
-        if (prescriptions != null)
+        if (prescriptions != null){
             this.prescriptions.postValue(prescriptions);
+
+            if (prescriptions.size() == 0)
+                this.prescriptions = new MutableLiveData<>();
+        }
 
         else {//set null if a null value was received, but post back the original value afterwards
             this.prescriptions.setValue(null);
 
-            if (previous != null)
+            if (previous != null && previous.size() > 0)
                 this.prescriptions.postValue(previous);
             else
                 this.prescriptions = new MutableLiveData<>();
@@ -735,18 +763,23 @@ public class ApmisNetworkDataSource {
         return this.prescriptions;
     }
 
+
     //Laboratory Requests
 
     public void setLabRequestsForPerson(List<LabRequest> labRequests) {
         List<LabRequest> previous = this.labRequests.getValue();
 
-        if (labRequests != null)
+        if (labRequests != null) {
             this.labRequests.postValue(labRequests);
+
+            if (labRequests.size() == 0)
+                this.labRequests = new MutableLiveData<>();
+        }
 
         else {//set null if a null value was received, but post back the original value afterwards
             this.labRequests.setValue(null);
 
-            if (previous != null)
+            if (previous != null && previous.size() > 0)
                 this.labRequests.postValue(previous);
             else
                 this.labRequests = new MutableLiveData<>();
@@ -760,7 +793,9 @@ public class ApmisNetworkDataSource {
     }
 
 
+
     //Found Objects in searches
+
     public LiveData<List<SearchTermItem>> getFoundObjects(String itemType, String searchQuery){
         fetchFoundItems(itemType, searchQuery);
         return foundObjects;
@@ -792,6 +827,7 @@ public class ApmisNetworkDataSource {
 
 
     //Bill Manager
+
     public LiveData<BillManager> getBillManagerForFacilityServiceCategory(String facilityId, String categoryId){
         fetchServiceCategoryBillManager(facilityId, categoryId);
         return categoryBillManager;
@@ -808,6 +844,7 @@ public class ApmisNetworkDataSource {
 
 
     //Wallet
+
     public LiveData<Wallet> getPersonWallet(String personId, boolean shouldQuery){
         if (shouldQuery)
             fetchPersonWallet(personId);
@@ -847,6 +884,13 @@ public class ApmisNetworkDataSource {
         return paidByPerson;
     }
 
+    public void setPaidByName(PersonEntry personEntry) {
+        paidByPerson.postValue(personEntry);
+    }
+
+
+    //Payment verification successful or not
+
     public void setPaymentVerificationData(String status){
         paymentVerificationData.postValue(status);
     }
@@ -864,10 +908,7 @@ public class ApmisNetworkDataSource {
     }
 
     public LiveData<Facility[]> getNearbyLocations () {
-        apmisExecutors.networkIO().execute(() -> {
-            Log.d(LOG_TAG, "Fetch NearbyFacilities started");
-            new NetworkDataCalls(mContext).fetchNearbyFacilities(mContext, sharedPreferencesManager.getStoredUserAccessToken());
-        });
+        fetchNearbyLocations();
         return nearbyLocations;
     }
 
@@ -898,9 +939,5 @@ public class ApmisNetworkDataSource {
         }
 
         registeredPatient.postValue(patient);
-    }
-
-    public void setPaidByName(PersonEntry personEntry) {
-        paidByPerson.postValue(personEntry);
     }
 }

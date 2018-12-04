@@ -6,7 +6,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#efefef"
     tools:context=".ui.dashboard.find.foundItems.FoundItemsActivity">
+
+    <!-- Make focusable to prevent search view from receiving unnecessary focus-->
+    <android.support.v7.widget.CardView
+        android:id="@+id/search_card"
+        android:transitionName="search_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_margin="10dp">
+
+        <TableRow
+            android:id="@+id/search_row"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.SearchView
+                android:id="@+id/find_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:theme="@style/AppSearchView"
+                android:background="@drawable/search_background"
+                app:queryBackground="@drawable/search_background"
+                app:iconifiedByDefault="false">
+
+            </android.support.v7.widget.SearchView>
+
+            <Spinner
+                android:id="@+id/find_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:theme="@style/SmallSpinner"
+                android:spinnerMode="dropdown"
+                android:entries="@array/filter">
+            </Spinner>
+
+        </TableRow>
+
+    </android.support.v7.widget.CardView>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -38,7 +79,8 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/search_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/layout_found_item">
 
 
         </android.support.v7.widget.RecyclerView>
