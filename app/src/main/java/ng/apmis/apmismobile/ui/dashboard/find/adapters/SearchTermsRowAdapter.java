@@ -27,6 +27,12 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
     private List<Appointment> appointments = null;
     private RecyclerView.RecycledViewPool recycledViewPool;
 
+    public interface OnViewAllTermsClickedListener{
+        void onViewAllTermsClicked(String searchTerm);
+    }
+
+    public OnViewAllTermsClickedListener viewAllListener;
+
     public SearchTermsRowAdapter(Context context, List<String> searchTermsRows){
         this.context = context;
         this.searchTermsRows = searchTermsRows;
@@ -74,8 +80,14 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
             if (previousItems.size() == 0) {
                 holder.emptyView.setVisibility(View.VISIBLE);
                 holder.emptyView.setText("Click here to find a "+searchTerm);
-            } else
+                holder.viewAll.setVisibility(View.GONE);
+            } else {
                 holder.emptyView.setVisibility(View.GONE);
+                holder.viewAll.setVisibility(View.VISIBLE);
+            }
+
+            holder.emptyView.setOnClickListener(v -> viewAllListener.onViewAllTermsClicked(searchTerm));
+            holder.viewAll.setOnClickListener(v -> viewAllListener.onViewAllTermsClicked(searchTerm));
         }
 
         holder.titleTermText.setText(searchTerm);
@@ -149,6 +161,10 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
         return false;
     }
 
+    public void instantiateOnViewAllClickedListener(OnViewAllTermsClickedListener listener){
+        this.viewAllListener = listener;
+    }
+
     class SearchTermRowViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.title_text)
@@ -162,6 +178,9 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
 
         @BindView(R.id.empty_view)
         TextView emptyView;
+
+        @BindView(R.id.view_all_text)
+        TextView viewAll;
 
         public SearchTermRowViewHolder(View itemView) {
             super(itemView);

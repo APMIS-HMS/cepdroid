@@ -1,7 +1,10 @@
 package ng.apmis.apmismobile.ui.dashboard;
 
+import android.app.ActivityOptions;
+import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -237,9 +240,20 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             intent.putExtra("SearchTerm", findSearchTerm);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // Apply activity transition
+                super.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(
+                        this, findViewById(R.id.search_card), "search_card").toBundle());
+            } else {
+                super.startActivity(intent);
+            }
+
+        } else {
+            super.startActivity(intent);
         }
 
-        super.startActivity(intent);
+
     }
 
     /**

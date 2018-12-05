@@ -93,6 +93,12 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
         snapHelper = new GravitySnapHelper(Gravity.START);
         snapHelper.attachToRecyclerView(cardsRecycler);
 
+        //handles back stack pop call here
+        if (cardListAdapter != null) {
+            cardsRecycler.setAdapter(cardListAdapter);
+
+        }
+
         fundWithCardButton.setOnClickListener(v -> mListener.onAddCardButtonClicked());
         emptyCardView.setOnClickListener(v -> mListener.onAddCardButtonClicked());
 
@@ -147,10 +153,6 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
             }
         });
 
-        if (cardListAdapter != null) {
-            cardsRecycler.setAdapter(cardListAdapter);
-        }
-
         initViewModel();
 
         return view;
@@ -199,16 +201,16 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
                     emptyCardView.setVisibility(View.GONE);
                 }
 
-                if (wallet.getCards() == null || wallet.getCards().size() == 0){
-                    cardsRecycler.setVisibility(View.GONE);
-                    fundWithCardButton.setVisibility(View.INVISIBLE);
-                    emptyCardView.setVisibility(View.VISIBLE);
-                }
-
             } else {
                 cardListAdapter.clear();
                 cardListAdapter.addAll(wallet.getCards());
                 cardListAdapter.notifyDataSetChanged();
+            }
+
+            if (wallet.getCards() == null || wallet.getCards().size() == 0){
+                cardsRecycler.setVisibility(View.GONE);
+                fundWithCardButton.setVisibility(View.INVISIBLE);
+                emptyCardView.setVisibility(View.VISIBLE);
             }
         };
 

@@ -2,7 +2,7 @@ package ng.apmis.apmismobile.ui.dashboard.find.foundItems;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,7 +18,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital.FoundHospitalDetailFragment;
-import ng.apmis.apmismobile.utilities.AppUtils;
 
 public class FoundItemsActivity extends AppCompatActivity implements FoundItemsListFragment.OnFragmentInteractionListener,
         FoundHospitalDetailFragment.OnFragmentInteractionListener {
@@ -29,8 +28,17 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
     @BindView(R.id.action_bar_title)
     TextView toolbarTitle;
 
-    String searchQuery;
-    String searchExtra;
+    private String searchQuery;
+
+    public String getSearchTerm() {
+        return searchTerm;
+    }
+
+    public void setSearchTerm(String searchTerm) {
+        this.searchTerm = searchTerm;
+    }
+
+    private String searchTerm;
 
     ActionBar actionBar;
 
@@ -50,7 +58,7 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
 
         // Get the intent, verify the action and get the query
         Intent intent = getIntent();
-        searchExtra = intent.getStringExtra("SearchTerm");
+        searchTerm = intent.getStringExtra("SearchTerm");
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             searchQuery = intent.getStringExtra(SearchManager.QUERY);
@@ -62,14 +70,21 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
         }
 
         //Set toolbar title to search term item
-        toolbarTitle.setText(formatToPlural(searchExtra).toUpperCase());
+        toolbarTitle.setText(formatToPlural(searchTerm));
 
         foundItemsListFragment = new FoundItemsListFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, foundItemsListFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
+    }
 
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
     }
 
 
@@ -86,7 +101,7 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
         return super.onOptionsItemSelected(item);
     }
 
-    private String formatToPlural(String singular){
+    public String formatToPlural(String singular){
         if (singular.endsWith("y")) {
             StringBuffer buffer = new StringBuffer(singular);
             buffer.deleteCharAt(singular.length() - 1);
@@ -103,7 +118,7 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
 
     @Override
     public void onViewIdActionPerformed(String id, String name) {
-        if (searchExtra.equals("Hospital")){
+        if (searchTerm.equals("Hospital")){
             placeFragment(FoundHospitalDetailFragment.newInstance(id, name));
         }
     }
@@ -125,5 +140,17 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
     @Override
     public void onPayClicked(String facilityId) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                super.finishAfterTransition();
+            } else {
+                super.finish();
+            }
+        else
+            super.onBackPressed();
     }
 }

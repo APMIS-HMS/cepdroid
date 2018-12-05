@@ -35,6 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/login"
@@ -45,7 +46,8 @@
             android:theme="@style/BackgroundTheme" />
         <activity
             android:name=".ui.dashboard.DashboardActivity"
-            android:theme="@style/BackgroundTheme">
+            android:theme="@style/BackgroundTheme"
+            android:windowSoftInputMode="adjustNothing">
 
             <!-- enable the search dialog to send searches to SearchableActivity -->
             <meta-data
@@ -86,7 +88,7 @@
 
         <activity
             android:name=".ui.dashboard.find.foundItems.FoundItemsActivity"
-            android:theme="@style/BackgroundTheme">
+            android:theme="@style/TransitionAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -95,6 +97,7 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
         <activity
             android:name=".ui.dashboard.payment.FundWalletActivity"
             android:theme="@style/BackgroundTheme" />

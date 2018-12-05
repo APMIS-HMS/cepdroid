@@ -1,5 +1,6 @@
 package ng.apmis.apmismobile.ui.dashboard.find;
 
+import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -7,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.MatrixCursor;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -37,7 +40,7 @@ import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsActivity;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
-public class FindFragment extends Fragment {
+public class FindFragment extends Fragment implements SearchTermsRowAdapter.OnViewAllTermsClickedListener{
 
     @BindView(R.id.search_term_recycler)
     RecyclerView searchTermRecycler;
@@ -48,6 +51,9 @@ public class FindFragment extends Fragment {
     @BindView(R.id.find_bar)
     SearchView findSearchView;
 
+    @BindView(R.id.search_card)
+    CardView searchCard;
+
     private SimpleCursorAdapter mAdapter;
 
     private SharedPreferencesManager prefs;
@@ -57,6 +63,8 @@ public class FindFragment extends Fragment {
     private SearchTermsRowAdapter searchTermsRowAdapter;
 
     List<String> searchTerms = new ArrayList<>();
+
+    private List<String> terms = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,6 +106,7 @@ public class FindFragment extends Fragment {
         searchTerms = Arrays.asList(getActivity().getResources().getStringArray(R.array.filter));
 
         searchTermsRowAdapter = new SearchTermsRowAdapter(getContext(), searchTerms);
+        searchTermsRowAdapter.instantiateOnViewAllClickedListener(this);
 
         searchTermRecycler.setAdapter(searchTermsRowAdapter);
 
@@ -149,7 +158,13 @@ public class FindFragment extends Fragment {
                 String jg = mAdapter.getCursor().getString(1);
 
                 i.putExtra("title", jg);
-                startActivity(i);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    // Apply activity transition
+                    startActivity(i, ActivityOptions.makeSceneTransitionAnimation(
+                            getActivity(), searchCard, "search_card").toBundle());
+                } else {
+                    startActivity(i);
+                }
                 return true;
             }
 
@@ -169,7 +184,7 @@ public class FindFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String s) {
                 populateAdapter(s);
-                return false;
+                return true;
             }
         });
 
@@ -232,8 +247,6 @@ public class FindFragment extends Fragment {
         previousItemsViewModel.getPersonAppointments(prefs.getPersonId()).observe(this, appointmentObserver);
     }
 
-    private List<String> terms = new ArrayList<>();
-
     private void populateAdapter(String query) {
         final MatrixCursor c = new MatrixCursor(new String[]{ BaseColumns._ID, "title" });
         for (int i=0; i<terms.size(); i++) {
@@ -245,6 +258,14 @@ public class FindFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        //reset selection on pause
+        findSearchView.setQuery("", false);
+        findSpinner.setSelection(0);
+        super.onPause();
+    }
+
+    @Override
     public void onResume() {
         if (getActivity() != null) {
             ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.SEARCH, true);
@@ -253,4 +274,19 @@ public class FindFragment extends Fragment {
         super.onResume();
     }
 
+    @Override
+    public void onViewAllTermsClicked(String searchTerm) {
+        Intent i = new Intent(getActivity(), FoundItemsActivity.class);
+        i.putExtra("SearchTerm", searchTerm);
+        i.setAction(Intent.ACTION_VIEW);
+
+        i.putExtra("title", "");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Apply activity transition
+            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(
+                    getActivity(), searchCard, "search_card").toBundle());
+        } else {
+            startActivity(i);
+        }
+    }
 }

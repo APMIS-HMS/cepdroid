@@ -17,6 +17,10 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <style name="TransitionAppTheme" parent="BackgroundTheme">
+        <!-- leave empty -->
+    </style>
+
     <style name="AppTheme.WhiteAccent">
         <item name="colorAccent">@android:color/white</item>
     </style>
@@ -71,4 +75,8 @@
         <item name="android:textColor">#fff</item>
     </style>
 
+    <!-- SearchView text size -->
+    <style name="AppSearchView" parent="Widget.AppCompat.SearchView" >
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>
