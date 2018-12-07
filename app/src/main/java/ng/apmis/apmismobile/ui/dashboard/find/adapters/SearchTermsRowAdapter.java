@@ -20,18 +20,24 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SearchTermItem;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 
-public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAdapter.SearchTermRowViewHolder> {
+public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAdapter.SearchTermRowViewHolder>
+        implements SearchTermsItemAdapter.OnPreviousItemSelectedListener {
 
     private Context context;
     private List<String> searchTermsRows;
     private List<Appointment> appointments = null;
     private RecyclerView.RecycledViewPool recycledViewPool;
 
+    public interface OnPreviousRowItemSelectedListener{
+        void onPreviousRowItemSelected(String id, String name, String type);
+    }
+
     public interface OnViewAllTermsClickedListener{
         void onViewAllTermsClicked(String searchTerm);
     }
 
-    public OnViewAllTermsClickedListener viewAllListener;
+    private OnPreviousRowItemSelectedListener previousRowItemSelectedListener;
+    private OnViewAllTermsClickedListener viewAllListener;
 
     public SearchTermsRowAdapter(Context context, List<String> searchTermsRows){
         this.context = context;
@@ -94,6 +100,7 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
 
 
         SearchTermsItemAdapter adapter = new SearchTermsItemAdapter(context, previousItems);
+        adapter.instantiatePreviousItemSelectedListener(this);
         holder.previousVisitRecycler.setHasFixedSize(true);
         holder.previousVisitRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.previousVisitRecycler.setAdapter(adapter);
@@ -165,6 +172,10 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
         this.viewAllListener = listener;
     }
 
+    public void instantiateOnPreviousRowItemSelectedListener(OnPreviousRowItemSelectedListener listener){
+        this.previousRowItemSelectedListener = listener;
+    }
+
     class SearchTermRowViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.title_text)
@@ -186,6 +197,11 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    @Override
+    public void onPreviousItemSelected(String itemId, String itemName, String itemType) {
+        previousRowItemSelectedListener.onPreviousRowItemSelected(itemId, itemName, itemType);
     }
 
 }

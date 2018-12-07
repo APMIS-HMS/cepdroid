@@ -356,10 +356,10 @@ public class ApmisNetworkDataSource {
      * @param itemType
      * @param searchQuery
      */
-    private void fetchFoundItems(String itemType, String searchQuery){
+    private void fetchFoundItems(String itemType, String searchQuery, int skipCount){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Found", "Fetch found items started");
-            new NetworkDataCalls(mContext).searchForItems(mContext, itemType, searchQuery, sharedPreferencesManager.getStoredUserAccessToken());
+            new NetworkDataCalls(mContext).searchForItems(mContext, itemType, searchQuery, sharedPreferencesManager.getStoredUserAccessToken(), skipCount);
         });
     }
 
@@ -796,12 +796,15 @@ public class ApmisNetworkDataSource {
 
     //Found Objects in searches
 
-    public LiveData<List<SearchTermItem>> getFoundObjects(String itemType, String searchQuery){
-        fetchFoundItems(itemType, searchQuery);
+    public LiveData<List<SearchTermItem>> getFoundObjects(String itemType, String searchQuery, int skipCount){
+        fetchFoundItems(itemType, searchQuery, skipCount);
         return foundObjects;
     }
 
     public void setFoundObjects(List<SearchTermItem> foundObjectsList){
+        try {
+            Log.e("Find", "Found "+foundObjectsList.get(0).getTitle());
+        } catch (Exception e){}
         foundObjects.postValue(foundObjectsList);
     }
 

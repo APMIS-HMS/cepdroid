@@ -58,6 +58,22 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
 
         // Get the intent, verify the action and get the query
         Intent intent = getIntent();
+
+        //If an intent
+        if (intent.hasExtra("itemId")){
+            String id = intent.getStringExtra("itemId");
+            String name = intent.getStringExtra("itemName");
+            String type = intent.getStringExtra("itemType");
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, FoundHospitalDetailFragment.newInstance(id, name))
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+            return;
+        }
+
+
+
         searchTerm = intent.getStringExtra("SearchTerm");
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {

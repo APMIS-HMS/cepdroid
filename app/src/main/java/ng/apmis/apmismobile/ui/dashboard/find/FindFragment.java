@@ -37,10 +37,12 @@ import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.find.adapters.SearchTermsRowAdapter;
 import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsActivity;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
-public class FindFragment extends Fragment implements SearchTermsRowAdapter.OnViewAllTermsClickedListener{
+public class FindFragment extends Fragment implements SearchTermsRowAdapter.OnViewAllTermsClickedListener,
+        SearchTermsRowAdapter.OnPreviousRowItemSelectedListener {
 
     @BindView(R.id.search_term_recycler)
     RecyclerView searchTermRecycler;
@@ -107,7 +109,7 @@ public class FindFragment extends Fragment implements SearchTermsRowAdapter.OnVi
 
         searchTermsRowAdapter = new SearchTermsRowAdapter(getContext(), searchTerms);
         searchTermsRowAdapter.instantiateOnViewAllClickedListener(this);
-
+        searchTermsRowAdapter.instantiateOnPreviousRowItemSelectedListener(this);
         searchTermRecycler.setAdapter(searchTermsRowAdapter);
 
         final String[] from = new String[] {"title"};
@@ -288,5 +290,18 @@ public class FindFragment extends Fragment implements SearchTermsRowAdapter.OnVi
         } else {
             startActivity(i);
         }
+    }
+
+    @Override
+    public void onPreviousRowItemSelected(String id, String name, String type) {
+        Intent i = new Intent(getActivity(), FoundItemsActivity.class);
+        i.putExtra("itemId", id);
+        i.putExtra("itemName", name);
+        i.putExtra("itemType", type);
+
+        if (type.equals("Hospital"))
+            startActivity(i);
+        else
+            AppUtils.showShortToast(getContext(), "Not yet supported");
     }
 }
