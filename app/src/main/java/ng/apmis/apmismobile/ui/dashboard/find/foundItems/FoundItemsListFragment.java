@@ -9,6 +9,9 @@ import android.database.MatrixCursor;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -38,7 +41,8 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FoundItemsListFragment extends Fragment implements FoundItemsAdapter.OnViewClickedListener {
+public class FoundItemsListFragment extends Fragment implements FoundItemsAdapter.OnViewClickedListener,
+        FoundItemsAdapter.OnLoadMoreListener, FoundItemsAdapter.OnForceReloadListener {
 
     @BindView(R.id.search_shimmer)
     ShimmerFrameLayout searchShimmer;
@@ -69,9 +73,12 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
     FoundItemsViewModel foundItemsViewModel;
     List<SearchTermItem> foundItems = new ArrayList<>();
 
+    private int skipCount = 0;
+    private int lastSkipCount;
+
     private OnFragmentInteractionListener mListener;
 
-    public interface OnFragmentInteractionListener{
+    public interface OnFragmentInteractionListener {
         void onViewIdActionPerformed(String id, String name);
     }
 
@@ -116,6 +123,11 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
         selectedSearchTerm = hostActivity.getSearchTerm();
 
         searchTerms = Arrays.asList(hostActivity.getResources().getStringArray(R.array.filter));
+
+        if (savedInstanceState != null) {
+            skipCount = savedInstanceState.getInt("skipCount", 0);
+            lastSkipCount = savedInstanceState.getInt("lastSkipCount", 0);
+        }
 
         findSearchView.setQuery(hostActivity.getSearchQuery(), false);
         findSpinner.setSelection(searchTerms.indexOf(selectedSearchTerm));
@@ -164,7 +176,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
             searchShimmer.stopShimmer();
         }
 
-        initViewModel();
+        if (foundItemsViewModel == null)
+            initViewModel();
 
         findSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -224,52 +237,96 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
 
         objectsObserver = objects -> {
 
-            if (objects != null && objects.size() > 0) {
+            if (objects == null){
+                if (skipCount > 0){
+                    foundItemsAdapter.showNullLoader();
+
+                } else {
+                    //todo show empty view
+                    searchShimmer.setVisibility(View.GONE);
+                    searchShimmer.stopShimmer();
+                    Snackbar.make(findSearchView, "Failed to load "
+                            + hostActivity.formatToPlural(hostActivity.getSearchTerm()), Snackbar.LENGTH_LONG).show();
+                }
+
+                return;
+            }
+
+            if (objects.size() > 0) {
 
                 if (foundItemsAdapter == null) {
 
                     foundItems = objects;
                     foundItemsAdapter = new FoundItemsAdapter(getContext());
                     foundItemsAdapter.instantiateOnViewClickedListener(this);
+                    foundItemsAdapter.instantiateOnLoadMoreListener(this);
+                    foundItemsAdapter.instantiateOnForceReloadListener(this);
                     searchRecycler.setAdapter(foundItemsAdapter);
                     foundItemsAdapter.createFoundItems(foundItems);
-                    foundItemsAdapter.notifyDataSetChanged();
                     Log.e("Find", "Am I called");
+
                 } else {
-                    foundItemsAdapter.clear();
-                    foundItems = objects;
-                    foundItemsAdapter.createFoundItems(foundItems);
-                    foundItemsAdapter.notifyDataSetChanged();
-                    Log.e("Find", "Have been called");
+
+                    if (skipCount == 0) {
+                        foundItemsAdapter.clear();
+                        foundItems = objects;
+                        foundItemsAdapter.createFoundItems(foundItems);
+                        foundItemsAdapter.setLoaded();
+                        Log.e("Find", "Have been called");
+
+                    } else {
+                        //Check if the skip count has been loaded before
+                        //in case of doubled data calls
+                        if (lastSkipCount < skipCount) {
+                            foundItems = objects;
+                            foundItemsAdapter.remove(foundItemsAdapter.getItemCount() - 1);
+                            foundItemsAdapter.addFoundItems(foundItems);
+                            foundItemsAdapter.setLoaded();
+
+                            lastSkipCount = skipCount;
+                            Log.e("Find", "loaded extra " + skipCount);
+                        }
+                    }
                 }
 
                 searchShimmer.setVisibility(View.GONE);
                 searchShimmer.stopShimmer();
+
+            } else { //if size is empty
+
+                if (skipCount > 0){
+                    foundItemsAdapter.remove(foundItemsAdapter.getItemCount() - 1);
+
+                } else {
+                    //todo show empty view
+                    searchShimmer.setVisibility(View.GONE);
+                    searchShimmer.stopShimmer();
+                }
             }
         };
 
-        //Observe the found items]
+        //Observe the found items
         foundItemsViewModel.getFoundItems(hostActivity.getSearchTerm(),
                 hostActivity.getSearchQuery()).observe(this, objectsObserver);
     }
 
     private void resetSearch(String searchQuery){
-        //TODO update search term also
+        skipCount = 0;
+        lastSkipCount = 0;
+
         hostActivity.setSearchQuery(searchQuery);
         hostActivity.setSearchTerm(selectedSearchTerm);
-        //Observe the found items
-        //foundItemsViewModel.getFoundItems(hostActivity.searchExtra,
-          //      hostActivity.searchQuery).removeObservers(this);
 
-        foundItemsViewModel.clearFoundItems();
-        if (foundItemsAdapter != null)
+        if (foundItemsAdapter != null) {
             foundItemsAdapter.clear();
+            foundItemsAdapter.setLoading();
+        }
 
         searchShimmer.startShimmer();
         searchShimmer.setVisibility(View.VISIBLE);
 
-        foundItemsViewModel.getFoundItems(selectedSearchTerm,
-                searchQuery).observe(this, objectsObserver);
+        foundItemsViewModel.populateExtra(selectedSearchTerm,
+                searchQuery, 0);
 
         hostActivity.setToolBarTitle(hostActivity.formatToPlural(selectedSearchTerm));
     }
@@ -284,8 +341,33 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt("skipCount", skipCount);
+        outState.putInt("lastSkipCount", lastSkipCount);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onViewClicked(String id, String name) {
         mListener.onViewIdActionPerformed(id, name);
+    }
+
+    @Override
+    public void onLoadMore() {
+        skipCount = skipCount + 20;
+
+        foundItemsAdapter.add(null);
+
+        foundItemsViewModel.populateExtra(hostActivity.getSearchTerm(),
+                hostActivity.getSearchQuery(), skipCount);
+
+    }
+
+    @Override
+    public void onForceReload() {
+        foundItemsAdapter.removeNullLoader();
+        foundItemsViewModel.populateExtra(hostActivity.getSearchTerm(),
+                hostActivity.getSearchQuery(), skipCount);
     }
 
     @Override
@@ -303,5 +385,11 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.e("Find", "Am i Destroyed?");
+        super.onDestroy();
     }
 }

@@ -907,7 +907,6 @@ public final class NetworkDataCalls {
             }
         };
 
-        APMISAPP.getInstance().getRequestQueue().getCache().clear();
 
         APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
         APMISAPP.getInstance().getRequestQueue().getCache().clear();
@@ -1218,18 +1217,20 @@ public final class NetworkDataCalls {
      * @param itemType
      * @param accessToken
      */
-    public void searchForItems(Context context, String itemType, String searchQuery, String accessToken){
+    public void searchForItems(Context context, String itemType, String searchQuery, String accessToken, int skipCount){
         String urlQuery;
+
+        Log.e("Find net", "Skipped "+skipCount);
 
         switch (itemType) {
             case "Hospital":
-                urlQuery = "facilities?$select[name]&$select[email]&$select[logoObject]&facilityTypeId=Hospital&$sort[updatedAt]=-1";
+                urlQuery = "facilities?$select[name]&$select[email]&$select[logoObject]&facilityTypeId=Hospital&$sort[updatedAt]=-1&$skip="+skipCount;
                 break;
             case "Doctor":
-                urlQuery = "employees?isActive=true&professionId=Doctor";
+                urlQuery = "employees?isActive=true&professionId=Doctor&$skip="+skipCount;
                 break;
             case "Nurse":
-                urlQuery = "employees?isActive=true&professionId=Nurse";
+                urlQuery = "employees?isActive=true&professionId=Nurse&$skip="+skipCount;
                 break;
             default:
                 return;
@@ -1251,13 +1252,20 @@ public final class NetworkDataCalls {
 
                     InjectorUtils.provideNetworkData(context).setFoundObjects(foundItems);
 
+                } else {
+                    InjectorUtils.provideNetworkData(context).setFoundObjects(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                InjectorUtils.provideNetworkData(context).setFoundObjects(null);
             }
 
-        }, error -> Log.e("Lab Request error", String.valueOf(error.getMessage()))) {
+        }, error -> {
+            Log.e("Lab Request error", String.valueOf(error.getMessage()));
+            InjectorUtils.provideNetworkData(context).setFoundObjects(null);
+
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -1269,6 +1277,7 @@ public final class NetworkDataCalls {
             }
         };
 
+        APMISAPP.getInstance().getRequestQueue().getCache().clear();
         jsonArrayRequest.setShouldCache(false);
         APMISAPP.getInstance().addToRequestQueue(jsonArrayRequest);
     }
