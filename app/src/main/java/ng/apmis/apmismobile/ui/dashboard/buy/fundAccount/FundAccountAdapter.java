@@ -229,6 +229,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public BeneficiariesViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            beneficiaryRecycler.setVisibility(View.GONE);
         }
 
     }

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
+<!--    <TextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,7 +12,7 @@
         android:textColor="#292929"
         android:textSize="14sp"
         android:layout_marginLeft="16dp"
-        android:layout_alignBottom="@id/fund_wallet"/>
+        android:layout_alignBottom="@id/fund_wallet"/>-->
 
     <Button
         android:id="@+id/fund_wallet"

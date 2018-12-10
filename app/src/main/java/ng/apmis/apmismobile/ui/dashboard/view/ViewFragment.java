@@ -38,12 +38,12 @@ public class ViewFragment extends Fragment {
         optionItems.add(new ModuleListModel(Constants.VITALS, R.drawable.ic_health_vitals));
         optionItems.add(new ModuleListModel(Constants.INVESTIGATIONS, R.drawable.ic_investigations));
 
-        optionItems.add(new ModuleListModel(Constants.MEDICATION, R.drawable.ic_medication));
+      /*  optionItems.add(new ModuleListModel(Constants.MEDICATION, R.drawable.ic_medication));
         optionItems.add(new ModuleListModel(Constants.HEALTH_INSURANCE, R.drawable.ic_health_insurance));
         optionItems.add(new ModuleListModel(Constants.REFERRAL, R.drawable.ic_referral));
         optionItems.add(new ModuleListModel(Constants.MENSTRUAL_CYCLE, R.drawable.ic_menstrual));
         optionItems.add(new ModuleListModel(Constants.CARE_TEAM, R.drawable.ic_care_team));
-        optionItems.add(new ModuleListModel(Constants.CARE_PROVIDERS, R.drawable.ic_care_providers));
+        optionItems.add(new ModuleListModel(Constants.CARE_PROVIDERS, R.drawable.ic_care_providers));*/
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ViewFragment extends Fragment {
                     case Constants.CLINICAL_DOCUMENTATION:
                         setFragment(new MedicalRecordsFragment());
                         break;
-                    case "MEDICATION":
+                    case Constants.MEDICATION:
                         //setFragment(new AppointmentFragment());
                         break;
                     case Constants.PRESCRIPTION:
@@ -83,22 +83,22 @@ public class ViewFragment extends Fragment {
                     case Constants.APPOINTMENTS:
                         setFragment(new AppointmentFragment());
                         break;
-                    case "HEALTH INSURANCE":
+                    case Constants.HEALTH_INSURANCE:
                         //setFragment(new AppointmentFragment());
                         break;
                     case Constants.INVESTIGATIONS:
                         setFragment(new DiagnosisListFragment());
                         break;
-                    case "REFERRAL":
+                    case Constants.REFERRAL:
                         //setFragment(new AppointmentFragment());
                         break;
-                    case "MENSTRUAL CYCLE":
+                    case Constants.MENSTRUAL_CYCLE:
                         //setFragment(new AppointmentFragment());
                         break;
-                    case "CARE TEAM":
+                    case Constants.CARE_TEAM:
                         //setFragment(new AppointmentFragment());
                         break;
-                    case "CARE PROVIDERS":
+                    case Constants.CARE_PROVIDERS:
                         //setFragment(new AppointmentFragment());
                         break;
                 }

@@ -225,10 +225,10 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
                 break;
             case R.id.buy_menu:
                 placeFragment(new BuyFragment());
-                break;
+                break;/*
             case R.id.chat_menu:
                 placeFragment(new ChatFragment());
-                break;
+                break;*/
             case R.id.find_menu:
                 placeFragment(new FindFragment());
                 break;

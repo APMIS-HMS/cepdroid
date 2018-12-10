@@ -70,7 +70,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onResume() {
         ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.CHAT, true);
-        ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.chat_menu).setChecked(true);
+       // ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.chat_menu).setChecked(true);
         super.onResume();
     }
 }

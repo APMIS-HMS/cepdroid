@@ -17,7 +17,7 @@ import ng.apmis.apmismobile.ui.dashboard.buy.payBills.PayBillsFragment;
 
 public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
 
-    private String[] pageTitles = new String[]{"Fund Account", "Pay Bills", "Make Purchase"};
+    private String[] pageTitles = new String[]{"Fund Account"/*, "Pay Bills", "Make Purchase"*/};
 
     public BuyCategoryAdapter(FragmentManager fm) {
         super(fm);
@@ -29,11 +29,11 @@ public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new FundAccountFragment();
+                return new FundAccountFragment();/*
             case 1:
                 return new PayBillsFragment();
             case 2:
-                return new MakePurchaseFragment();
+                return new MakePurchaseFragment();*/
             default:
                 return new FundAccountFragment();
         }
@@ -49,11 +49,11 @@ public class BuyCategoryAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return pageTitles[0];
+                return pageTitles[0];/*
             case 1:
                 return pageTitles[1];
             case 2:
-                return pageTitles[2];
+                return pageTitles[2];*/
             default:
                 return pageTitles[0];
         }
