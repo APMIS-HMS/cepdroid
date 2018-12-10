@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -116,6 +117,9 @@ public class AddAppointmentFragment extends Fragment {
 
     @BindView(R.id.set_reminder_switch)
     Switch setReminderSwitch;
+
+    @BindView(R.id.appointment_reason_edit_text)
+    EditText appointmentReasonEdit;
 
     @OnClick(R.id.your_schedule_textview)
     void scheduleTextViewClicked(){
@@ -764,7 +768,7 @@ public class AddAppointmentFragment extends Fragment {
         appointment.setDoctorId(mSelectedDoctor.getId());
         appointment.setOrderStatusId(mOrderStatus.getName());
         appointment.setPatientId(mSelectedFacility.getPatientIdForPerson());
-        appointment.setAppointmentReason("");
+        appointment.setAppointmentReason(appointmentReasonEdit.getText().toString());
         appointment.setCategory(mSelectedService.getName());
 
         Log.e("Submit ted", appointment.toString());
@@ -833,6 +837,6 @@ public class AddAppointmentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("NEW APPOINTMENT", false);
+        ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("New Appointment", false);
     }
 }

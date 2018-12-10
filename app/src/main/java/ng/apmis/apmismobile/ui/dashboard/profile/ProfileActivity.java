@@ -52,8 +52,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         actionBar.setElevation(0);
 
-        toolbarTitle.setText("PROFILE ACTIONS");
-
         profileActionFragment = new ProfileActionFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, profileActionFragment)
@@ -63,6 +61,10 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
 
     public void instantiateFragmentOnBackPressedListener(OnBackPressedListener listener){
         this.mListener = listener;
+    }
+
+    public void setToolBarTitle(String title) {
+        toolbarTitle.setText(title);
     }
 
     @Override

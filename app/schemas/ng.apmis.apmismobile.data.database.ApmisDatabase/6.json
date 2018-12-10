@@ -1,0 +1,305 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 6,
+    "identityHash": "31eb62b86b1437572e92c47e2686ad0c",
+    "entities": [
+      {
+        "tableName": "person",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `_id` TEXT, `apmisId` TEXT, `title` TEXT, `firstName` TEXT, `lastName` TEXT, `gender` TEXT, `motherMaidenName` TEXT, `securityQuestion` TEXT, `securityAnswer` TEXT, `primaryContactPhoneNo` TEXT, `secondaryContactPhoneNo` TEXT, `dateOfBirth` TEXT, `email` TEXT, `otherNames` TEXT, `biometric` TEXT, `personProfessions` TEXT, `nationality` TEXT, `stateOfOrigin` TEXT, `lgaOfOrigin` TEXT, `profileImageUriPath` TEXT, `profileImageFileName` TEXT, `homeAddress` TEXT, `maritalStatus` TEXT, `nextOfKin` TEXT, `wallet` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "apmisId",
+            "columnName": "apmisId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "firstName",
+            "columnName": "firstName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "lastName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "motherMaidenName",
+            "columnName": "motherMaidenName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "securityQuestion",
+            "columnName": "securityQuestion",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "securityAnswer",
+            "columnName": "securityAnswer",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "primaryContactPhoneNo",
+            "columnName": "primaryContactPhoneNo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "secondaryContactPhoneNo",
+            "columnName": "secondaryContactPhoneNo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dateOfBirth",
+            "columnName": "dateOfBirth",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "otherNames",
+            "columnName": "otherNames",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "biometric",
+            "columnName": "biometric",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "personProfessions",
+            "columnName": "personProfessions",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nationality",
+            "columnName": "nationality",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "stateOfOrigin",
+            "columnName": "stateOfOrigin",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lgaOfOrigin",
+            "columnName": "lgaOfOrigin",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "profileImageUriPath",
+            "columnName": "profileImageUriPath",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "profileImageFileName",
+            "columnName": "profileImageFileName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "homeAddress",
+            "columnName": "homeAddress",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "maritalStatus",
+            "columnName": "maritalStatus",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nextOfKin",
+            "columnName": "nextOfKin",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wallet",
+            "columnName": "wallet",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_person_apmisId",
+            "unique": true,
+            "columnNames": [
+              "apmisId"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_person_apmisId` ON `${TABLE_NAME}` (`apmisId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "appointments",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `_id` TEXT, `facilityName` TEXT, `orderStatusId` TEXT, `category` TEXT, `startDate` TEXT, `personId` TEXT, `patientId` TEXT, `facilityId` TEXT, `doctorId` TEXT, `clinicId` TEXT, `appointmentTypeId` TEXT, `appointmentReason` TEXT, `isActive` INTEGER, `age` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "facilityName",
+            "columnName": "facilityName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "orderStatusId",
+            "columnName": "orderStatusId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "startDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "personId",
+            "columnName": "personId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "patientId",
+            "columnName": "patientId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "facilityId",
+            "columnName": "facilityId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "doctorId",
+            "columnName": "doctorId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "clinicId",
+            "columnName": "clinicId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "appointmentTypeId",
+            "columnName": "appointmentTypeId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "appointmentReason",
+            "columnName": "appointmentReason",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "isActive",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "age",
+            "columnName": "age",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_appointments__id",
+            "unique": true,
+            "columnNames": [
+              "_id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_appointments__id` ON `${TABLE_NAME}` (`_id`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"31eb62b86b1437572e92c47e2686ad0c\")"
+    ]
+  }
+}

@@ -3,6 +3,8 @@ package ng.apmis.apmismobile.ui.dashboard;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -16,13 +18,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 import static android.widget.RelativeLayout.BELOW;
 
@@ -64,6 +75,15 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
     @BindView(R.id.reminder_recycler)
     RecyclerView reminderRecycler;
 
+    @BindView(R.id.reminder_loader)
+    ProgressBar reminderLoader;
+
+    @BindView(R.id.reminder_date)
+    TextView remidnerDate;
+
+    @BindView(R.id.reminder_empty_view)
+    TextView reminderEmptyView;
+
     boolean areRemindersShowing;
 
     OnQuickLinkListener mListener;
@@ -71,6 +91,9 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
     public void initializeQuickLinkListener(OnQuickLinkListener listener) {
         this.mListener = listener;
     }
+
+    DashboardFragmentViewModel dashboardFragmentViewModel;
+    ReminderAdapter reminderAdapter;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -90,6 +113,7 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
         ButterKnife.bind(this, rootView);
 
+        Log.e("Dash", "I should be called");
         areRemindersShowing = false;
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -101,8 +125,6 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         params.addRule(BELOW, R.id.first_row);
         secondRow.setLayoutParams(params);
 
-        ReminderAdapter adapter = new ReminderAdapter(getContext());
-        reminderRecycler.setAdapter(adapter);
         reminderRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         reminderRecycler.setNestedScrollingEnabled(false);
 
@@ -155,9 +177,64 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         rootView.findViewById(R.id.location).setOnClickListener(this);
         rootView.findViewById(R.id.help).setOnClickListener(this);
 
+        if (reminderAdapter != null) {
+            reminderLoader.setVisibility(View.GONE);
+            reminderRecycler.setAdapter(reminderAdapter);
+        }
+
+        remidnerDate.setText(AppUtils.dateToReadableFullDateStringNoTime(new Date()));
+
+        initViewModel();
+
         return rootView;
     }
 
+    private void initViewModel() {
+        DashboardFragmentViewModelFactory factory = InjectorUtils.provideDashboardFragmentViewModelFactory(getActivity().getApplicationContext());
+        dashboardFragmentViewModel = ViewModelProviders.of(this, factory).get(DashboardFragmentViewModel.class);
+
+        final Observer<List<Appointment>> reminderObserver = appointments -> {
+
+            reminderLoader.setVisibility(View.GONE);
+            Log.e("Dash", "Called out");
+
+            if (appointments == null || appointments.size() == 0){
+                Log.e("Dash", "Called null or empty");
+                reminderEmptyView.setVisibility(View.VISIBLE);
+                reminderRecycler.setVisibility(View.GONE);
+
+            } else {
+
+                List<Appointment> todayAppointments = new ArrayList<>();
+                for (Appointment appointment : appointments)
+                    if (ReminderAdapter.checkIfToday(appointment))
+                        todayAppointments.add(appointment);
+
+                if (todayAppointments.size() == 0) {
+                    reminderEmptyView.setVisibility(View.VISIBLE);
+                    reminderRecycler.setVisibility(View.GONE);
+                    return;
+                }
+
+                Log.e("Dash", "Called in");
+                if (reminderAdapter == null){
+                    reminderAdapter = new ReminderAdapter(getActivity());
+                    reminderAdapter.addAppointmentReminders(todayAppointments);
+                    reminderRecycler.setAdapter(reminderAdapter);
+
+                } else {
+                    //TODO remove this when fetching medication reminders
+                    reminderAdapter.clear();
+                    reminderAdapter.addAppointmentReminders(appointments);
+                }
+
+                reminderEmptyView.setVisibility(View.GONE);
+                reminderRecycler.setVisibility(View.VISIBLE);
+            }
+        };
+
+        dashboardFragmentViewModel.getTodaysAppointments().observe(this, reminderObserver);
+    }
 
     @Override
     public void onClick(View v) {

@@ -61,6 +61,8 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
 
     public String findSearchTerm = "Hospital";
 
+    DashboardFragment dashboardFragment;
+    DashboardFragment.OnQuickLinkListener mListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,14 +105,13 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
             }
         });
 
-        DashboardFragment dashboardFragment = new DashboardFragment();
+        dashboardFragment = new DashboardFragment();
 
         initializeFragmentListener(dashboardFragment);
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, dashboardFragment)
+                .replace(R.id.fragment_container, dashboardFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
-
 
 
         profileImage.setOnClickListener((view) -> {
@@ -213,12 +214,11 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
         }
     }
 
-
     private void selectFragment(MenuItem item) {
 
         switch (item.getItemId()) {
             case R.id.home_menu:
-                placeFragment(new DashboardFragment());
+                placeFragment(dashboardFragment);
                 break;
             case R.id.view_menu:
                 placeFragment(new ViewFragment());

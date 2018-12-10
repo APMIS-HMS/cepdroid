@@ -4,17 +4,17 @@ public class Reminder {
 
     private String type;
     private String name;
-    private String message;
     private String time;
+    private Object body;
 
     public Reminder() {
     }
 
-    public Reminder(String type, String name, String message, String time) {
+    public Reminder(String type, String name, String time, Object body) {
         this.type = type;
         this.name = name;
-        this.message = message;
         this.time = time;
+        this.body = body;
     }
 
     public String getType() {
@@ -33,14 +33,6 @@ public class Reminder {
         this.name = name;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public String getTime() {
         return time;
     }
@@ -49,12 +41,19 @@ public class Reminder {
         this.time = time;
     }
 
+    public Object getBody() {
+        return body;
+    }
+
+    public void setBody(Object body) {
+        this.body = body;
+    }
+
     @Override
     public String toString() {
         return "Reminder{" +
                 "type='" + type + '\'' +
                 ", name='" + name + '\'' +
-                ", message='" + message + '\'' +
                 ", time='" + time + '\'' +
                 '}';
     }

@@ -24,10 +24,10 @@ public class AppointmentViewModel extends ViewModel {
         this.apmisRepository = apmisRepository;
         sharedPreferencesManager = new SharedPreferencesManager(context);
 
-        mAppointments = apmisRepository.getAppointmentsForPatient(sharedPreferencesManager.getPersonId());
+        mAppointments = apmisRepository.getAppointmentsForPerson(sharedPreferencesManager.getPersonId());
     }
 
-    public LiveData<List<Appointment>> getAppointmentsForPatient() {
+    public LiveData<List<Appointment>> getAppointmentsForPerson() {
         return mAppointments;
     }
 

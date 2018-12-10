@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +25,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
-import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
-import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
+
+import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
@@ -54,12 +53,6 @@ public class ProfileActionFragment extends Fragment {
 
     @BindView(R.id.profile_button)
     Button myProfileButton;
-
-    @BindView(R.id.reminders_button)
-    Button remindersButton;
-
-    @BindView(R.id.alerts_button)
-    Button alertsButton;
 
     @BindView(R.id.facilities_button)
     Button facilitiesButton;
@@ -191,6 +184,14 @@ public class ProfileActionFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnProfileActionInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((ProfileActivity)getActivity()).setToolBarTitle("Profile Actions");
+        }
+        super.onResume();
     }
 
     @Override

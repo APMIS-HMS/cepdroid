@@ -24,6 +24,9 @@ public interface ApmisDao {
     @Query("SELECT * FROM person LIMIT 1")
     LiveData<PersonEntry> getUserData();
 
+    @Query("SELECT * FROM person LIMIT 1")
+    PersonEntry getStaticUserData();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertData(PersonEntry... personEntries);
 
@@ -33,14 +36,17 @@ public interface ApmisDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAppointment(Appointment appointment);
 
-    @Query("SELECT * FROM appointments WHERE personId = :patientId ORDER BY startDate DESC")
-    LiveData<List<Appointment>> findAppointmentsForPatient(String patientId);
+    @Query("SELECT * FROM appointments WHERE personId = :personId ORDER BY startDate ASC")
+    LiveData<List<Appointment>> findAppointmentsForPerson(String personId);
 
     @Query("SELECT * FROM appointments WHERE _id = :appointment_id")
     LiveData<Appointment> findAppointmentById(String appointment_id);
 
     @Query("SELECT * FROM appointments WHERE _id = :appointment_id")
     Appointment getAppointmentById(String appointment_id);
+
+    @Query("SELECT * FROM appointments WHERE personId = :personId AND (startDate LIKE :today OR startDate LIKE :yesterday OR startDate LIKE :tomorrow) ORDER BY startDate ASC")
+    LiveData<List<Appointment>> getDailyAppointments(String personId, String today, String yesterday, String tomorrow);
 
     @Query("DELETE FROM appointments")
     void deleteAllAppointments();

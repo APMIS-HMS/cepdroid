@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
@@ -24,7 +23,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -58,6 +59,12 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
 
     @BindView(R.id.search_card)
     CardView searchCard;
+
+    @BindView(R.id.empty_view)
+    RelativeLayout searchEmptyView;
+
+    @BindView(R.id.empty_text)
+    TextView emptyTextView;
 
     String selectedSearchTerm;
 
@@ -176,8 +183,9 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
             searchShimmer.stopShimmer();
         }
 
-        if (foundItemsViewModel == null)
-            initViewModel();
+        //TODO this is good but not fully tested
+        //if (foundItemsViewModel == null)
+        initViewModel();
 
         findSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -242,7 +250,9 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
                     foundItemsAdapter.showNullLoader();
 
                 } else {
-                    //todo show empty view
+                    searchEmptyView.setVisibility(View.VISIBLE);
+                    emptyTextView.setText(String.format(getString(R.string.empty_search_text),
+                            hostActivity.getSearchTerm(), hostActivity.getSearchQuery()));
                     searchShimmer.setVisibility(View.GONE);
                     searchShimmer.stopShimmer();
                     Snackbar.make(findSearchView, "Failed to load "
@@ -289,6 +299,7 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
                     }
                 }
 
+                searchEmptyView.setVisibility(View.GONE);
                 searchShimmer.setVisibility(View.GONE);
                 searchShimmer.stopShimmer();
 
@@ -298,7 +309,9 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
                     foundItemsAdapter.remove(foundItemsAdapter.getItemCount() - 1);
 
                 } else {
-                    //todo show empty view
+                    searchEmptyView.setVisibility(View.VISIBLE);
+                    emptyTextView.setText(String.format(getString(R.string.empty_search_text),
+                            hostActivity.getSearchTerm(), hostActivity.getSearchQuery()));
                     searchShimmer.setVisibility(View.GONE);
                     searchShimmer.stopShimmer();
                 }
@@ -316,6 +329,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
 
         hostActivity.setSearchQuery(searchQuery);
         hostActivity.setSearchTerm(selectedSearchTerm);
+
+        searchEmptyView.setVisibility(View.GONE);
 
         if (foundItemsAdapter != null) {
             foundItemsAdapter.clear();
@@ -361,6 +376,12 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
         foundItemsViewModel.populateExtra(hostActivity.getSearchTerm(),
                 hostActivity.getSearchQuery(), skipCount);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        hostActivity.setToolBarTitle(hostActivity.formatToPlural(hostActivity.getSearchTerm()));
     }
 
     @Override

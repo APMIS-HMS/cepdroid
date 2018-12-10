@@ -41,6 +41,23 @@ public class AppUtils {
 
     /**
      * Converts the current date-time to the String format required by the APMIS database.
+     * @param date {@link Date} object to convert
+     * @return String formatted in the APMIS Db style
+     */
+    public static String dateToDbString(Date date){
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
+
+        String dateString;
+
+        dateString = format.format(date);
+
+        return dateString;
+    }
+
+    /**
+     * Converts the current date-time to the String format required by the APMIS database.
      * Also converts timezone from the local TimeZone to UTC.
      * @param date {@link Date} object to convert
      * @return String formatted in the APMIS Db style
@@ -89,6 +106,20 @@ public class AppUtils {
      */
     public static String dateToReadableFullDateString(Date date){
         String pattern = "EEE, MMM dd, yyyy 'at' hh:mm a";
+
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
+
+        return format.format(date);
+    }
+
+    /**
+     * Formats a date to a readable string without the time, <br/>
+     * e.g, 2018-09-26 09:00:00 date would be represented as Wed, Sep 26, 2018
+     * @param date The {@link Date} object to format
+     * @return Readable date string
+     */
+    public static String dateToReadableFullDateStringNoTime(Date date){
+        String pattern = "EEE, MMM dd, yyyy";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
 

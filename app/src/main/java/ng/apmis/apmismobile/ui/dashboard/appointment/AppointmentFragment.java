@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -152,19 +151,11 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
             }
         };
 
-        appointmentViewModel.getAppointmentsForPatient().observe(this, appointmentsObserver);
+        appointmentViewModel.getAppointmentsForPerson().observe(this, appointmentsObserver);
 
         //appointmentViewModel.clearLoadStatus();
         appointmentViewModel.getAppointmentLoadStatus(sharedPreferencesManager.getPersonId())
                 .observe(this, appointmentLoadStatusObserver);
-    }
-
-
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        appointmentViewModel.getAppointmentsForPatient().removeObservers(this);
     }
 
     @Override
@@ -178,10 +169,9 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.appointment_add_fab:
-                Toast.makeText(getActivity(), "Add New Appointment", Toast.LENGTH_SHORT).show();
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .add(R.id.fragment_container, new AddAppointmentFragment())
+                        .replace(R.id.fragment_container, new AddAppointmentFragment())
                         .addToBackStack("appointment")
                         .commit();
         }

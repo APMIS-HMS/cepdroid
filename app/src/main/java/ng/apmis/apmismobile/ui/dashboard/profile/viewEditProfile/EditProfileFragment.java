@@ -582,6 +582,14 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
     }
 
     @Override
+    public void onResume() {
+        if (getActivity() != null) {
+            ((ProfileActivity)getActivity()).setToolBarTitle("My Profile");
+        }
+        super.onResume();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

@@ -43,6 +43,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
@@ -408,18 +409,16 @@ public class FoundHospitalDetailFragment extends Fragment {
         serviceText.setText(selectedService.getName());
         priceText.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(selectedPrice.getPrice())));
 
-        //Quickly fetch the user data from local db
-        LiveData<PersonEntry> entryLiveData = InjectorUtils.provideRepository(getContext()).getUserData();
-        Observer<PersonEntry> personEntryObserver = personEntry -> {
+
+        APMISAPP.getInstance().diskIO().execute(() -> {
+            PersonEntry personEntry = InjectorUtils.provideRepository(getContext()).getStaticUserData();
             if (personEntry != null){
-                //if (personEntry.getEmail() != null) {
+                logoImage.post(() -> {
                     apmisIdText.setText(personEntry.getApmisId());
                     nameText.setText(personEntry.getFirstName() + " " + personEntry.getLastName());
-                //}
+                });
             }
-        };
-        entryLiveData.removeObservers(this);
-        entryLiveData.observe(this, personEntryObserver);
+        });
 
 
         walletObserver = wallet -> {

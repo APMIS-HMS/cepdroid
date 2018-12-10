@@ -2,6 +2,8 @@ package ng.apmis.apmismobile.ui.dashboard.view;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,8 @@ public class ViewFragment extends Fragment {
 
     @BindView(R.id.list_items)
     ListView listItems;
+
+    ModuleAdapter moduleAdapter;
 
     private static final String CLASSNAME = "VIEW";
 
@@ -58,7 +62,7 @@ public class ViewFragment extends Fragment {
 
 
 
-        ModuleAdapter moduleAdapter = new ModuleAdapter(getActivity(), optionItems);
+        moduleAdapter = new ModuleAdapter(getActivity(), optionItems);
 
         listItems.setAdapter(moduleAdapter);
 
@@ -110,8 +114,9 @@ public class ViewFragment extends Fragment {
     void setFragment (Fragment fragment) {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_ENTER_MASK)
                 .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
+                .addToBackStack("view")
                 .commit();
     }
 

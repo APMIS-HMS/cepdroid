@@ -215,9 +215,10 @@
                 android:id="@+id/appointment_reason_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="40dp"
+                android:minHeight="65dp"
                 android:layout_marginBottom="35dp"
-                android:inputType="text"
+                android:gravity="top"
+                android:inputType="textMultiLine"
                 android:hint="Enter your reason here"
                 android:background="@drawable/textview_background_no_background_color" />
 

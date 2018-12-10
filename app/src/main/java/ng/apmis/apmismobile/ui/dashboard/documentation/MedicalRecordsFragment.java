@@ -79,8 +79,8 @@ public class MedicalRecordsFragment extends Fragment implements RecordsAdapter.O
         //Handle backstack popping creation
         if (recordsAdapter != null) {
             recordsRecycler.setAdapter(recordsAdapter);
-            recordsShimmer.setVisibility(View.GONE);
-            recordsShimmer.stopShimmer();
+            //recordsShimmer.setVisibility(View.GONE);
+            //recordsShimmer.stopShimmer();
         }
 
         initViewModel();

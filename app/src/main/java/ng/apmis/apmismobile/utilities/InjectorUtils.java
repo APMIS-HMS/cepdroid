@@ -8,8 +8,10 @@ import ng.apmis.apmismobile.data.database.ApmisDatabase;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
+import ng.apmis.apmismobile.data.database.personModel.Reminder;
 import ng.apmis.apmismobile.data.database.prescriptionModel.Prescription;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
+import ng.apmis.apmismobile.ui.dashboard.DashboardFragmentViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.PersonFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AddAppointmentViewModelFactory;
 import ng.apmis.apmismobile.ui.dashboard.appointment.AppointmentViewModelFactory;
@@ -212,4 +214,13 @@ public class InjectorUtils {
         return new FacilityLocationFactory(apmisRepository);
     }
 
+    /**
+     * Injects all dependencies to provide local data for {@link Reminder}s
+     * @param context
+     * @return
+     */
+    public static DashboardFragmentViewModelFactory provideDashboardFragmentViewModelFactory(Context context){
+        ApmisRepository apmisRepository = provideRepository(context.getApplicationContext());
+        return new DashboardFragmentViewModelFactory(apmisRepository, context);
+    }
 }
