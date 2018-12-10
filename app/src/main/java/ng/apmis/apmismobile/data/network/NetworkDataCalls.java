@@ -804,7 +804,6 @@ public final class NetworkDataCalls {
                 } else {
                     //return an empty list if nothing is there
                     InjectorUtils.provideNetworkData(context).setAppointments(new ArrayList<>());
-                    InjectorUtils.provideRepository(context).insertAppointmentsForPatient(new ArrayList<>());
                 }
 
             } catch (JSONException e) {
@@ -1233,6 +1232,7 @@ public final class NetworkDataCalls {
                 urlQuery = "employees?isActive=true&professionId=Nurse&$skip="+skipCount;
                 break;
             default:
+                InjectorUtils.provideNetworkData(context).setFoundObjects(new ArrayList<>());
                 return;
         }
 

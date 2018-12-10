@@ -51,7 +51,35 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/empty_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:alpha="0.5"
+                app:srcCompat="@drawable/ic_search_gray"/>
+
+            <TextView
+                android:id="@+id/empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/empty_image"
+                android:layout_margin="15dp"
+                android:padding="3dp"
+                android:gravity="center"
+                android:textColor="#777"
+                android:text="@string/empty_search_text" />
+
+        </RelativeLayout>
 
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/search_shimmer"
@@ -80,6 +108,7 @@
             android:id="@+id/search_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             tools:listitem="@layout/layout_found_item">
 
 

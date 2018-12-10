@@ -1,11 +1,10 @@
 package ng.apmis.apmismobile.data;
 
 
-import android.app.Activity;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
 import android.util.Log;
 
+import java.util.Date;
 import java.util.List;
 
 import ng.apmis.apmismobile.APMISAPP;
@@ -13,6 +12,7 @@ import ng.apmis.apmismobile.data.database.ApmisDao;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
+import ng.apmis.apmismobile.utilities.AppUtils;
 
 /**
  * Source of truth for data whether from database or from server
@@ -22,6 +22,8 @@ import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 public class ApmisRepository {
 
     private static final String LOG_TAG = ApmisRepository.class.getSimpleName();
+
+    private static long A_DAY_IN_MILLIS = 60 * 60 * 24 * 1000;
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -94,6 +96,11 @@ public class ApmisRepository {
         return mApmisDao.getUserData();
     }
 
+    public PersonEntry getStaticUserData () {
+        initializeData();
+        return mApmisDao.getStaticUserData();
+    }
+
     /**
      * Update the user data in the db
      * @param personEntry
@@ -156,11 +163,11 @@ public class ApmisRepository {
 
     /**
      * Get Appointment LiveData from room database
-     * @param patientId PatientId to query the Appointment
+     * @param personId PatientId to query the Appointment
      * @return The list of {@link Appointment}s wrapped in a LiveData object
      */
-    public LiveData<List<Appointment>> getAppointmentsForPatient(String patientId){
-        return mApmisDao.findAppointmentsForPatient(patientId);
+    public LiveData<List<Appointment>> getAppointmentsForPerson(String personId){
+        return mApmisDao.findAppointmentsForPerson(personId);
     }
 
     /**
@@ -180,6 +187,22 @@ public class ApmisRepository {
      */
     public Appointment getAppointmentById(String id){
         return mApmisDao.getAppointmentById(id);
+    }
+
+    /**
+     * Get Appointments for today as LiveData from room database
+     * @return The list of {@link Appointment}s wrapped in a LiveData object
+     */
+    public LiveData<List<Appointment>> getTodaysAppointments(String personId){
+        Date today = new Date();
+        Date yesterday = new Date(today.getTime() - A_DAY_IN_MILLIS);
+        Date tomorrow = new Date(today.getTime() + A_DAY_IN_MILLIS);
+
+        String todayQuery = AppUtils.dateToDbString(today).substring(0, 10) + "%";
+        String yesterdayQuery = AppUtils.dateToDbString(yesterday).substring(0, 10) + "%";
+        String tomorrowQuery = AppUtils.dateToDbString(tomorrow).substring(0, 10) + "%";
+
+        return mApmisDao.getDailyAppointments(personId, todayQuery, yesterdayQuery, tomorrowQuery);
     }
 
     public void deleteAllAppointments(){

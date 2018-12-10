@@ -10,12 +10,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
+import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.personModel.Reminder;
+import ng.apmis.apmismobile.utilities.AppUtils;
 
 public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder> {
 
@@ -27,13 +30,6 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
 
     public ReminderAdapter(Context mContext) {
         this.mContext = mContext;
-
-        reminders.add(new Reminder(TYPE_APPOINTMENT, "Sabaoth Clinic appointment", "Back pain", "4:00PM"));
-        reminders.add(new Reminder(TYPE_DRUG, "Panadol", "", "8:00AM"));
-        reminders.add(new Reminder(TYPE_DRUG, "Loratadine", "You'll probably die without these", "12:00PM"));
-        reminders.add(new Reminder(TYPE_APPOINTMENT, "APMIS Hospital appointment", "Chest pain and chronic coughs", "4:00PM"));
-        reminders.add(new Reminder(TYPE_DRUG, "Panadol", "Eat first before taking", "4:00PM"));
-
         notifyDataSetChanged();
     }
 
@@ -53,7 +49,6 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         Reminder reminder = reminders.get(position);
 
         holder.titleText.setText(String.format("%s", reminder.getName()));
-        holder.messageText.setText(reminder.getMessage());
         holder.timeText.setText(String.format("%s", reminder.getTime()));
 
         switch (reminder.getType()){
@@ -75,6 +70,42 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         return reminders.size();
     }
 
+    public void addAppointmentReminders(List<Appointment> appointments) {
+        for (Appointment appointment : appointments) {
+
+            if (!checkIfToday(appointment)) //skip loop if it isn't today's appointment
+                continue;
+
+            String name = appointment.getFacilityName() + " appointment";
+            String time = AppUtils.dateToReadableTimeString(AppUtils.dbStringToLocalDate(appointment.getStartDate()));
+            reminders.add(new Reminder(TYPE_APPOINTMENT, name, time, appointment));
+        }
+
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Check if an appointment is scheduled today (in local time)
+     * @param appointment
+     * @return
+     */
+    public static boolean checkIfToday(Appointment appointment){
+        //get the string date value now
+        String today = AppUtils.dateToDbString(new Date()).substring(0, 10) + "%";
+
+        //Get appointment date value in local time
+        Date appointmentDate = AppUtils.dbStringToLocalDate(appointment.getStartDate());
+        //Get appointment date value string
+        String appointmentDateString = AppUtils.dateToDbString(appointmentDate).substring(0, 10) + "%";
+
+        return today.equals(appointmentDateString);
+    }
+
+    public void clear() {
+        reminders.clear();
+        notifyDataSetChanged();
+    }
+
     class ReminderViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.type_image)
@@ -82,9 +113,6 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
 
         @BindView(R.id.title_text)
         TextView titleText;
-
-        @BindView(R.id.message_text)
-        TextView messageText;
 
         @BindView(R.id.time_text)
         TextView timeText;

@@ -59,7 +59,6 @@ public class FundWalletActivity extends AppCompatActivity implements CardEntryFr
      * @param fragment Fragment used to replace
      */
     private void placeFragment(Fragment fragment) {
-        //getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.fragment_container, fragment)

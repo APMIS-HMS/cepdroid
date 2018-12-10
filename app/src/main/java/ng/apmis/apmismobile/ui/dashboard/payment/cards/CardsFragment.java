@@ -12,6 +12,7 @@ import android.support.v7.widget.SnapHelper;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,7 +97,11 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
         //handles back stack pop call here
         if (cardListAdapter != null) {
             cardsRecycler.setAdapter(cardListAdapter);
+            Log.e("Dash", "Card adapter is not null");
 
+        } else {
+
+            Log.e("Dash", "Card adapter is null");
         }
 
         fundWithCardButton.setOnClickListener(v -> mListener.onAddCardButtonClicked());

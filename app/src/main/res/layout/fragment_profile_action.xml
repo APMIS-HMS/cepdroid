@@ -127,38 +127,6 @@
                         android:text="@string/my_profile"/>
 
                     <Button
-                        android:id="@+id/reminders_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="start|center_vertical"
-                        android:background="@android:color/white"
-                        android:layout_margin="5dp"
-                        android:padding="5dp"
-                        android:drawableLeft="@drawable/ic_notification_black"
-                        android:drawableStart="@drawable/ic_notification_black"
-                        android:drawablePadding="5dp"
-                        android:textColor="@color/almost_black"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        style="?android:attr/borderlessButtonStyle"
-                        android:text="@string/reminders"/>
-
-                    <Button
-                        android:id="@+id/alerts_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="start|center_vertical"
-                        android:background="@android:color/white"
-                        android:layout_margin="5dp"
-                        android:padding="5dp"
-                        android:drawableLeft="@drawable/ic_error_outline_black"
-                        android:drawableStart="@drawable/ic_error_outline_black"
-                        android:drawablePadding="5dp"
-                        android:textColor="@color/almost_black"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        style="?android:attr/borderlessButtonStyle"
-                        android:text="Alerts"/>
-
-                    <Button
                         android:id="@+id/facilities_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

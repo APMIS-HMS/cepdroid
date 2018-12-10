@@ -205,7 +205,7 @@
         <item>Hospital</item>
         <item>Doctor</item>
         <item>Nurse</item>
-        <item>Services</item>
+        <item>Service</item>
         <item>Pharmacy</item>
         <item>Ambulance</item>
     </string-array>
@@ -241,5 +241,6 @@
     <string name="home">Home</string>
     <string name="fund_with_card">Fund with Card</string>
     <string name="censored">&#9679;&#9679;&#9679;&#9679;</string>
+    <string name="empty_search_text">Could not find any %s matching \"%s\"</string>
 
 </resources>

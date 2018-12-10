@@ -2,12 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_scroll"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#fff">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#fff"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context="ng.apmis.apmismobile.ui.dashboard.DashboardFragment">
 
@@ -213,20 +213,26 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/quick_links_group"
             android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginLeft="25dp"
             android:layout_marginRight="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="0dp"
             android:textSize="18sp"
-            android:textStyle="bold"
             android:text="Wednesday, 28th November, 2018"/>
+
+        <View
+            android:id="@+id/divider_line"
+            style="@style/HorizontalDivider"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/reminder_date"
+            android:layout_marginBottom="1dp"/>
 
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/reminder_date"
+            android:layout_below="@+id/divider_line"
             android:descendantFocusability="blocksDescendants">
 
 
@@ -239,15 +245,33 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginEnd="10dp"
                 android:padding="5dp"
+                tools:listitem="@layout/layout_reminder_item"
                 android:visibility="visible">
 
             </android.support.v7.widget.RecyclerView>
 
+            <ProgressBar
+                android:id="@+id/reminder_loader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:visibility="visible"/>
+
+
+            <TextView
+                android:id="@+id/reminder_empty_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:text="No reminders to display today"
+                android:visibility="gone"/>
 
 
         </RelativeLayout>
 
-    <Button
+        <Button
         android:id="@+id/open_close_reminders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
