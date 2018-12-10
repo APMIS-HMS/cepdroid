@@ -33,6 +33,7 @@ import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.signup.SignupActivity;
 import ng.apmis.apmismobile.utilities.Constants;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * A login screen that offers login via apmisId/password.
@@ -183,6 +184,20 @@ public class LoginActivity extends AppCompatActivity {
                     String dbId = userObj.getString("_id");
 
                     sharedPreferencesManager.storeLoggedInUserDetails(token, personId, email, dbId);
+
+                    APMISAPP.getInstance().diskIO().execute(() -> {
+                        InjectorUtils.provideRepository(this).getUserData().observe(this, personEntry -> {
+                            if (personEntry != null) {
+                                Log.e("same data ?", String.valueOf(personId.equals(personEntry.get_id())));
+                                if (!personId.equals(personEntry.get_id())) {
+                                    APMISAPP.getInstance().diskIO().execute(() -> {
+                                        InjectorUtils.provideRepository(this).clearOldUserData(this);
+                                    });
+                                }
+                            }
+                        });
+                    });
+
 
                     Log.v("sharedPRef", String.valueOf(sharedPreferencesManager.getStoredLoggedInUser()));
                 } catch (JSONException e) {

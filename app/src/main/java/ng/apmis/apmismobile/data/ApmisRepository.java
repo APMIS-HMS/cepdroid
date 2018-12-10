@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.File;
 import java.util.List;
 
 import ng.apmis.apmismobile.APMISAPP;
@@ -13,6 +14,7 @@ import ng.apmis.apmismobile.data.database.ApmisDao;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
+import ng.apmis.apmismobile.utilities.AppUtils;
 
 /**
  * Source of truth for data whether from database or from server
@@ -186,7 +188,16 @@ public class ApmisRepository {
         mApmisDao.deleteAllAppointments();
     }
 
+    public void clearSingleton () {
+        sInstance = null;
+    }
 
+    public void clearOldUserData (Context context) {
+        deleteOldData();
+        deleteAllAppointments();
+        File profilePhotoDir = new File(context.getFilesDir(), "profilePhotos");
 
+        AppUtils.deleteRecursive(profilePhotoDir);
 
+    }
 }

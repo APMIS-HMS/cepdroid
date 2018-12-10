@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -498,6 +499,34 @@ public class AppUtils {
             }
         }
         return builder.reverse().toString();
+    }
+
+    public static void deleteRecursive(File fileOrDirectory) {
+
+        if (fileOrDirectory.isDirectory())
+
+            for (File child : fileOrDirectory.listFiles()) {
+
+                Log.e("Tag", "Deleted child at "+child.getAbsolutePath());
+
+                deleteRecursive(child);
+
+            }
+
+
+
+        try {
+
+            Log.e("Tag", "Deleted directory at "+fileOrDirectory.getAbsolutePath());
+
+            fileOrDirectory.delete();
+
+        } catch (Exception ignored){
+
+
+
+        }
+
     }
 
 

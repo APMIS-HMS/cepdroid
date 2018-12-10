@@ -3,6 +3,7 @@ package ng.apmis.apmismobile.ui.dashboard.profile.profileAction;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
+import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
+import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
+import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
@@ -100,6 +104,14 @@ public class ProfileActionFragment extends Fragment {
         myProfileButton.setOnClickListener(v -> mListener.onProfileAction(ACTION_MY_PROFILE));
 
         apmisIdText.setText(prefs.getStoredApmisId());
+
+        logoutButton.setOnClickListener((v) -> {
+            InjectorUtils.provideNetworkData(getActivity()).clearSingleton();
+            InjectorUtils.provideRepository(getActivity()).clearSingleton();
+            prefs.storeLoggedInUserDetails("","","","");
+            startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+            getActivity().finishAffinity();
+        });
 
         return view;
     }

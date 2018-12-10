@@ -943,4 +943,9 @@ public class ApmisNetworkDataSource {
 
         registeredPatient.postValue(patient);
     }
+
+    public void clearSingleton () {
+        sInstance = null;
+    }
+
 }
