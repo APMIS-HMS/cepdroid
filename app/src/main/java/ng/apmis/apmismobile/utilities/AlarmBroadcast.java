@@ -18,9 +18,15 @@ public class AlarmBroadcast extends BroadcastReceiver {
 
         Log.i("Alarm", "here");
 
+        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+           AlarmIntentService.startResetAlarms(context);
+
+            Log.e("OnrestartAlarm", "here");
+        }
+
         if (intent.getAction() != null && intent.getAction().equals("appointment_reminder")) {
 
-            Log.d("Alarm", "received");
+            Log.e("Alarm", "received");
 
             String appointmentId = intent.getExtras().getString("appointment_reminder_id");
 

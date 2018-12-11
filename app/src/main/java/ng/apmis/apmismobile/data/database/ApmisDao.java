@@ -51,4 +51,6 @@ public interface ApmisDao {
     @Query("DELETE FROM appointments")
     void deleteAllAppointments();
 
+    @Query("SELECT * FROM appointments")
+    List<Appointment> getStaticAppointmentList();
 }

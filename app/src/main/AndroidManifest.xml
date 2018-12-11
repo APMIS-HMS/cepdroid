@@ -27,7 +27,6 @@
         android:roundIcon="@mipmap/ic_launcher_apmis_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".ui.WelcomeScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/login"
@@ -84,8 +82,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <receiver android:name=".utilities.AlarmBroadcast" />
-
         <activity
             android:name=".ui.dashboard.find.foundItems.FoundItemsActivity"
             android:theme="@style/TransitionAppTheme">
@@ -97,7 +93,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".ui.dashboard.payment.FundWalletActivity"
             android:theme="@style/BackgroundTheme" />
@@ -105,18 +100,27 @@
         <meta-data
             android:name="co.paystack.android.PublicKey"
             android:value="pk_test_3c53bcffeb3c889d04ea0f905c44d36fc342aa85" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB6ywArqljTvZ5WiIvQqnjOnwMuSVFJ1-I" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <service
             android:name=".data.GeofenceTransitionsIntentService"
-            android:exported="false"/>
+            android:exported="false" />
+        <service
+            android:name=".utilities.AlarmIntentService"
+            android:exported="false" />
+
+        <receiver android:name=".utilities.AlarmBroadcast"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -58,6 +59,7 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
     TransactionViewModel transactionViewModel;
     TransactionHistoryViewModelFactory transactionHistoryViewModelFactory;
     SharedPreferencesManager sharedPreferencesManager;
+    ArrayList<Object> listItems;
 
     @Nullable
     @Override
@@ -83,26 +85,29 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
         transactionViewModel = ViewModelProviders.of(this, transactionHistoryViewModelFactory).get(TransactionViewModel.class);
 
         transactionViewModel.getPersonWallet(sharedPreferencesManager.getPersonId()).observe(this, wallet -> {
-
+            Log.e("wallet state", String.valueOf(wallet));
             if (wallet == null){
                 Snackbar.make(recyclerView, "Failed to load Account details ", Snackbar.LENGTH_LONG).show();
-                return;
+                Toast.makeText(recyclerView.getContext(), "Wallet is null", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(recyclerView.getContext(), "Wallet is not - null", Toast.LENGTH_SHORT).show();
+                listItems = new ArrayList<>();
+
+                listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
+                listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
+                listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));
+
+                listItems.addAll(wallet.getTransactions());
+
+                adapter.setItems(listItems);
+
+                transactionHistoryShimmer.stopShimmer();
+                beneficiaryShimmer.stopShimmer();
+
+                transactionHistoryShimmer.setVisibility(View.GONE);
+                beneficiaryShimmer.setVisibility(View.GONE);
             }
 
-            ArrayList<Object> listItems = new ArrayList<>();
-            listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
-            listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
-            listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));
-
-            listItems.addAll(wallet.getTransactions());
-
-            adapter.setItems(listItems);
-
-            transactionHistoryShimmer.stopShimmer();
-            beneficiaryShimmer.stopShimmer();
-
-            transactionHistoryShimmer.setVisibility(View.GONE);
-            beneficiaryShimmer.setVisibility(View.GONE);
 
         });
 

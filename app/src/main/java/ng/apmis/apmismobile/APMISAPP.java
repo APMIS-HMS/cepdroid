@@ -3,6 +3,7 @@ package ng.apmis.apmismobile;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,6 +19,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import co.paystack.android.PaystackSdk;
+import ng.apmis.apmismobile.utilities.NotificationUtils;
 
 public class APMISAPP extends Application{
 
@@ -54,6 +56,9 @@ public class APMISAPP extends Application{
                 sInstance = new APMISAPP(Executors.newSingleThreadExecutor(),
                         Executors.newFixedThreadPool(3),
                         new MainThreadExecutor());
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationUtils.createNotificationChannel(this);
             }
         }
     }

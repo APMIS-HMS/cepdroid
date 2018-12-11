@@ -223,4 +223,12 @@ public class ApmisRepository {
         AppUtils.deleteRecursive(profilePhotoDir);
 
     }
+
+    /**
+     * Get appointments without livedata
+     * @return Static list of appointments
+     */
+    public List<Appointment> getStaticAppointmentList () {
+        return mApmisDao.getStaticAppointmentList();
+    }
 }

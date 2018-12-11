@@ -242,5 +242,7 @@
     <string name="fund_with_card">Fund with Card</string>
     <string name="censored">&#9679;&#9679;&#9679;&#9679;</string>
     <string name="empty_search_text">Could not find any %s matching \"%s\"</string>
+    <string name="channel_name">Apmis notification channel</string>
+    <string name="channel_description">APMIS notification</string>
 
 </resources>

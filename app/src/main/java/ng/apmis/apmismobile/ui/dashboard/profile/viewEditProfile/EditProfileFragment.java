@@ -28,6 +28,7 @@ import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,6 +153,20 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
     @OnClick(R.id.save_changes_button)
     void saveChangesClicked(){
+
+        if (TextUtils.isEmpty(firstNameEdit.getText().toString())) {
+            firstNameEdit.setError("Field cannot be empty");
+            return;
+        }
+        if (TextUtils.isEmpty(lastNameEdit.getText().toString())) {
+            lastNameEdit.setError("Field cannot be empty");
+            return;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(emailEdit.getText().toString()).matches()) {
+            emailEdit.setError("Check email");
+            return;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogMinWidth);
         AlertDialog dialog = builder.create();
         View authorizeLayout = LayoutInflater.from(getContext()).inflate(R.layout.layout_apmis_authorize, null, false);

@@ -282,12 +282,6 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
             case Constants.APPOINTMENTS:
 
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new DashboardFragment())
-                        .addToBackStack(null)
-                        .setReorderingAllowed(true)
-                        .commit();
-
-                getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new AppointmentFragment())
                         .addToBackStack(null)
                         .setReorderingAllowed(true)
