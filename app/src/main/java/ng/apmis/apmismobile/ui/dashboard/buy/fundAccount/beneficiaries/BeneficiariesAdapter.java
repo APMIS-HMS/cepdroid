@@ -4,11 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,31 +25,62 @@ import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
  * Created by Thadeus-APMIS on 10/26/2018.
  */
 
-public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdapter.MyViewHolder> {
+public class BeneficiariesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<Beneficiaries> beneficiaries;
     private Context context;
+    private final int ADD_BENEFICIARY = 0;
+    private final int BENEFICIARY = 1;
+    private final int EMPTY_BENEFICIARY = 2;
 
     public BeneficiariesAdapter(Context context, ArrayList<Beneficiaries> beneficiaries) {
         this.context = context;
-        this.beneficiaries = beneficiaries;
+        this.beneficiaries = new ArrayList<>();
+
+        //Add arbitrary item in first position to enable showing add button in the first position of onbindview
+        this.beneficiaries.add(new Beneficiaries(null, 0));
+
+        this.beneficiaries.addAll(beneficiaries);
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.beneficiaries_item, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        RecyclerView.ViewHolder holder;
 
-        return new MyViewHolder(root);
+        switch (viewType) {
+            case BENEFICIARY:
+                view = layoutInflater.inflate(R.layout.beneficiaries_item, parent ,false);
+                holder = new MyViewHolder(view);
+                return holder;
+            default:
+                view = layoutInflater.inflate(R.layout.add_beneficiary, parent, false);
+                holder = new AddBeneficiaryViewHolder(view);
+                return holder;
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Beneficiaries beneficiary = this.beneficiaries.get(position);
-        holder.imageView.setImageResource(beneficiary.getImage());
-        holder.userName.setText(beneficiary.getName());
+        if (getItemViewType(position) == BENEFICIARY) {
+            ((MyViewHolder)holder).imageView.setImageResource(beneficiary.getImage());
+            ((MyViewHolder)holder).userName.setText(beneficiary.getName());
+        }
+
     }
 
+    @Override
+    public int getItemViewType(int position) {
+
+        if (position == 0) {
+            return ADD_BENEFICIARY;
+        } else {
+            return BENEFICIARY;
+        }
+    }
 
     @Override
     public int getItemCount() {
@@ -69,6 +104,31 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<BeneficiariesAdap
         @Override
         public void onClick(View v) {
             v.getContext().startActivity(new Intent(v.getContext(), FundWalletActivity.class));
+        }
+    }
+
+    class AddBeneficiaryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        TextView emptyText;
+        ImageView addImage;
+        RelativeLayout parentLayout;
+
+        AddBeneficiaryViewHolder(View itemView) {
+            super(itemView);
+            parentLayout = itemView.findViewById(R.id.add_layout);
+            addImage = itemView.findViewById(R.id.add_image);
+            emptyText = itemView.findViewById(R.id.empty_text);
+            itemView.setOnClickListener(this);
+            Log.e("bene size", String.valueOf(beneficiaries.size()));
+            if (beneficiaries.size() < 1) {
+                parentLayout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 160));
+                emptyText.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(context, "Adds a new beneficiary", Toast.LENGTH_SHORT).show();
         }
     }
 }

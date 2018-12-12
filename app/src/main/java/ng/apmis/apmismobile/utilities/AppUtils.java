@@ -532,6 +532,19 @@ public class AppUtils {
         return builder.reverse().toString();
     }
 
+    public static String formatExpiryWithSlash(String cardNum){
+        String expString = String.valueOf(cardNum);
+
+        StringBuilder builder = new StringBuilder(expString);
+
+        for (int i=0; i<expString.length()-1; ++i){
+            if ((i+1) == 2){
+                builder.insert(i + 1,"/");
+            }
+        }
+        return builder.toString();
+    }
+
     public static void deleteRecursive(File fileOrDirectory) {
 
         if (fileOrDirectory.isDirectory())

@@ -244,5 +244,6 @@
     <string name="empty_search_text">Could not find any %s matching \"%s\"</string>
     <string name="channel_name">Apmis notification channel</string>
     <string name="channel_description">APMIS notification</string>
+    <string name="no_beneficiary">No beneficiaries added</string>
 
 </resources>

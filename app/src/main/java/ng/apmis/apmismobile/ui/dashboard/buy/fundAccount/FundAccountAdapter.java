@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,15 +33,12 @@ import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 
 public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final int BENEFICIARIES = 0;
-    private final int TRANSACTION = 1;
-    private final int BENEFICIARIES_HEADER = 2;
-    private final int TRANSACTION_HEADER = 3;
-    private final int ALL_HEADERS_WITH_EMPTY_VIEW = 4;
-    private boolean isBeneficiaryInflated, isTransactionInflated = false;
+    private final int BENEFICIARIES = 2;
+    private final int TRANSACTION = 3;
+    private final int BENEFICIARIES_HEADER = 0;
+    private final int TRANSACTION_HEADER = 1;
 
     private Context context;
-    private ArrayList<SegmentedObjects> segmentedObjectsList;
     private ArrayList<Beneficiaries> beneficiaries;
     private ArrayList<Transaction> transactions;
 
@@ -53,50 +51,21 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public FundAccountAdapter(Context context) {
         this.context = context;
-        this.segmentedObjectsList = new ArrayList<>();
         this.beneficiaries = new ArrayList<>();
         this.transactions = new ArrayList<>();
     }
 
-    void setItems(ArrayList<Object> newItems) {
-        boolean isEnteredTransaction = false;
-        this.segmentedObjectsList = new ArrayList<>();
-        this.beneficiaries = new ArrayList<>();
-        this.transactions = new ArrayList<>();
-        filterObjects(newItems);
-        for (int i = 0; i < newItems.size(); i++) {
-            if (i == 0) {
-                segmentedObjectsList.add(new SegmentedObjects(Type.BEN_HEADER.typeName, null));
-            }
-            if (newItems.get(i) instanceof Beneficiaries) {
-                segmentedObjectsList.add(new SegmentedObjects(Type.BEN.typeName, (Beneficiaries) newItems.get(i)));
-            } else {
-                //Once it gets here, the beneficiary items are exhausted
-                if (!isEnteredTransaction) {
-                    segmentedObjectsList.add((new SegmentedObjects(Type.TRX_HEADER.typeName, null)));
-                    isEnteredTransaction = true;
-                }
-            }
-            if (newItems.get(i) instanceof Transaction) {
-                segmentedObjectsList.add(new SegmentedObjects(Type.TRX.typeName, (Transaction) newItems.get(i)));
-            }
+    void setItems(ArrayList<Beneficiaries> benList, List<Transaction> trxList) {
+        if (!this.beneficiaries.isEmpty() || !this.transactions.isEmpty()) {
+            this.beneficiaries = new ArrayList<>();
+            this.transactions = new ArrayList<>();
         }
-        Log.e("Segmented items", String.valueOf(segmentedObjectsList));
+        this.beneficiaries.addAll(benList);
+        this.transactions.addAll(trxList);
         notifyDataSetChanged();
     }
 
-    private void filterObjects (ArrayList<Object> items) {
-    Log.e("items to filter", String.valueOf(items));
-        for (Object x: items) {
-            if (x instanceof Beneficiaries) {
-                this.beneficiaries.add((Beneficiaries) x);
-            } else {
-                this.transactions.add((Transaction) x);
-            }
-        }
-    }
-
-    public void instantiateFundWalletClickedListener(OnFundWalletClickedListener listener) {
+    void instantiateFundWalletClickedListener(OnFundWalletClickedListener listener) {
         this.mListener = listener;
     }
 
@@ -132,53 +101,42 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
 
-        SegmentedObjects segmentedObjects = segmentedObjectsList.get(position);
-        Log.e("segmentedObjects", String.valueOf(segmentedObjects.objectType));
-
-            if (segmentedObjects.objectType.equals(Type.BEN_HEADER.typeName)) {
-                return BENEFICIARIES_HEADER;
-            }
-            if (segmentedObjects.objectType.equals(Type.BEN.typeName)) {
-                return BENEFICIARIES;
-            }
-            if (segmentedObjects.objectType.equals(Type.TRX_HEADER.typeName)) {
-                return TRANSACTION_HEADER;
-            }
-            if (segmentedObjects.objectType.equals(Type.TRX.typeName)) {
-                return TRANSACTION;
-            }
-        return ALL_HEADERS_WITH_EMPTY_VIEW;
+        if (position == 2) {
+            return TRANSACTION_HEADER;
+        }
+        if (position == 1) {
+            return BENEFICIARIES;
+        }
+        if (position == 3) {
+            return TRANSACTION;
+        }
+        return BENEFICIARIES_HEADER;
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
         if (holder.getItemViewType() == BENEFICIARIES) {
-            if (!isBeneficiaryInflated)
-                beneficiaryViewHolder((BeneficiariesViewHolder)holder);
-                isBeneficiaryInflated = true;
+            beneficiaryViewHolder((BeneficiariesViewHolder) holder);
         }
 
         if (holder.getItemViewType() == TRANSACTION) {
-            if (!isTransactionInflated)
-                transactionViewHolder((TransactionHistoryViewHolder)holder);
-                isTransactionInflated = true;
+            transactionViewHolder((TransactionHistoryViewHolder) holder);
         }
 
     }
 
     @Override
     public int getItemCount() {
-        return segmentedObjectsList.size();
+        return transactions.isEmpty() ? 0 : 4;
     }
 
-    private void beneficiaryViewHolder (BeneficiariesViewHolder holder) {
+    private void beneficiaryViewHolder(BeneficiariesViewHolder holder) {
         BeneficiariesAdapter beneficiariesAdapter = new BeneficiariesAdapter(context, beneficiaries);
         holder.beneficiaryRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         holder.beneficiaryRecycler.setAdapter(beneficiariesAdapter);
     }
 
-    private void transactionViewHolder (TransactionHistoryViewHolder holder) {
+    private void transactionViewHolder(TransactionHistoryViewHolder holder) {
         TransactionHistoryAdapter transactionHistoryAdapter = new TransactionHistoryAdapter(context, transactions);
         holder.transactionRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         holder.transactionRecycler.setAdapter(transactionHistoryAdapter);
@@ -186,7 +144,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
-    class BeneficiariesHeaderViewHolder extends RecyclerView.ViewHolder{
+    class BeneficiariesHeaderViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.fund_wallet)
         Button fundWalletButton;
@@ -226,10 +184,9 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @BindView(R.id.beneficiary_recycler)
         RecyclerView beneficiaryRecycler;
 
-        public BeneficiariesViewHolder(View itemView) {
+        BeneficiariesViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            beneficiaryRecycler.setVisibility(View.GONE);
         }
 
     }
@@ -240,35 +197,10 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @BindView(R.id.transaction_recycler)
         RecyclerView transactionRecycler;
 
-        public TransactionHistoryViewHolder(View itemView) {
+        TransactionHistoryViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
-
-
-
-    class SegmentedObjects {
-        private String objectType;
-        private Object object;
-
-        SegmentedObjects(String type, Object object) {
-            this.objectType = type;
-            this.object = object;
-        }
-
-    }
-
-    private enum Type {
-        BEN("beneficiary"), TRX("transaction"), BEN_HEADER("ben-header"), TRX_HEADER("trx-header");
-
-        private String typeName;
-
-        Type(String type) {
-            this.typeName = type;
-        }
-
-    }
-
 
 }

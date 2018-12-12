@@ -59,7 +59,7 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
     TransactionViewModel transactionViewModel;
     TransactionHistoryViewModelFactory transactionHistoryViewModelFactory;
     SharedPreferencesManager sharedPreferencesManager;
-    ArrayList<Object> listItems;
+    ArrayList<Beneficiaries> listItems;
 
     @Nullable
     @Override
@@ -85,21 +85,16 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
         transactionViewModel = ViewModelProviders.of(this, transactionHistoryViewModelFactory).get(TransactionViewModel.class);
 
         transactionViewModel.getPersonWallet(sharedPreferencesManager.getPersonId()).observe(this, wallet -> {
-            Log.e("wallet state", String.valueOf(wallet));
-            if (wallet == null){
-                Snackbar.make(recyclerView, "Failed to load Account details ", Snackbar.LENGTH_LONG).show();
-                Toast.makeText(recyclerView.getContext(), "Wallet is null", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(recyclerView.getContext(), "Wallet is not - null", Toast.LENGTH_SHORT).show();
+
+            if (wallet != null){
+
                 listItems = new ArrayList<>();
-
-                listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
+               /* listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
                 listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
-                listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));
+                listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));*/
 
-                listItems.addAll(wallet.getTransactions());
 
-                adapter.setItems(listItems);
+                adapter.setItems(listItems, wallet.getTransactions());
 
                 transactionHistoryShimmer.stopShimmer();
                 beneficiaryShimmer.stopShimmer();
