@@ -86,7 +86,7 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
     private OnFragmentInteractionListener mListener;
 
     public interface OnFragmentInteractionListener {
-        void onViewIdActionPerformed(String id, String name);
+        void onViewIdActionPerformed(String id, String name, String subName);
     }
 
     public FoundItemsListFragment() {
@@ -250,9 +250,13 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
                     foundItemsAdapter.showNullLoader();
 
                 } else {
-                    searchEmptyView.setVisibility(View.VISIBLE);
-                    emptyTextView.setText(String.format(getString(R.string.empty_search_text),
-                            hostActivity.getSearchTerm(), hostActivity.getSearchQuery()));
+                    //This check is in case of onBackPressed re-creations
+                    if ((foundItemsAdapter != null && foundItemsAdapter.getItemCount() == 0) ||
+                            foundItemsAdapter == null) {
+                        searchEmptyView.setVisibility(View.VISIBLE);
+                        emptyTextView.setText(String.format(getString(R.string.empty_search_text),
+                                hostActivity.getSearchTerm(), hostActivity.getSearchQuery()));
+                    }
                     searchShimmer.setVisibility(View.GONE);
                     searchShimmer.stopShimmer();
                     Snackbar.make(findSearchView, "Failed to load "
@@ -363,8 +367,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
     }
 
     @Override
-    public void onViewClicked(String id, String name) {
-        mListener.onViewIdActionPerformed(id, name);
+    public void onViewClicked(String id, String name, String subName) {
+        mListener.onViewIdActionPerformed(id, name, subName);
     }
 
     @Override

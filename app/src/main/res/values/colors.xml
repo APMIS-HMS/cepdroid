@@ -10,5 +10,6 @@
     <color name="almost_black">#292929</color>
     <color name="pale_cyan">#cfe1ec</color>
     <color name="pale_blue">#190071bc</color>
+    <color name="background_color">#fdfdfd</color>
 
 </resources>

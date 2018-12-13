@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +77,12 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
         mGeofenceList = new ArrayList<>();
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewCompat.setTranslationZ(getView(), 10f);
     }
 
     void initViewModel() {

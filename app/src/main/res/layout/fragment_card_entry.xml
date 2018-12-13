@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context="ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity">
 
     <ScrollView
@@ -30,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
                     android:text="Card number"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/card_edit"
@@ -39,9 +40,7 @@
                     android:padding="5dp"
                     android:text="5060666666666666666"
                     android:background="@drawable/edittext_background"
-                    android:drawableEnd="@android:drawable/ic_menu_camera"
-                    android:drawablePadding="8dp"
-                    android:drawableRight="@android:drawable/ic_menu_camera" />
+                    android:drawablePadding="8dp" />
 
             </LinearLayout>
 
@@ -61,8 +60,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:text="Expiration MM/YY"
-                        android:textSize="16sp" />
+                        android:text="Expiry MM/YY"
+                        android:textSize="14sp" />
 
                     <EditText
                         android:id="@+id/expiration_edit"
@@ -93,7 +92,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:text="CVV"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
                     <EditText
                         android:id="@+id/cvv_edit"
@@ -121,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
                     android:text="Email Address"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/email_edit"
@@ -145,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
                     android:text="Amount"
-                    android:textSize="16sp"/>
+                    android:textSize="14sp"/>
 
                 <EditText
                     android:id="@+id/amount_edit"
@@ -178,6 +177,22 @@
                 android:textColor="@color/action_button_text_color"
                 android:background="@drawable/action_button"
                 android:text="PAY" />
+
+            <TextView
+                android:id="@+id/paystack_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:drawableLeft="@drawable/ic_paystack"
+                android:drawableStart="@drawable/ic_paystack"
+                android:drawablePadding="5dp"
+                android:textSize="14sp"
+                android:text="  Payment secured by Paystack. \nWhat is Paystack?"
+                />
 
         </LinearLayout>
 

@@ -20,8 +20,9 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:textSize="12sp"
             android:layout_margin="1dp"
-            android:visibility="gone"
+            android:visibility="visible"
             android:text="22/05/2019"/>
 
         <TextView
@@ -32,7 +33,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold"
             android:layout_marginBottom="3dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:maxLines="2"
             android:ellipsize="end"
             android:text="Generic Drug"/>
@@ -62,13 +63,13 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textStyle="bold"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:text="After a meal only" />
 
         <Button
             android:id="@+id/add_to_cart_button"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignBottom="@+id/instruction_text"
@@ -81,7 +82,7 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="15dp"
             android:layout_below="@+id/instruction_text">
 
             <LinearLayout
@@ -93,6 +94,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="12sp"
                     android:gravity="center"
                     android:text="Dosage"/>
 
@@ -124,6 +126,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="12sp"
                     android:gravity="center"
                     android:text="Frequency"/>
 
@@ -156,6 +159,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="12sp"
                     android:gravity="center"
                     android:text="Prescribed by"/>
 

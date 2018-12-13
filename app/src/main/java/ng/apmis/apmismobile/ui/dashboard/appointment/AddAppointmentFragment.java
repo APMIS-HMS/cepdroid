@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,10 +44,13 @@ import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
+import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
+import ng.apmis.apmismobile.data.database.fundAccount.Price;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
 import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.ClinicAdapter;
 import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.EmployeeAdapter;
 import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.FacilityAdapter;
+import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.PriceAdapter;
 import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.ScheduleAdapter;
 import ng.apmis.apmismobile.ui.dashboard.appointment.adapters.ServiceAdapter;
 import ng.apmis.apmismobile.utilities.AlarmBroadcast;
@@ -109,6 +113,15 @@ public class AddAppointmentFragment extends Fragment {
     @BindView(R.id.select_employee_refresh)
     Button selectEmployeeRefresh;
 
+    @BindView(R.id.pricing_spinner)
+    Spinner selectPriceSpinner;
+
+    @BindView(R.id.pricing_progress)
+    ProgressBar selectPriceProgress;
+
+    @BindView(R.id.pricing_refresh)
+    Button selectPriceRefresh;
+
     @BindView(R.id.clinic_schedule_spinner)
     Spinner clinicScheduleSpinner;
 
@@ -133,6 +146,7 @@ public class AddAppointmentFragment extends Fragment {
     ServiceAdapter serviceAdapter;
     EmployeeAdapter employeeAdapter;
     ScheduleAdapter scheduleAdapter;
+    PriceAdapter priceAdapter;
     AddAppointmentViewModel appointmentViewModel;
 
     //Selectable data lists
@@ -142,6 +156,8 @@ public class AddAppointmentFragment extends Fragment {
     private List<Service> mServices;
     private List<Employee> mEmployees;
     private List<ScheduleItem> mScheduleItems;
+    private List<Price> mPrices;
+    private BillManager mBill;
 
     //Selectable data items
     private AppointmentType mAppointmentType;
@@ -150,6 +166,7 @@ public class AddAppointmentFragment extends Fragment {
     private ClinicSchedule mSelectedClinic;
     private Service mSelectedService;
     private Employee mSelectedDoctor;
+    private Price mSelectedPrice;
     private ScheduleItem mSelectedSchedule;
     private Date mYourSchedule;
 
@@ -183,9 +200,16 @@ public class AddAppointmentFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewCompat.setTranslationZ(getView(), 20f);
+    }
+
     Observer<List<ClinicSchedule>> clinicsObserver;
     Observer<List<Service>> serviceObserver;
     Observer<List<Employee>> employeeObserver;
+    Observer<BillManager> billManagerObserver;
 
     /**
      * Initialize the AppointmentViewModel and set up all the observers
@@ -405,6 +429,46 @@ public class AddAppointmentFragment extends Fragment {
 
             appointmentViewModel.getEmployees(mSelectedFacility.getId(), true).observe(AddAppointmentFragment.this, employeeObserver);
         });
+
+
+        //Bill Manager Observer
+
+        billManagerObserver = bill -> {
+
+            if (mSelectedPrice == null){
+                return;
+            }
+
+            //return in case a bill from the wrong facility is returned from an earlier request
+            if (bill != null){
+                if (!bill.getFacilityId().equals(mSelectedFacility.getId()))
+                    return;
+            }
+
+            if (bill == null){
+                selectPriceProgress.setVisibility(View.GONE);
+                selectPriceRefresh.setVisibility(View.VISIBLE);
+                //appointmentViewModel.resetEmployees();
+                return;
+            }
+
+            mBill = bill;
+
+//            if (priceAdapter == null) {
+//                priceAdapter = new PriceAdapter(getContext(), 0, mPrices);
+//                selectPriceSpinner.setAdapter(priceAdapter);
+//            } else {
+//                priceAdapter.clear();
+//                //priceAdapter.addAllEmployees(mEmployees);
+//                priceAdapter.notifyDataSetChanged();
+//                selectPriceSpinner.setSelection(0);
+//            }
+
+            selectPriceProgress.setVisibility(View.GONE);
+
+
+        };
+
 
 
 
@@ -687,6 +751,26 @@ public class AddAppointmentFragment extends Fragment {
         });
 
 
+        selectPriceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Get the correct price by reducing position by 1
+                if (position > 0) {
+                    mSelectedPrice = mPrices.get(position-1);
+
+                } else {
+                    mSelectedPrice = null;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         clinicScheduleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -838,5 +922,6 @@ public class AddAppointmentFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((DashboardActivity)getActivity()).setToolBarTitleAndBottomNavVisibility("New Appointment", false);
+        ((DashboardActivity)getActivity()).profileImage.setVisibility(View.GONE);
     }
 }

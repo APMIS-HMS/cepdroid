@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#fff"
+    android:background="@color/background_color"
     android:clickable="true"
     android:focusable="true">
 
@@ -193,6 +192,47 @@
 
                 <Button
                     android:id="@+id/select_employee_refresh"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginRight="33dp"
+                    android:layout_marginEnd="33dp"
+                    android:background="@drawable/ic_error_refresh"
+                    android:visibility="gone"/>
+
+            </FrameLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pricing"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="35dp">
+
+                <Spinner
+                    android:id="@+id/pricing_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:theme="@style/AddAppointmentSpinner"
+                    android:background="@drawable/spinner_background_no_background_color"
+                    android:entries="@array/select_service_price_level" />
+
+                <ProgressBar
+                    android:id="@+id/pricing_progress"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginRight="35dp"
+                    android:layout_marginEnd="35dp"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/pricing_refresh"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical|end"

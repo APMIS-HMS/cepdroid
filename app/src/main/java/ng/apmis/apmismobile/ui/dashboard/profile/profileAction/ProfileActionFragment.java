@@ -99,8 +99,6 @@ public class ProfileActionFragment extends Fragment {
         apmisIdText.setText(prefs.getStoredApmisId());
 
         logoutButton.setOnClickListener((v) -> {
-            InjectorUtils.provideNetworkData(getActivity()).clearSingleton();
-            InjectorUtils.provideRepository(getActivity()).clearSingleton();
             prefs.storeLoggedInUserDetails("","","","");
             startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
             getActivity().finishAffinity();
@@ -113,15 +111,12 @@ public class ProfileActionFragment extends Fragment {
         ProfileActionViewModelFactory profileActionViewModelFactory = InjectorUtils.provideProfileActionViewModelFactory(getContext());
         mProfileActionViewModel = ViewModelProviders.of(this, profileActionViewModelFactory).get(ProfileActionViewModel.class);
 
-        final Observer<PersonEntry> personEntryObserver = new Observer<PersonEntry>() {
-            @Override
-            public void onChanged(@Nullable PersonEntry personEntry) {
+        final Observer<PersonEntry> personEntryObserver = personEntry -> {
 
-                if (personEntry != null) {
-                    usernameText.setText(String.format("%s %s", personEntry.getFirstName(), personEntry.getLastName()));
+            if (personEntry != null) {
+                usernameText.setText(String.format("%s %s", personEntry.getFirstName(), personEntry.getLastName()));
 
-                    ProfileActionFragment.this.attemptLoadImage(personEntry);
-                }
+                ProfileActionFragment.this.attemptLoadImage(personEntry);
             }
         };
 

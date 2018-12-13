@@ -31,7 +31,7 @@
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/apmis_id"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="55dp"
                         android:background="@drawable/edittext_background"
                         android:hint="@string/apmis_id_placeholder"
                         android:maxLines="1"
@@ -45,13 +45,13 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="30dp"
                     app:passwordToggleEnabled="true">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/password"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="55dp"
                         android:background="@drawable/edittext_background"
                         android:hint="@string/password_placeholder"
                         android:imeActionId="6"
@@ -78,6 +78,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:padding="3dp"
                     android:text="Remember"
                     android:textColor="#95989a" />
 
@@ -86,8 +87,9 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:padding="3dp"
                     android:textColor="@color/colorPrimary"
-                    android:text="Forgot Password ?"
+                    android:text="Forgot Password ? "
                     android:textStyle="italic"
                     android:gravity="end"/>
 
@@ -113,14 +115,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Don't Have Account?" />
+                    android:text="Don't have an account?" />
 
                 <TextView
                     android:id="@+id/create_account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
-                    android:text="Create Account."
+                    android:text="Create one now"
                     android:textColor="@color/colorPrimary" />
             </LinearLayout>
 

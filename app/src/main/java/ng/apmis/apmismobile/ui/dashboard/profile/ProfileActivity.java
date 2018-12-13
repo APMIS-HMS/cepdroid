@@ -80,9 +80,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileActionF
      * @param fragment Fragment used to replace
      */
     private void placeFragment(Fragment fragment) {
-        //getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                        R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack("current")
                 .commit();

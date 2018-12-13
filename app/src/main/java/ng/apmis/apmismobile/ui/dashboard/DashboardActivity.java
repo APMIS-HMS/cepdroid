@@ -201,12 +201,16 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
         if (getIntent().getExtras().getString(Constants.NOTIFICATION_ACTION).equals(Constants.APPOINTMENTS)) {
 
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                            R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                     .replace(R.id.fragment_container, new ViewFragment(), "HOME")
                     .addToBackStack(null)
                     .setReorderingAllowed(true)
                     .commit();
 
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                            R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                     .replace(R.id.fragment_container, new AppointmentFragment(), Constants.APPOINTMENTS)
                     .addToBackStack(null)
                     .setReorderingAllowed(true)
@@ -218,19 +222,19 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
 
         switch (item.getItemId()) {
             case R.id.home_menu:
-                placeFragment(dashboardFragment);
+                placeFragment(dashboardFragment, false);
                 break;
             case R.id.view_menu:
-                placeFragment(new ViewFragment());
+                placeFragment(new ViewFragment(), false);
                 break;
             case R.id.buy_menu:
-                placeFragment(new BuyFragment());
+                placeFragment(new BuyFragment(), false);
                 break;/*
             case R.id.chat_menu:
                 placeFragment(new ChatFragment());
                 break;*/
             case R.id.find_menu:
-                placeFragment(new FindFragment());
+                placeFragment(new FindFragment(), false);
                 break;
         }
     }
@@ -260,15 +264,24 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
      * Replace the current fragment with another
      * @param fragment Fragment used to replace
      */
-    private void placeFragment(Fragment fragment) {
+    private void placeFragment(Fragment fragment, boolean shouldSlide) {
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-        if (!(fragment instanceof DashboardFragment))
-            getSupportFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack("current")
-                .commit();
+        if (!(fragment instanceof DashboardFragment)) {
+            if (shouldSlide)
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                                R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack("current")
+                        .commit();
+            else
+                getSupportFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack("current")
+                        .commit();
+        }
     }
 
     @Override
@@ -282,31 +295,29 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
             case Constants.APPOINTMENTS:
 
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new DashboardFragment())
-                        .addToBackStack(null)
-                        .setReorderingAllowed(true)
-                        .commit();
-
-                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                                R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                         .replace(R.id.fragment_container, new AppointmentFragment())
                         .addToBackStack(null)
                         .setReorderingAllowed(true)
                         .commit();
 
                 getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                                R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                         .replace(R.id.fragment_container, new AddAppointmentFragment())
                         .addToBackStack(null)
                         .setReorderingAllowed(true)
                         .commit();
                 break;
             case Constants.VITALS:
-                placeFragment(new HealthProfileFragment());
+                placeFragment(new HealthProfileFragment(), true);
                 break;
             case Constants.LOCATION:
-                placeFragment(new FacilityLocationFragment());
+                placeFragment(new FacilityLocationFragment(), true);
                 break;
             case Constants.HELP:
-                placeFragment(new ChatFragment());
+                placeFragment(new ChatFragment(), true);
                 break;
             default:
                 break;

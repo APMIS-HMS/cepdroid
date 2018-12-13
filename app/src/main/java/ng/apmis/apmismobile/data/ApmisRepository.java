@@ -15,6 +15,7 @@ import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 import ng.apmis.apmismobile.utilities.AppUtils;
+import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 /**
  * Source of truth for data whether from database or from server
@@ -218,6 +219,9 @@ public class ApmisRepository {
     public void clearOldUserData (Context context) {
         deleteOldData();
         deleteAllAppointments();
+
+        InjectorUtils.provideNetworkData(context).clearSingleton();
+        InjectorUtils.provideRepository(context).clearSingleton();
         File profilePhotoDir = new File(context.getFilesDir(), "profilePhotos");
 
         AppUtils.deleteRecursive(profilePhotoDir);

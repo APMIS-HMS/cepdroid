@@ -1,7 +1,9 @@
 package ng.apmis.apmismobile.ui.dashboard.payment.cards;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.cardModel.Card;
+import ng.apmis.apmismobile.utilities.AppUtils;
 
 public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardViewHolder> {
 
@@ -25,10 +28,11 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
     private Card selectedCard;
 
-    public OnCardSelectedListener mListener;
+    public OnCardActionListener mListener;
 
-    public interface OnCardSelectedListener {
+    public interface OnCardActionListener {
         void onCardSelected(Card card);
+        void onCardRemoved(Card card);
     }
 
     public CardListAdapter(Context context, List<Card> cards){
@@ -43,6 +47,11 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
     public void clear(){
         cards.clear();
+        notifyDataSetChanged();
+    }
+
+    public void deselectCard(){
+        selectedCard = null;
         notifyDataSetChanged();
     }
 
@@ -65,7 +74,39 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                 holder.cardBackground.setSelected(true);
             else
                 holder.cardBackground.setSelected(false);
+        } else {
+            holder.cardBackground.setSelected(false);
         }
+
+        holder.popUpMenuButton.setOnClickListener(v -> {
+            //Creating the instance of PopupMenu
+            PopupMenu popup = new PopupMenu(mContext, holder.popUpMenuButton);
+            //Inflating the Popup using xml file
+            popup.getMenuInflater()
+                    .inflate(R.menu.card_menu, popup.getMenu());
+
+            //registering popup with OnMenuItemClickListener
+            popup.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()){
+                    case R.id.action_card_delete:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setTitle("Remove Card?");
+                        builder.setMessage("Doing this would permanently remove this card from your payment options.\n" +
+                                "Do you wish to continue?");
+                        builder.setPositiveButton("Remove", (dialog, which) -> {
+                            mListener.onCardRemoved(card);
+                            AppUtils.showShortToast(mContext, "Card removing...");
+                        });
+                        builder.setNegativeButton("Cancel", null);
+                        builder.show();
+                        break;
+
+                }
+                return true;
+            });
+
+            popup.show(); //showing popup menu
+        });
 
         holder.lastFourText.setText(card.getAuthorization().getLast4());
 
@@ -101,7 +142,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
         return cards == null ? 0 : cards.size();
     }
 
-    public void instantiateSelectionListener(OnCardSelectedListener listener){
+    public void instantiateSelectionListener(OnCardActionListener listener){
         this.mListener = listener;
     }
 
@@ -118,6 +159,9 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
         @BindView(R.id.card_holder_text)
         TextView cardHolderText;
+
+        @BindView(R.id.popup_menu_image)
+        ImageView popUpMenuButton;
 
         @BindView(R.id.expiry_text)
         TextView expiryText;

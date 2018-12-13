@@ -240,7 +240,9 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             PendingIntent.FLAG_ONE_SHOT);
                     alarmManager.set(
                             AlarmManager.RTC_WAKEUP,
-                            new Date().getTime() + 3000, //An hour behind
+                            AppUtils.dbStringToLocalDate(
+                                    segmentedAppointmentItem.appointment.getStartDate())
+                                    .getTime()-60*60*1000, //An hour behind
                             pendingIntent);
                     Log.d("Alarm", "Set");
                     return true;
@@ -248,8 +250,6 @@ public class AppointmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 popup.show(); //showing popup menu
 
-
-                AppUtils.showShortToast(mContext, "View show now");
             }); //closing the setOnClickListener method
 
         } else if (holder instanceof SegmentTitleViewHolder){

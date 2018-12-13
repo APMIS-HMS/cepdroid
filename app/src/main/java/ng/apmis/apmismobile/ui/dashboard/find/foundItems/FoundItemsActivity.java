@@ -66,7 +66,7 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
             String type = intent.getStringExtra("itemType");
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, FoundHospitalDetailFragment.newInstance(id, name))
+                    .replace(R.id.fragment_container, FoundHospitalDetailFragment.newInstance(id, name, null))
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
             return;
@@ -133,9 +133,9 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
     }
 
     @Override
-    public void onViewIdActionPerformed(String id, String name) {
+    public void onViewIdActionPerformed(String id, String name, String subName) {
         if (searchTerm.equals("Hospital")){
-            placeFragment(FoundHospitalDetailFragment.newInstance(id, name));
+            placeFragment(FoundHospitalDetailFragment.newInstance(id, name, subName));
         }
     }
 
@@ -146,8 +146,8 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
     private void placeFragment(Fragment fragment) {
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                //.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                        R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack("current")
                 .commit();

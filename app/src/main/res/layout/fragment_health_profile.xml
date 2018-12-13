@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:padding="1dp"
     android:orientation="vertical"
+    android:background="@color/background_color"
     tools:context=".ui.dashboard.healthProfile.HealthProfileFragment">
 
     <LinearLayout

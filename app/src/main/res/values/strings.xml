@@ -181,6 +181,10 @@
         <item>Select whom to see</item>
     </string-array>
 
+    <string-array name="select_service_price_level">
+        <item>Select service price level</item>
+    </string-array>
+
     <string-array name="select_class">
         <item>Select Class</item>
     </string-array>
@@ -242,5 +246,7 @@
     <string name="fund_with_card">Fund with Card</string>
     <string name="censored">&#9679;&#9679;&#9679;&#9679;</string>
     <string name="empty_search_text">Could not find any %s matching \"%s\"</string>
+    <string name="pricing">Pricing</string>
+    <string name="delete_card">Delete Card</string>
 
 </resources>

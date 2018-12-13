@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.ViewCompat;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +93,12 @@ public class HealthProfileFragment extends Fragment {
         initViewModel();
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewCompat.setTranslationZ(getView(), 10f);
     }
 
     private void initViewModel() {

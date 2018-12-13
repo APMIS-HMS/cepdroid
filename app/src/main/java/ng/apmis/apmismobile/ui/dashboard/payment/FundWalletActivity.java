@@ -60,7 +60,8 @@ public class FundWalletActivity extends AppCompatActivity implements CardEntryFr
      */
     private void placeFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                        R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack("current")
                 .commit();
