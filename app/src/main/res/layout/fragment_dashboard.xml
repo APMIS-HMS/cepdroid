@@ -3,7 +3,7 @@
     android:id="@+id/main_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff">
+    android:background="@color/background_color">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,7 +20,6 @@
             android:layout_margin="20dp"
             android:layout_alignParentTop="true"
             android:visibility="gone"/>
-
 
 
         <RelativeLayout
@@ -55,8 +54,10 @@
                     android:id="@+id/appointment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:maxWidth="150dp"
+                    android:maxHeight="150dp"
                     android:padding="50dp"
-                    android:src="@drawable/ic_add_appointment"
+                    android:src="@drawable/ill_new_appt"
                     android:clickable="true"
                     android:focusable="true"/>
 
@@ -87,8 +88,10 @@
                     android:id="@+id/vitals"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:maxWidth="150dp"
+                    android:maxHeight="150dp"
                     android:padding="50dp"
-                    android:src="@drawable/ic_vitals_outline"
+                    android:src="@drawable/ill_health"
                     android:clickable="true"
                     android:focusable="true"/>
 
@@ -132,8 +135,10 @@
                     android:id="@+id/location"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:maxWidth="150dp"
+                    android:maxHeight="150dp"
                     android:padding="50dp"
-                    android:src="@drawable/ic_location_outline"
+                    android:src="@drawable/ill_location"
                     android:clickable="true"
                     android:focusable="true"/>
 
@@ -165,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="50dp"
-                    android:src="@drawable/ic_help"
+                    android:src="@drawable/ill_help"
                     android:clickable="true"
                     android:focusable="true"/>
 
@@ -272,24 +277,24 @@
         </RelativeLayout>
 
         <Button
-        android:id="@+id/open_close_reminders"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
-        android:text="View Reminders"
-        android:textColor="@color/almost_black"
-        android:textSize="12sp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:drawableRight="@drawable/ic_expand_more_black"
-        android:drawableEnd="@drawable/ic_expand_more_black"
-        android:drawablePadding="10dp"
-        android:background="@drawable/sleek_curve_button_outline"
-        android:visibility="gone"/>
+            android:id="@+id/open_close_reminders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:text="View Reminders"
+            android:textColor="@color/almost_black"
+            android:textSize="12sp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:drawableRight="@drawable/ic_expand_more_black"
+            android:drawableEnd="@drawable/ic_expand_more_black"
+            android:drawablePadding="10dp"
+            android:background="@drawable/sleek_curve_button_outline"
+            android:visibility="gone"/>
 
 
     </RelativeLayout>

@@ -270,6 +270,7 @@ public class DashboardFragment extends Fragment implements View.OnClickListener 
         if (getActivity() != null) {
             ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.WELCOME, true);
             ((DashboardActivity) getActivity()).mBottomNav.getMenu().findItem(R.id.home_menu).setChecked(true);
+            ((DashboardActivity)getActivity()).profileImage.setVisibility(View.VISIBLE);
             ((DashboardActivity) getActivity()).initializeFragmentListener(this);
         }
         super.onResume();

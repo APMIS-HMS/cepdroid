@@ -41,7 +41,7 @@ import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
-public class DashboardActivity extends AppCompatActivity implements DashboardFragment.OnQuickLinkListener{
+public class DashboardActivity extends AppCompatActivity implements DashboardFragment.OnQuickLinkListener {
 
     PersonViewModel mPersonViewModel;
 
@@ -118,17 +118,17 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
             startActivity(new Intent(this, ProfileActivity.class));
         });
 
-        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)){
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Constants.NOTIFICATION_ACTION)) {
             jumpToNotifiedFragment();
         }
 
     }
 
-    void initializeFragmentListener (Fragment fragment) {
-        ((DashboardFragment)fragment).initializeQuickLinkListener(this);
+    void initializeFragmentListener(Fragment fragment) {
+        ((DashboardFragment) fragment).initializeQuickLinkListener(this);
     }
 
-    private void attemptLoadImage(PersonEntry person){
+    private void attemptLoadImage(PersonEntry person) {
         File profilePhotoDir = new File(this.getFilesDir(), "profilePhotos");
         profilePhotoDir.mkdir();
 
@@ -137,21 +137,21 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
         if (!TextUtils.isEmpty(person.getProfileImageFileName()))
             localFile = new File(profilePhotoDir, person.getProfileImageFileName());
 
-        if (localFile != null && localFile.exists()){
+        if (localFile != null && localFile.exists()) {
             try {
                 Glide.with(this).load(localFile).into(profileImage);
-            } catch (Exception e){
+            } catch (Exception e) {
 
             }
 
-        } else if (localFile != null){
+        } else if (localFile != null) {
             // Download image from web
             profileImage.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_user_profile));
 
             File finalLocalFile = localFile;
 
             mPersonViewModel.getPersonPhotoPath(person, finalLocalFile).observe(this, s -> {
-                if (!TextUtils.isEmpty(s)){
+                if (!TextUtils.isEmpty(s)) {
                     if (!s.equals("error"))
                         Glide.with(this).load(finalLocalFile).into(profileImage);
                 }
@@ -180,7 +180,7 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
         bottomNavVisibility(isTopLevel);
     }
 
-    public void bottomNavVisibility (boolean show) {
+    public void bottomNavVisibility(boolean show) {
         if (show) {
             mBottomNav.setVisibility(View.VISIBLE);
             return;
@@ -194,19 +194,23 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
         bottomNavVisibility(true);
     }
 
-    private void jumpToNotifiedFragment(){
+    private void jumpToNotifiedFragment() {
         Log.i("Appointment", getIntent().getExtras().getString(Constants.NOTIFICATION_ACTION));
 
 
         if (getIntent().getExtras().getString(Constants.NOTIFICATION_ACTION).equals(Constants.APPOINTMENTS)) {
 
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                            R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                     .replace(R.id.fragment_container, new DashboardFragment(), "DASHBOARD")
                     .addToBackStack(null)
                     .setReorderingAllowed(true)
                     .commit();
 
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                            R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                     .replace(R.id.fragment_container, new AppointmentFragment(), Constants.APPOINTMENTS)
                     .addToBackStack(null)
                     .setReorderingAllowed(true)
@@ -218,19 +222,19 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
 
         switch (item.getItemId()) {
             case R.id.home_menu:
-                placeFragment(dashboardFragment);
+                placeFragment(dashboardFragment, false);
                 break;
             case R.id.view_menu:
-                placeFragment(new ViewFragment());
+                placeFragment(new ViewFragment(), false);
                 break;
             case R.id.buy_menu:
-                placeFragment(new BuyFragment());
+                placeFragment(new BuyFragment(), false);
                 break;/*
             case R.id.chat_menu:
                 placeFragment(new ChatFragment());
                 break;*/
             case R.id.find_menu:
-                placeFragment(new FindFragment());
+                placeFragment(new FindFragment(), false);
                 break;
         }
     }
@@ -258,17 +262,27 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
 
     /**
      * Replace the current fragment with another
+     *
      * @param fragment Fragment used to replace
      */
-    private void placeFragment(Fragment fragment) {
+    private void placeFragment(Fragment fragment, boolean shouldSlide) {
         getSupportFragmentManager().popBackStack("current", FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-        if (!(fragment instanceof DashboardFragment))
-            getSupportFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack("current")
-                .commit();
+        if (!(fragment instanceof DashboardFragment)) {
+            if (shouldSlide)
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                                R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack("current")
+                        .commit();
+            else
+                getSupportFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack("current")
+                        .commit();
+        }
     }
 
     @Override
@@ -282,25 +296,29 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
             case Constants.APPOINTMENTS:
 
                 getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                                R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                         .replace(R.id.fragment_container, new AppointmentFragment())
                         .addToBackStack(null)
                         .setReorderingAllowed(true)
                         .commit();
 
                 getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                                R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                         .replace(R.id.fragment_container, new AddAppointmentFragment())
                         .addToBackStack(null)
                         .setReorderingAllowed(true)
                         .commit();
                 break;
             case Constants.VITALS:
-                placeFragment(new HealthProfileFragment());
+                placeFragment(new HealthProfileFragment(), true);
                 break;
             case Constants.LOCATION:
-                placeFragment(new FacilityLocationFragment());
+                placeFragment(new FacilityLocationFragment(), true);
                 break;
             case Constants.HELP:
-                placeFragment(new ChatFragment());
+                placeFragment(new ChatFragment(), true);
                 break;
             default:
                 break;

@@ -51,7 +51,7 @@ public class FoundItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private OnForceReloadListener forceReloadListener;
 
     public interface OnViewClickedListener {
-        void onViewClicked(String id, String name);
+        void onViewClicked(String id, String name, String subName);
     }
 
     public interface OnLoadMoreListener {
@@ -166,7 +166,7 @@ public class FoundItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             ((FoundItemViewHolder)holder).viewButton.setOnClickListener(v -> {
                 //Change fragments with the id
-                mListener.onViewClicked(foundItem.getId(), foundItem.getTitle());
+                mListener.onViewClicked(foundItem.getId(), foundItem.getTitle(), foundItem.getSubTitle());
             });
 
             switch (foundItem.getType()) {

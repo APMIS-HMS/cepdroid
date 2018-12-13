@@ -33,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
+        android:padding="5dp"
         app:srcCompat="@drawable/ic_more_vert"
         android:layout_alignTop="@+id/card_type_image"
         android:layout_alignBottom="@+id/card_type_image"

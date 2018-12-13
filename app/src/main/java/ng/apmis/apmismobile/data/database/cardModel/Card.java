@@ -5,12 +5,27 @@ import com.google.gson.annotations.SerializedName;
 
 public class Card {
 
+    @SerializedName("_id")
+    @Expose
+    private String _id;
+
     @SerializedName("authorization")
     @Expose
     private Authorization authorization;
+
     @SerializedName("customer")
     @Expose
     private Customer customer;
+
+
+
+    public String getId() {
+        return _id;
+    }
+
+    public void setId(String _id) {
+        this._id = _id;
+    }
 
     public Authorization getAuthorization() {
         return authorization;
@@ -27,5 +42,4 @@ public class Card {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
-
 }

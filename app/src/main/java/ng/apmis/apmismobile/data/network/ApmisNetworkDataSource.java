@@ -27,6 +27,7 @@ import ng.apmis.apmismobile.data.database.SearchTermItem;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
+import ng.apmis.apmismobile.data.database.cardModel.Card;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
@@ -88,10 +89,11 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<String> serviceCategoryId;
     private MutableLiveData<BillManager> categoryBillManager;
     private MutableLiveData<Wallet> personWallet;
-    private MutableLiveData<String> paymentVerificationData;
+    private MutableLiveData<List<String>> paymentVerificationData;
     private MutableLiveData<Patient> registeredPatient;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
     private MutableLiveData<PersonEntry> paidByPerson;
+    private MutableLiveData<String> cardRemovalStatus;
 
     //TODO Switch to LiveData later
     private List<OrderStatus> orderStatuses;
@@ -124,6 +126,7 @@ public class ApmisNetworkDataSource {
         paymentVerificationData = new MutableLiveData<>();
         paidByPerson = new MutableLiveData<>();
         registeredPatient = new MutableLiveData<>();
+        cardRemovalStatus = new MutableLiveData<>();
 
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
@@ -391,11 +394,11 @@ public class ApmisNetworkDataSource {
         });
     }
 
-    private void fetchPaymentVerificationData(String referenceCode, int amountPaid, boolean isCardReused, boolean shouldSaveCard){
+    private void fetchPaymentVerificationData(String referenceCode, int amountPaid, boolean isCardReused, boolean shouldSaveCard, String encEmail, String encAuth){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Found", "Fetch payment verification started");
             new NetworkDataCalls(mContext).fetchPaymentVerificationData(mContext, referenceCode, amountPaid, sharedPreferencesManager.getPersonId(),
-                    sharedPreferencesManager.getStoredUserAccessToken(), isCardReused, shouldSaveCard);
+                    sharedPreferencesManager.getStoredUserAccessToken(), isCardReused, shouldSaveCard, encEmail, encAuth);
         });
     }
 
@@ -420,6 +423,12 @@ public class ApmisNetworkDataSource {
         });
     }
 
+    private void removeCardFromWallet(String cardId, Wallet wallet){
+        apmisExecutors.networkIO().execute(() -> {
+            Log.d(LOG_TAG, "Remove card started");
+            new NetworkDataCalls(mContext).removeCardFromWallet(mContext, sharedPreferencesManager.getPersonId(), cardId, wallet, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
 
 
 
@@ -876,9 +885,26 @@ public class ApmisNetworkDataSource {
     }
 
 
+    //Card removal Status
+
+    public LiveData<String> getCardRemovalStatus(String cardId, Wallet wallet){
+        removeCardFromWallet(cardId, wallet);
+        return cardRemovalStatus;
+    }
+
+    public void setCardRemovalStatus(String cards){
+        this.cardRemovalStatus.postValue(cards);
+    }
+
+    public void clearCardRemovalStatus(){
+        cardRemovalStatus = new MutableLiveData<>();
+    }
+
+
     //Payment verification data
-    public LiveData<String> getPaymentVerificationData(String referenceCode, int amountPaid, boolean isCardReused, boolean shouldSaveCard){
-        fetchPaymentVerificationData(referenceCode, amountPaid, isCardReused, shouldSaveCard);
+    public LiveData<List<String>> getPaymentVerificationData(String referenceCode, int amountPaid, boolean isCardReused,
+                                                       boolean shouldSaveCard, String encEmail, String encAuth){
+        fetchPaymentVerificationData(referenceCode, amountPaid, isCardReused, shouldSaveCard, encEmail, encAuth);
         return paymentVerificationData;
     }
 
@@ -894,8 +920,8 @@ public class ApmisNetworkDataSource {
 
     //Payment verification successful or not
 
-    public void setPaymentVerificationData(String status){
-        paymentVerificationData.postValue(status);
+    public void setPaymentVerificationData(List<String> statuses){
+        paymentVerificationData.postValue(statuses);
     }
 
     public void clearPaymentVerificationData(){

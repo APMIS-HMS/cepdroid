@@ -90,10 +90,11 @@
         <ImageView
             android:id="@+id/popup_menu_image"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="42dp"
             app:srcCompat="@drawable/ic_more_options"
             android:clickable="true"
             android:focusable="true"
+            android:padding="12dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"/>
 

@@ -25,6 +25,7 @@ import android.support.transition.TransitionManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -302,6 +303,12 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         editProfileViewModel.getDownloadedPerson().observe(this, downloadedPersonObserver);
 
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewCompat.setTranslationZ(getView(), 10f);
     }
 
     /**

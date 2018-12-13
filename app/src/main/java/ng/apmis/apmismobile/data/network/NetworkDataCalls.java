@@ -36,6 +36,7 @@ import ng.apmis.apmismobile.data.database.SearchTermItem;
 import ng.apmis.apmismobile.data.database.appointmentModel.Appointment;
 import ng.apmis.apmismobile.data.database.appointmentModel.AppointmentType;
 import ng.apmis.apmismobile.data.database.appointmentModel.OrderStatus;
+import ng.apmis.apmismobile.data.database.cardModel.Card;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
@@ -1453,6 +1454,9 @@ public final class NetworkDataCalls {
 
             Log.v("Fetch servCat", billManager.toString());
 
+            //Append the facility ID to the object
+            billManager.setFacilityId(facilityId);
+
             InjectorUtils.provideNetworkData(context).setCategoryBillManager(billManager);
 
 
@@ -1574,28 +1578,52 @@ public final class NetworkDataCalls {
      * @param amountPaid
      * @param accessToken
      */
-    public void fetchPaymentVerificationData(Context context, String referenceCode, int amountPaid, String personId, String accessToken, boolean isCardReused, boolean shouldSaveCard){
+    public void fetchPaymentVerificationData(Context context, String referenceCode, int amountPaid, String personId, String accessToken, boolean isCardReused, boolean shouldSaveCard, String encEmail, String encAuth){
         Log.d("Pay Verify", "Started verification");
 
         JSONObject params = new JSONObject();
-        try {
-            JSONObject ref = new JSONObject();
-            ref.put("trxref", referenceCode);
-            params.put("ref", ref);
 
-            JSONObject payment = new JSONObject();
-            payment.put("type", "e-payment");
-            payment.put("route", "Paystack");
-            params.put("payment", payment);
+        if (!isCardReused) {
+            try {
+                JSONObject ref = new JSONObject();
+                ref.put("trxref", referenceCode);
+                params.put("ref", ref);
 
-            params.put("entity", "Person");
-            params.put("destinationId", personId);
-            params.put("amount", amountPaid);
+                JSONObject payment = new JSONObject();
+                payment.put("type", "e-payment");
+                payment.put("route", "Paystack");
+                params.put("payment", payment);
+
+                params.put("entity", "Person");
+                params.put("destinationId", personId);
+                params.put("amount", amountPaid);
 
 
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            try {
+                Log.e("Pay", "auth:" + encAuth);
+                Log.e("Pay", "email:" + encEmail);
+                Log.e("Pay", "amount:" + amountPaid);
+
+                JSONObject payment = new JSONObject();
+                payment.put("type", "e-payment");
+                payment.put("route", "Paystack");
+                params.put("payment", payment);
+
+                params.put("entity", "Person");
+                params.put("destinationId", personId);
+
+                params.put("authorization_code", encAuth);
+                params.put("email", encEmail);
+                params.put("amount", amountPaid*100);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL
@@ -1605,21 +1633,28 @@ public final class NetworkDataCalls {
             Log.v("Pay Verify response", String.valueOf(response));
 
             String status = null;
+            String cardStatus = null;
+            List<String> statuses = new ArrayList<>();//holds the status for the card payment, and the authorization save
 
             try {
                 status = response.getString("status");
+                cardStatus = String.valueOf(response.getJSONObject("data").getBoolean(isCardReused ? "card_auth_status": "card_save_status"));
+
+                statuses.add(status);
+                statuses.add(cardStatus);
+
             } catch (JSONException e) {
-                status = "error";
+                statuses = null;
                 e.printStackTrace();
             }
 
-            InjectorUtils.provideNetworkData(context).setPaymentVerificationData(status);
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData(statuses);
 
         }, (VolleyError error) -> {
 
             Log.e("Pay Verify error", String.valueOf(error.getMessage()));
-            //Return an error string
-            InjectorUtils.provideNetworkData(context).setPaymentVerificationData("error");
+            //Return a null status list
+            InjectorUtils.provideNetworkData(context).setPaymentVerificationData(null);
 
         }) {
 
@@ -1637,6 +1672,69 @@ public final class NetworkDataCalls {
         appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(120000, 6, 1));
         APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
+
+
+    /**
+     *
+     * @param context
+     * @param personId
+     * @param cardId
+     * @param accessToken
+     */
+    public void removeCardFromWallet(Context context, String personId, String cardId, Wallet wallet, String accessToken){
+        Log.v("Pay Remove Card", "Started removal");
+
+        JsonObjectRequest appointmentRequest = new JsonObjectRequest(Request.Method.DELETE, BASE_URL
+                + "fund-wallet/"+ personId +"?cardId=" + cardId,
+                null, response -> {
+
+            Log.v("Pay Remove response", String.valueOf(response));
+
+            List<Card> cards = new ArrayList<>();
+            String status = null;
+
+            try {
+                cards = Arrays.asList(gson.fromJson(response.getJSONObject("data").getJSONObject("wallet").getJSONArray("cards").toString(), Card[].class));
+                status = response.getString("status");
+
+            } catch (JSONException e) {
+                cards = null;
+                status = null;
+                e.printStackTrace();
+            }
+
+            InjectorUtils.provideNetworkData(context).setCardRemovalStatus(status);
+            //Update the user's wallet
+            if (cards != null ){
+                wallet.setCards(cards);
+                InjectorUtils.provideNetworkData(context).setPersonWallet(wallet);
+            }
+
+
+        }, (VolleyError error) -> {
+
+            Log.e("Pay Remove error", String.valueOf(error.getMessage()));
+            //Return a null status list
+            InjectorUtils.provideNetworkData(context).setCardRemovalStatus(null);
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
+    }
+
+
 
 
     /**

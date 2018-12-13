@@ -515,7 +515,7 @@ public class AppUtils {
         return inSampleSize;
     }
 
-    public static String formatNumberWithCommas(int num){
+    public static String formatNumberWithCommas(long num){
         String numString = String.valueOf(num);
 
         StringBuilder builder = new StringBuilder(numString);

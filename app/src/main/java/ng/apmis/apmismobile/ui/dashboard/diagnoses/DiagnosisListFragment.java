@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -90,6 +91,12 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
         initViewModel();
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewCompat.setTranslationZ(getView(), 10f);
     }
 
     private void initViewModel() {
@@ -215,6 +222,8 @@ public class DiagnosisListFragment extends Fragment implements DiagnosisAdapter.
     private void setFragment (Fragment fragment) {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
+                        R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();

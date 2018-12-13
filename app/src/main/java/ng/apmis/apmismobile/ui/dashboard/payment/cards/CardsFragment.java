@@ -24,11 +24,14 @@ import android.widget.TextView;
 
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.cardModel.Card;
+import ng.apmis.apmismobile.data.database.facilityModel.LogoObject;
 import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -36,7 +39,7 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CardsFragment extends Fragment implements CardListAdapter.OnCardSelectedListener {
+public class CardsFragment extends Fragment implements CardListAdapter.OnCardActionListener {
 
     @BindView(R.id.use_new_card)
     TextView fundWithCardButton;
@@ -60,6 +63,8 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
 
     CardsViewModel cardsViewModel;
     Observer<Wallet> walletObserver = null;
+    Observer<List<String>> verificationObserver = null;
+    Observer<String> removalObserver = null;
 
     private SnapHelper snapHelper;
 
@@ -98,9 +103,7 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
         if (cardListAdapter != null) {
             cardsRecycler.setAdapter(cardListAdapter);
             Log.e("Dash", "Card adapter is not null");
-
         } else {
-
             Log.e("Dash", "Card adapter is null");
         }
 
@@ -160,6 +163,11 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
 
         initViewModel();
 
+        fundWalletButton.setOnClickListener(v -> {
+            cardsViewModel.getPayData(null, 1000, true, false, selectedCard.getCustomer().getEmail(), selectedCard.getAuthorization().getAuthorizationCode()).observe(CardsFragment.this, verificationObserver);
+
+        });
+
         return view;
     }
 
@@ -167,6 +175,17 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
     public void onCardSelected(Card card) {
         selectedCard = card;
         formatButtonText(amountToPay, selectedCard);
+    }
+
+    @Override
+    public void onCardRemoved(Card card) {
+        if (selectedCard != null && card.getAuthorization().getSignature()
+                .equals(selectedCard.getAuthorization().getSignature())){
+            //remove selected card status if selected card is the one to delete
+            cardListAdapter.deselectCard();
+            formatButtonText(amountToPay, null);
+        }
+        cardsViewModel.getRemovalStatus(card.getId(), wallet).observe(this, removalObserver);
     }
 
     private void formatButtonText(int amount, Card card){
@@ -182,6 +201,7 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
     }
 
 
+    private Wallet wallet;
 
     private void initViewModel(){
         CardsViewModelFactory viewModelFactory = InjectorUtils.provideCardsViewModelFactory(getContext().getApplicationContext());
@@ -192,6 +212,8 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
             if (wallet == null) {
                 return;
             }
+
+            this.wallet = wallet;
 
             balanceTextView.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(wallet.getBalance())));
 
@@ -220,6 +242,38 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardSel
         };
 
         cardsViewModel.getWallet(prefs.getPersonId()).observe(this, walletObserver);
+
+        verificationObserver = s -> {
+            if (s != null){
+                //AppUtils.showShortToast(getContext(), s.get(0));
+
+                if (s.get(0).equals("success")) {
+
+                    if (s.get(1).equals("true")) {
+                        AppUtils.showShortToast(getContext(), "SUCCESS");
+                    } else {
+                        AppUtils.showShortToast(getContext(), "UNABLE TO CHARGE CARD!!!");
+                    }
+
+                } else {
+                    AppUtils.showShortToast(getContext(), "FAILED!!!");
+                }
+
+            } else {
+                AppUtils.showShortToast(getContext(), "FAILED!!!");
+            }
+        };
+
+        removalObserver = cards -> {
+
+            if (cards != null && cards.equals("success")){
+                cardListAdapter.notifyDataSetChanged();
+                AppUtils.showShortToast(getContext(), "Card Successfully removed");
+            } else {
+                AppUtils.showShortToast(getContext(), "Card not removed");
+            }
+
+        };
 
     }
 

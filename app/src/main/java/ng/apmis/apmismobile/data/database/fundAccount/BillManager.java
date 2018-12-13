@@ -18,6 +18,9 @@ public class BillManager {
 
     private String name;
 
+    private String facilityId;
+
+
     public List<Service> getServices() {
         return services;
     }
@@ -64,6 +67,14 @@ public class BillManager {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(String facilityId) {
+        this.facilityId = facilityId;
     }
 
     @Override

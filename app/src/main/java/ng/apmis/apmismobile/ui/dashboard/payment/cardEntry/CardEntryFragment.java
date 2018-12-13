@@ -4,9 +4,12 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Html;
@@ -22,6 +25,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,6 +68,9 @@ public class CardEntryFragment extends Fragment {
 
     @BindView(R.id.pay_button)
     Button payButton;
+
+    @BindView(R.id.paystack_text)
+    TextView paystackTextView;
 
     private int amountToPay;
     private int amountPaid;
@@ -177,10 +185,22 @@ public class CardEntryFragment extends Fragment {
 
         initViewModel();
 
-
         payButton.setOnClickListener(v -> validateCardForm());
 
+        paystackTextView.setOnClickListener(v -> {
+            Intent i = new Intent();
+            i.setAction(Intent.ACTION_VIEW);
+            i.setData(Uri.parse("https://paystack.com"));
+            startActivity(i);
+        });
+
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewCompat.setTranslationZ(getView(), 10f);
     }
 
     private void formatButtonText(int amount){
@@ -191,7 +211,7 @@ public class CardEntryFragment extends Fragment {
     }
 
     CardEntryViewModel cardEntryViewModel;
-    Observer<String> verificationObserver;
+    Observer<List<String>> verificationObserver;
 
     private void initViewModel(){
         CardEntryViewModelFactory viewModelFactory = InjectorUtils.provideCardEntryViewModelFactory(mContext);
@@ -199,11 +219,20 @@ public class CardEntryFragment extends Fragment {
 
         verificationObserver = s -> {
             if (s != null) {
-                AppUtils.showShortToast(mContext, s.toUpperCase());
+                AppUtils.showShortToast(mContext, s.get(0).toUpperCase());
                 dismissLoadingDialog();
 
-                presentCompletionDialog(s.equals("success"));
+                presentCompletionDialog(s.get(0).equals("success"));
 
+                //Monitor if card was able to save
+                if (saveCardSwitch.isChecked()){
+                    if (s.get(1).equals("false"))
+                        AppUtils.showShortToast(getContext(), "Unable to save card details");
+                }
+
+            } else {
+                dismissLoadingDialog();
+                presentCompletionDialog(false);
             }
         };
 
@@ -352,7 +381,7 @@ public class CardEntryFragment extends Fragment {
                 cardEntryViewModel.clearVerification();
 
                 amountPaid = amount;
-                cardEntryViewModel.getPayData(transaction.getReference(), amount, false, saveCardSwitch.isChecked()).observe(CardEntryFragment.this, verificationObserver);
+                cardEntryViewModel.getPayData(transaction.getReference(), amount, false, saveCardSwitch.isChecked(), null, null).observe(CardEntryFragment.this, verificationObserver);
             }
 
             @Override

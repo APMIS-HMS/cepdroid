@@ -17,7 +17,7 @@
         <View
             android:id="@+id/date_text"
             android:layout_width="100dp"
-            android:layout_height="14dp"
+            android:layout_height="12dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
@@ -27,7 +27,7 @@
         <View
             android:id="@+id/generic_name_text"
             android:layout_width="match_parent"
-            android:layout_height="18dp"
+            android:layout_height="16dp"
             android:layout_marginTop="5dp"
             android:layout_below="@+id/date_text"
             android:background="#ddd"/>
@@ -43,7 +43,7 @@
         <View
             android:id="@+id/instruction_text"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
+            android:layout_height="14dp"
             android:layout_below="@+id/instruction_title"
             android:layout_marginTop="5dp"
             android:gravity="start"
@@ -63,7 +63,7 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="20dp"
             android:layout_below="@+id/instruction_text">
 
             <LinearLayout
@@ -74,13 +74,13 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="14dp"
+                    android:layout_height="12dp"
                     android:layout_margin="5dp"
                     android:background="#ddd"/>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="18dp"
+                    android:layout_height="14dp"
                     android:layout_marginTop="15dp"
                     android:background="#ddd"/>
 
@@ -100,13 +100,13 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="14dp"
+                    android:layout_height="12dp"
                     android:layout_margin="5dp"
                     android:background="#ddd"/>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="18dp"
+                    android:layout_height="14dp"
                     android:layout_marginTop="15dp"
                     android:background="#ddd"/>
 
@@ -127,13 +127,13 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="14dp"
+                    android:layout_height="12dp"
                     android:layout_margin="5dp"
                     android:background="#ddd"/>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="18dp"
+                    android:layout_height="14dp"
                     android:layout_marginTop="15dp"
                     android:background="#ddd"/>
 

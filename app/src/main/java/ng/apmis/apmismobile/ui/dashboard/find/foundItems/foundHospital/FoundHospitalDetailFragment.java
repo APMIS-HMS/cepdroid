@@ -13,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.transition.TransitionManager;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,11 +73,12 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     private static String KEY_ID = "facilityIdKey";
     private static String KEY_NAME = "facilityNameKey";
+    private static String KEY_EMAIL = "facilityEmailKey";
 
     public static final int FUND_WALLET_REQUEST = 1;
 
     private OnFragmentInteractionListener mListener;
-    private String id, name;
+    private String id, name, email;
 
     private FoundHospitalDetailViewModel foundHospitalViewModel;
 
@@ -85,8 +88,20 @@ public class FoundHospitalDetailFragment extends Fragment {
     @BindView(R.id.logo_loader)
     ProgressBar logoLoader;
 
-    @BindView(R.id.email_text_view)
+    @BindView(R.id.hospital_name)
+    TextView hospitalNameTextView;
+
+    @BindView(R.id.email_text)
     TextView emailTextView;
+
+    @BindView(R.id.phone_text)
+    TextView phoneText;
+
+    @BindView(R.id.website_text)
+    TextView websiteText;
+
+    @BindView(R.id.address_text)
+    TextView addressText;
 
     @BindView(R.id.price_loader)
     ProgressBar priceLoader;
@@ -106,6 +121,9 @@ public class FoundHospitalDetailFragment extends Fragment {
     @BindView(R.id.price_spinner)
     Spinner priceSpinner;
 
+    @BindView(R.id.map_card)
+    CardView mapCard;
+
     @BindView(R.id.pay_button)
     Button payButton;
 
@@ -124,13 +142,12 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     private Observer<Wallet> walletObserver;
     private Observer<Patient> patientObserver;
-    private int walletFunds;
+    private long walletFunds;
 
     private ProgressDialog progressDialog;
 
     @BindView(R.id.map_group)
     LinearLayout mapGroup;
-
 
 
     public interface OnFragmentInteractionListener{
@@ -141,11 +158,12 @@ public class FoundHospitalDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static FoundHospitalDetailFragment newInstance(String id, String name){
+    public static FoundHospitalDetailFragment newInstance(String id, String name, String email){
         FoundHospitalDetailFragment fragment = new FoundHospitalDetailFragment();
         Bundle args = new Bundle();
         args.putSerializable(KEY_ID, id);
         args.putSerializable(KEY_NAME, name);
+        args.putSerializable(KEY_EMAIL, email);
         fragment.setArguments(args);
         return fragment;
     }
@@ -161,6 +179,7 @@ public class FoundHospitalDetailFragment extends Fragment {
             if (getArguments().getSerializable(KEY_ID) != null) {
                 id = getArguments().getString(KEY_ID);
                 name = getArguments().getString(KEY_NAME);
+                email = getArguments().getString(KEY_EMAIL);
             }
         }
     }
@@ -174,6 +193,9 @@ public class FoundHospitalDetailFragment extends Fragment {
 
         mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
+
+        hospitalNameTextView.setText(name);
+        emailTextView.setText(email);
 
         initViewModel();
 
@@ -231,6 +253,12 @@ public class FoundHospitalDetailFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewCompat.setTranslationZ(getView(), 10f);
+    }
+
     List<String> registeredIds = null;
 
     private void initViewModel(){
@@ -254,12 +282,29 @@ public class FoundHospitalDetailFragment extends Fragment {
 
                 mapFragment.getMapAsync(googleMap -> {
 
-                    LatLng hospitalLocation = new LatLng(facility.getAddress().getGeometry().getLocation().getLat(), facility.getAddress().getGeometry().getLocation().getLng());
+                    try {
+                        LatLng hospitalLocation = new LatLng(facility.getAddress().getGeometry().getLocation().getLat(), facility.getAddress().getGeometry().getLocation().getLng());
 
-                    googleMap.addMarker(new MarkerOptions().position(hospitalLocation).title(facility.getName()));
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(hospitalLocation, 16.0f));
+                        googleMap.addMarker(new MarkerOptions().position(hospitalLocation).title(facility.getName()));
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(hospitalLocation, 16.0f));
+                    } catch (Exception e){
+                        mapCard.setVisibility(View.GONE);
+                    }
+
                 });
-                emailTextView.setText(facility.getEmail());
+
+                if (facility.getEmail() != null)
+                    emailTextView.setText(facility.getEmail());
+
+                if (facility.getPrimaryContactPhoneNo() != null)
+                    phoneText.setText(facility.getPrimaryContactPhoneNo());
+
+                if (facility.getWebsite() != null)
+                    websiteText.setText(facility.getWebsite());
+
+                try {
+                    addressText.setText(facility.getAddress().getDescription());
+                } catch (Exception ignored){}
 
                 if (facility.getLogoObject() != null) {
 

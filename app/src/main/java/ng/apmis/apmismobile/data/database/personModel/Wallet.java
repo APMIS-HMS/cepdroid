@@ -6,9 +6,9 @@ import ng.apmis.apmismobile.data.database.cardModel.Card;
 
 public class Wallet {
 
-    private Integer balance;
+    private Long balance;
 
-    private Integer ledgerBalance;
+    private Long ledgerBalance;
 
     private List<Transaction> transactions = null;
 
@@ -20,19 +20,19 @@ public class Wallet {
 
     private List<Card> cards;
 
-    public Integer getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
-    public void setBalance(Integer balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
     }
 
-    public Integer getLedgerBalance() {
+    public Long getLedgerBalance() {
         return ledgerBalance;
     }
 
-    public void setLedgerBalance(Integer ledgerBalance) {
+    public void setLedgerBalance(Long ledgerBalance) {
         this.ledgerBalance = ledgerBalance;
     }
 

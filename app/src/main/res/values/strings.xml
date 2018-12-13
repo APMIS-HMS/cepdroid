@@ -181,6 +181,10 @@
         <item>Select whom to see</item>
     </string-array>
 
+    <string-array name="select_service_price_level">
+        <item>Select service price level</item>
+    </string-array>
+
     <string-array name="select_class">
         <item>Select Class</item>
     </string-array>
@@ -245,5 +249,7 @@
     <string name="channel_name">Apmis notification channel</string>
     <string name="channel_description">APMIS notification</string>
     <string name="no_beneficiary">No beneficiaries added</string>
+    <string name="pricing">Pricing</string>
+    <string name="delete_card">Delete Card</string>
 
 </resources>
