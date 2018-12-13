@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +27,7 @@ import ng.apmis.apmismobile.utilities.InjectorUtils;
  * Created by Thadeus-APMIS on 10/26/2018.
  */
 
-public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionHistoryAdapter.MyViewHolder> {
+public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<Transaction> transactionList;
     private Context context;
@@ -39,18 +40,19 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.transaction_history_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TransactionHistoryAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Transaction transaction = transactionList.get(position);
 
         //holder.name.setText(transaction.getPaidBy());
-        holder.title.setText(transaction.getDescription());
-        holder.amount.setTextColor(transaction.getTransactionType().equalsIgnoreCase("cr") ? ContextCompat.getColor(context, android.R.color.holo_green_light) : ContextCompat.getColor(context, android.R.color.holo_red_light));
-        holder.amount.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(transaction.getAmount())));
-        holder.date.setText(AppUtils.dateToReadableFullDateString(AppUtils.dbStringToLocalDate(transaction.getCreatedAt())));
+        ((MyViewHolder)holder).title.setText(transaction.getDescription());
+        ((MyViewHolder)holder).amount.setTextColor(transaction.getTransactionType().equalsIgnoreCase("cr") ? ContextCompat.getColor(context, android.R.color.holo_green_light) : ContextCompat.getColor(context, android.R.color.holo_red_light));
+        ((MyViewHolder)holder).amount.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(transaction.getAmount())));
+        ((MyViewHolder)holder).date.setText(AppUtils.dateToReadableFullDateString(AppUtils.dbStringToLocalDate(transaction.getCreatedAt())));
     }
 
     @Override
@@ -58,11 +60,12 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
         return transactionList.size();
     }
 
+
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView name, title, amount, date;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             name = itemView.findViewById(R.id.name);

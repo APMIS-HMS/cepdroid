@@ -3,6 +3,7 @@ package ng.apmis.apmismobile.ui.dashboard.buy.fundAccount;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -55,13 +57,20 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.transactions = new ArrayList<>();
     }
 
-    void setItems(ArrayList<Beneficiaries> benList, List<Transaction> trxList) {
-        if (!this.beneficiaries.isEmpty() || !this.transactions.isEmpty()) {
-            this.beneficiaries = new ArrayList<>();
+    void setTransactionItems (List<Transaction> trxList) {
+        if (!this.transactions.isEmpty()) {
             this.transactions = new ArrayList<>();
         }
-        this.beneficiaries.addAll(benList);
         this.transactions.addAll(trxList);
+        notifyDataSetChanged();
+    }
+
+    void setBeneficiaryItems (ArrayList<Beneficiaries> benList) {
+
+        if (!this.beneficiaries.isEmpty()) {
+            this.beneficiaries = new ArrayList<>();
+        }
+        this.beneficiaries.addAll(benList);
         notifyDataSetChanged();
     }
 
@@ -127,7 +136,7 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return transactions.isEmpty() ? 0 : 4;
+        return 4;
     }
 
     private void beneficiaryViewHolder(BeneficiariesViewHolder holder) {
@@ -137,10 +146,15 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void transactionViewHolder(TransactionHistoryViewHolder holder) {
-        TransactionHistoryAdapter transactionHistoryAdapter = new TransactionHistoryAdapter(context, transactions);
-        holder.transactionRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-        holder.transactionRecycler.setAdapter(transactionHistoryAdapter);
-        holder.transactionRecycler.setNestedScrollingEnabled(false);
+        if (transactions.isEmpty()) {
+            holder.emptyView.setVisibility(View.VISIBLE);
+            holder.transactionRecycler.setVisibility(View.GONE);
+        } else {
+            TransactionHistoryAdapter transactionHistoryAdapter = new TransactionHistoryAdapter(context, transactions);
+            holder.transactionRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+            holder.transactionRecycler.setAdapter(transactionHistoryAdapter);
+            holder.transactionRecycler.setNestedScrollingEnabled(false);
+        }
     }
 
 
@@ -196,6 +210,8 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         @BindView(R.id.transaction_recycler)
         RecyclerView transactionRecycler;
+        @BindView(R.id.empty_view)
+        CardView emptyView;
 
         TransactionHistoryViewHolder(View itemView) {
             super(itemView);

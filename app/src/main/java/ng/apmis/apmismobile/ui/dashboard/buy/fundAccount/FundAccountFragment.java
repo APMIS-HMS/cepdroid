@@ -87,24 +87,27 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
         transactionViewModel.getPersonWallet(sharedPreferencesManager.getPersonId()).observe(this, wallet -> {
 
             if (wallet != null){
-
-                listItems = new ArrayList<>();
-               /* listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
-                listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
-                listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));*/
-
-
-                adapter.setItems(listItems, wallet.getTransactions());
-
-                transactionHistoryShimmer.stopShimmer();
-                beneficiaryShimmer.stopShimmer();
-
-                transactionHistoryShimmer.setVisibility(View.GONE);
-                beneficiaryShimmer.setVisibility(View.GONE);
+                adapter.setTransactionItems(wallet.getTransactions());
+            } else {
+                adapter.setTransactionItems(new ArrayList<>());
             }
-
-
+            transactionHistoryShimmer.stopShimmer();
+            transactionHistoryShimmer.setVisibility(View.INVISIBLE);
         });
+
+        listItems = new ArrayList<>();
+        listItems.add(new Beneficiaries("Seun Aloma", R.drawable.apmis_profile));
+        listItems.add(new Beneficiaries("James Cracks", R.drawable.apmis_profile));
+        listItems.add(new Beneficiaries("Alabe Boom", R.drawable.apmis_profile));
+
+        if (!listItems.isEmpty()) {
+            adapter.setBeneficiaryItems(listItems);
+        } else {
+            adapter.setBeneficiaryItems(new ArrayList<>());
+        }
+
+        beneficiaryShimmer.setVisibility(View.INVISIBLE);
+        beneficiaryShimmer.stopShimmer();
 
         return root;
     }

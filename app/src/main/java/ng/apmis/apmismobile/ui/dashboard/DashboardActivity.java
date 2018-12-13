@@ -201,7 +201,7 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
         if (getIntent().getExtras().getString(Constants.NOTIFICATION_ACTION).equals(Constants.APPOINTMENTS)) {
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new ViewFragment(), "HOME")
+                    .replace(R.id.fragment_container, new DashboardFragment(), "DASHBOARD")
                     .addToBackStack(null)
                     .setReorderingAllowed(true)
                     .commit();

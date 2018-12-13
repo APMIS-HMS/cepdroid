@@ -31,7 +31,6 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<RecyclerView.View
     private Context context;
     private final int ADD_BENEFICIARY = 0;
     private final int BENEFICIARY = 1;
-    private final int EMPTY_BENEFICIARY = 2;
 
     public BeneficiariesAdapter(Context context, ArrayList<Beneficiaries> beneficiaries) {
         this.context = context;
@@ -119,9 +118,9 @@ public class BeneficiariesAdapter extends RecyclerView.Adapter<RecyclerView.View
             addImage = itemView.findViewById(R.id.add_image);
             emptyText = itemView.findViewById(R.id.empty_text);
             itemView.setOnClickListener(this);
-            Log.e("bene size", String.valueOf(beneficiaries.size()));
-            if (beneficiaries.size() < 1) {
-                parentLayout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 160));
+            if (getItemCount() == 1) {
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 160);
+                parentLayout.setLayoutParams(layoutParams);
                 emptyText.setVisibility(View.VISIBLE);
             }
         }
