@@ -2,8 +2,8 @@ package ng.apmis.apmismobile.utilities;
 
 public class Constants {
 
-    //public static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
-    public static final String BASE_URL = "http://172.16.16.58:3031/";
+    public static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
+    //public static final String BASE_URL = "http://172.16.16.58:3031/";
 
     public final static String NOTIFICATION_ACTION = "notification_action";
     public final static String WELCOME = "Welcome";
