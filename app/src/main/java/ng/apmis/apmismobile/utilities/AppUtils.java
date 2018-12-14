@@ -1,14 +1,20 @@
 package ng.apmis.apmismobile.utilities;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -30,6 +36,8 @@ import java.util.TimeZone;
 
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 
+import static android.content.Context.LOCATION_SERVICE;
+
 /**
  * Created by mofeejegi-apmis on 9/5/2018.
  * Utility class for handling some minor functions
@@ -41,10 +49,11 @@ public class AppUtils {
 
     /**
      * Converts the current date-time to the String format required by the APMIS database.
+     *
      * @param date {@link Date} object to convert
      * @return String formatted in the APMIS Db style
      */
-    public static String dateToDbString(Date date){
+    public static String dateToDbString(Date date) {
         String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -59,10 +68,11 @@ public class AppUtils {
     /**
      * Converts the current date-time to the String format required by the APMIS database.
      * Also converts timezone from the local TimeZone to UTC.
+     *
      * @param date {@link Date} object to convert
      * @return String formatted in the APMIS Db style
      */
-    public static String localDateToDbString(Date date){
+    public static String localDateToDbString(Date date) {
         String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -78,10 +88,11 @@ public class AppUtils {
     /**
      * Converts the date string received from the APMIS DB to a Date item
      * Also converts timezone from UTC to the local timezone
+     *
      * @param dateString Date string in APMIS data
      * @return The {@link Date} item in the current timezone
      */
-    public static Date dbStringToLocalDate(String dateString){
+    public static Date dbStringToLocalDate(String dateString) {
         String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -101,10 +112,11 @@ public class AppUtils {
     /**
      * Formats a date to a readable string, <br/>
      * e.g, 2018-09-26 09:00:00 date would be represented as Wed, Sep 26, 2018 at 09:00 am
+     *
      * @param date The {@link Date} object to format
      * @return Readable date string
      */
-    public static String dateToReadableFullDateString(Date date){
+    public static String dateToReadableFullDateString(Date date) {
         String pattern = "EEE, MMM dd, yyyy 'at' hh:mm a";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -115,10 +127,11 @@ public class AppUtils {
     /**
      * Formats a date to a readable string without the time, <br/>
      * e.g, 2018-09-26 09:00:00 date would be represented as Wed, Sep 26, 2018
+     *
      * @param date The {@link Date} object to format
      * @return Readable date string
      */
-    public static String dateToReadableFullDateStringNoTime(Date date){
+    public static String dateToReadableFullDateStringNoTime(Date date) {
         String pattern = "EEE, MMM dd, yyyy";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -130,10 +143,11 @@ public class AppUtils {
      * Formats a date to a short readable string, <br/>
      * e.g, 2018-09-26 09:00:00 date would be represented as 26/09/2018
      * according to the UK locale convention
+     *
      * @param date The {@link Date} object to format
      * @return Short readable date string
      */
-    public static String dateToShortDateString(Date date){
+    public static String dateToShortDateString(Date date) {
         String pattern = "dd/MM/yyyy";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -145,10 +159,11 @@ public class AppUtils {
      * Formats a date to a very short readable string, <br/>
      * e.g, 2018-09-26 09:00:00 date would be represented as 26/09/18
      * according to the UK locale convention
+     *
      * @param date The {@link Date} object to format
      * @return Very short readable date string
      */
-    public static String dateToVeryShortDateString(Date date){
+    public static String dateToVeryShortDateString(Date date) {
         String pattern = "dd/MM/yy";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -160,10 +175,11 @@ public class AppUtils {
      * Formats a date to a short readable time string, <br/>
      * e.g, 2018-09-26 09:00:00 date would be represented as 09:00 am
      * ignoring the date values
+     *
      * @param date The {@link Date} object to format
      * @return Short readable time string
      */
-    public static String dateToReadableTimeString(Date date){
+    public static String dateToReadableTimeString(Date date) {
         String pattern = "hh:mm a";
 
         SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
@@ -173,12 +189,13 @@ public class AppUtils {
 
     /**
      * Convenience method to return Upper and lower date limits for a weekday schedule in a time period
+     *
      * @param scheduleItem The ScheduleItem from the Clinic
-     * @param isNextWeek Recursive check to see if the Scheduled weekday has passed this current week and falls into the next week
-     * @param date The Date to check with
+     * @param isNextWeek   Recursive check to see if the Scheduled weekday has passed this current week and falls into the next week
+     * @param date         The Date to check with
      * @return The Upper and Lower Date limits in which the ScheduleItem falls into
      */
-    public static Date[] getNextScheduleTimeLimits(ScheduleItem scheduleItem, boolean isNextWeek, Date date){
+    public static Date[] getNextScheduleTimeLimits(ScheduleItem scheduleItem, boolean isNextWeek, Date date) {
         //Get today's calendar date
         Calendar cal = Calendar.getInstance();
         //Update to a preset date, if available
@@ -197,14 +214,14 @@ public class AppUtils {
         }
 
         //if the day of the week hasn't passed yet...
-        if (weekDayToday <= weekDaySchedule){
+        if (weekDayToday <= weekDaySchedule) {
 
             //next do a check for of today is the day of the week
-            if (weekDayToday == weekDaySchedule){
+            if (weekDayToday == weekDaySchedule) {
                 //if it is, then check if end time has passed
                 Date now = new Date();
                 //if it has passed, re run method using next week
-                if (now.after(getDateWithScheduledTime(scheduleItem.getEndTime(), 0, date))){
+                if (now.after(getDateWithScheduledTime(scheduleItem.getEndTime(), 0, date))) {
                     return getNextScheduleTimeLimits(scheduleItem, true, date);
                 }//otherwise, continue
             }
@@ -215,7 +232,7 @@ public class AppUtils {
         }
 
         //the days between today(or the date in view) and the next scheduled weekday
-        int offsetDays = weekDaySchedule-weekDayToday;
+        int offsetDays = weekDaySchedule - weekDayToday;
 
         return new Date[]{
                 getDateWithScheduledTime(scheduleItem.getStartTime(), offsetDays, date),
@@ -225,13 +242,14 @@ public class AppUtils {
 
     /**
      * Simply removes the time part from a date object
+     *
      * @param dateString The db date string from which we take the time period from
      * @param offsetDays The days between today(or the date in view) and the next scheduled weekday
      *                   with which an offset would be added
-     * @param date The date to check with and strip it's time part away
+     * @param date       The date to check with and strip it's time part away
      * @return The new Date object with the new time
      */
-    private static Date getDateWithScheduledTime(String dateString, int offsetDays, Date date){
+    private static Date getDateWithScheduledTime(String dateString, int offsetDays, Date date) {
         Date dbDate = dbStringToLocalDate(dateString);
 
         SimpleDateFormat hours = new SimpleDateFormat("HH", Locale.UK);
@@ -263,11 +281,12 @@ public class AppUtils {
 
     /**
      * Convenience method to ensure that a Date picked falls within a particular time frame in a particular week day
+     *
      * @param scheduleItem The ScheduleItem with the time range
-     * @param date The date to check with
+     * @param date         The date to check with
      * @return True if it falls within, false otherwise
      */
-    public static boolean isInPossibleScheduleTimeLimit(ScheduleItem scheduleItem, Date date){
+    public static boolean isInPossibleScheduleTimeLimit(ScheduleItem scheduleItem, Date date) {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -282,25 +301,28 @@ public class AppUtils {
 
     /**
      * Convenience method to display a short toast
+     *
      * @param context The calling context
      * @param message The toast message
      */
-    public static void showShortToast(Context context, String message){
+    public static void showShortToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Converts a Double type to a Float type
+     *
      * @param d The double to convert
      * @return The converted float
      */
-    public static float doubleToFloat(Double d){
+    public static float doubleToFloat(Double d) {
         BigDecimal bigDecimal = new BigDecimal(d);
         return bigDecimal.floatValue();
     }
 
     /**
      * Converting Bitmap to byte array
+     *
      * @param bitmap
      * @return
      */
@@ -311,7 +333,8 @@ public class AppUtils {
     }
 
     /**
-     *Converting byte array to Bitmap
+     * Converting byte array to Bitmap
+     *
      * @param byteArray
      * @return
      */
@@ -322,6 +345,7 @@ public class AppUtils {
 
     /**
      * Check if user is connected to the internet
+     *
      * @param context The calling context
      * @return <code>true</code> if there's available network connectivity
      */
@@ -334,6 +358,7 @@ public class AppUtils {
 
     /**
      * Helper method to copy contents of one file into another
+     *
      * @param src The source file to copy from
      * @param dst The destination file to write to
      * @throws IOException
@@ -359,8 +384,9 @@ public class AppUtils {
 
     /**
      * Helper method to compress the size of an image while maintaining it's good quality
-     * @param context The calling context of the compressImage method
-     * @param imagePath File path of the image on the device
+     *
+     * @param context       The calling context of the compressImage method
+     * @param imagePath     File path of the image on the device
      * @param compressTries The amount of times the image has recursively been compressed
      * @return Path to the compressed image
      */
@@ -381,8 +407,8 @@ public class AppUtils {
 
 //      max Height and width values of the compressed image is taken as 1000x1000
 
-        float maxHeight = 500.0f - (compressTries*100);
-        float maxWidth = 500.0f - (compressTries*100);
+        float maxHeight = 500.0f - (compressTries * 100);
+        float maxWidth = 500.0f - (compressTries * 100);
         float imgRatio = actualWidth / actualHeight;
         float maxRatio = maxWidth / maxHeight;
 
@@ -480,17 +506,17 @@ public class AppUtils {
         }
 
         //re-compress the image again if it's above 50KB or if it hasn't compressed a fifth time yet
-        long length = new File(imagePath).length()/1024;
-        if (length > 50 && compressTries < 4){
-            return compressImage(context, filename, compressTries+1);
-        }
-        else
+        long length = new File(imagePath).length() / 1024;
+        if (length > 50 && compressTries < 4) {
+            return compressImage(context, filename, compressTries + 1);
+        } else
             return filename;
 
     }
 
     /**
      * Perform some necessary calculations for the ggod output of the image
+     *
      * @param options
      * @param reqWidth
      * @param reqHeight
@@ -515,7 +541,7 @@ public class AppUtils {
         return inSampleSize;
     }
 
-    public static String formatNumberWithCommas(long num){
+    public static String formatNumberWithCommas(long num) {
         String numString = String.valueOf(num);
 
         StringBuilder builder = new StringBuilder(numString);
@@ -523,23 +549,23 @@ public class AppUtils {
 
         int commaCount = 0;
 
-        for (int i=0; i<numString.length()-1; ++i){
-            if ((i+1) % 3 == 0){
-                builder.insert(i + commaCount + 1,",");
+        for (int i = 0; i < numString.length() - 1; ++i) {
+            if ((i + 1) % 3 == 0) {
+                builder.insert(i + commaCount + 1, ",");
                 ++commaCount;
             }
         }
         return builder.reverse().toString();
     }
 
-    public static String formatExpiryWithSlash(String cardNum){
+    public static String formatExpiryWithSlash(String cardNum) {
         String expString = String.valueOf(cardNum);
 
         StringBuilder builder = new StringBuilder(expString);
 
-        for (int i=0; i<expString.length()-1; ++i){
-            if ((i+1) == 2){
-                builder.insert(i + 1,"/");
+        for (int i = 0; i < expString.length() - 1; ++i) {
+            if (i == 1 && !builder.toString().contains("/")) {
+                builder.insert(i + 1, "/");
             }
         }
         return builder.toString();
@@ -551,27 +577,62 @@ public class AppUtils {
 
             for (File child : fileOrDirectory.listFiles()) {
 
-                Log.e("Tag", "Deleted child at "+child.getAbsolutePath());
+                Log.e("Tag", "Deleted child at " + child.getAbsolutePath());
 
                 deleteRecursive(child);
 
             }
 
 
-
         try {
 
-            Log.e("Tag", "Deleted directory at "+fileOrDirectory.getAbsolutePath());
+            Log.e("Tag", "Deleted directory at " + fileOrDirectory.getAbsolutePath());
 
             fileOrDirectory.delete();
 
-        } catch (Exception ignored){
-
+        } catch (Exception ignored) {
 
 
         }
 
     }
 
+    public AlertDialog.Builder turnOnLocation(Context mContext) {
+        return new AlertDialog.Builder(mContext)
+                .setTitle("GPS is settings")
+                .setMessage("GPS is not enabled. Do you want to go to settings menu?")
+                .setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        mContext.startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+    }
+
+    public static void turnLocation(Context context) {
+        LocationManager lm = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)/* ||
+                !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)*/) {
+            // Build the alert dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Location Services Not Active");
+            builder.setMessage("Please enable Location Services and GPS");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    // Show location settings when the user acknowledges the alert dialog
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    context.startActivity(intent);
+                }
+            });
+            Dialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+        }
+    }
 
 }

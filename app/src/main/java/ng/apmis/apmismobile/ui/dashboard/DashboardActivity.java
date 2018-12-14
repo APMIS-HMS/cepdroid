@@ -203,14 +203,6 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
             getSupportFragmentManager().beginTransaction()
                     .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
                             R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
-                    .replace(R.id.fragment_container, new DashboardFragment(), "DASHBOARD")
-                    .addToBackStack(null)
-                    .setReorderingAllowed(true)
-                    .commit();
-
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.fragment_slide_in, R.anim.fragment_slide_out,
-                            R.anim.fragment_pop_slide_in, R.anim.fragment_pop_slide_out)
                     .replace(R.id.fragment_container, new AppointmentFragment(), Constants.APPOINTMENTS)
                     .addToBackStack(null)
                     .setReorderingAllowed(true)

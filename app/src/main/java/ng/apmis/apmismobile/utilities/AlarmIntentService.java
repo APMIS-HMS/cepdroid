@@ -31,7 +31,7 @@ public class AlarmIntentService extends IntentService {
     }
 
 
-    public static void startResetAlarms (Context context) {
+    public static void startResetAlarms(Context context) {
         Intent intent = new Intent(context, AlarmIntentService.class);
         intent.setAction(RESET_ALARMS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -41,18 +41,21 @@ public class AlarmIntentService extends IntentService {
         context.startService(intent);
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
-            if (RESET_ALARMS.equals(action)) {
-                resetAlarms();
-            }
+        final String action = intent.getAction();
+        if (RESET_ALARMS.equals(action)) {
+            resetAlarms();
         }
     }
 
-    private void resetAlarms () {
+    private void resetAlarms() {
         APMISAPP.getInstance().diskIO().execute(() -> {
             for (Appointment x : InjectorUtils.provideRepository(this).getStaticAppointmentList()) {
                 if (x.getIsActive()) {
@@ -67,10 +70,10 @@ public class AlarmIntentService extends IntentService {
         });
     }
 
-    private boolean isServiceRunning(){
-        ActivityManager manager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-        for(ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if(AlarmIntentService.class.getName().equals(service.service.getClassName())) {
+    private boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (AlarmIntentService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -92,7 +95,7 @@ public class AlarmIntentService extends IntentService {
                 PendingIntent.FLAG_ONE_SHOT);
         alarmManager.set(
                 AlarmManager.RTC_WAKEUP,
-                mYourSchedule.getTime()-60*60*1000, //An hour behind
+                mYourSchedule.getTime() - 60 * 60 * 1000, //An hour behind
                 pendingIntent);
         Log.d("Alarm", "Set");
     }

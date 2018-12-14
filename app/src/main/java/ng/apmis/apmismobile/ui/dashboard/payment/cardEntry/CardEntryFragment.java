@@ -20,6 +20,7 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethod;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -105,7 +106,7 @@ public class CardEntryFragment extends Fragment {
         //Quickly fetch the email and pre-load the email edit text if one is available
         LiveData<PersonEntry> entryLiveData = InjectorUtils.provideRepository(mContext).getUserData();
         Observer<PersonEntry> personEntryObserver = personEntry -> {
-            if (personEntry != null){
+            if (personEntry != null) {
                 if (personEntry.getEmail() != null)
                     emailEdit.setText(personEntry.getEmail());
             }
@@ -135,8 +136,8 @@ public class CardEntryFragment extends Fragment {
                 else {//otherwise, try checking the value entered
                     try {
                         amountToPay = Integer.parseInt(s.toString().replaceAll(",", ""));
-                        Integer.parseInt(amountToPay+"00");//Add two extra zeros for kobo conversion
-                    } catch (Exception e){
+                        Integer.parseInt(amountToPay + "00");//Add two extra zeros for kobo conversion
+                    } catch (Exception e) {
                         amountEdit.setText(previousTextInBox);
                         AppUtils.showShortToast(getContext(), "Invalid amount");
                         return;
@@ -151,8 +152,8 @@ public class CardEntryFragment extends Fragment {
                 //Do nothing if value entered is invalid
                 try {
                     int errCatch = Integer.parseInt(s.toString().replaceAll(",", ""));
-                    Integer.parseInt(errCatch+"00");//Add two extra zeros for kobo conversion
-                } catch (Exception e){
+                    Integer.parseInt(errCatch + "00");//Add two extra zeros for kobo conversion
+                } catch (Exception e) {
                     return;
                 }
 
@@ -164,24 +165,29 @@ public class CardEntryFragment extends Fragment {
             }
         });
 
-      /*  expirationEdit.addTextChangedListener(new TextWatcher() {
+
+        expirationEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.e("expiry", s.toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
-                //expirationEdit.setText(AppUtils.formatExpiryWithSlash(s.toString()));
+                expirationEdit.removeTextChangedListener(this);
+
+                expirationEdit.setText(AppUtils.formatExpiryWithSlash(s.toString()));
+
+                //Move cursor to end of the word
+                expirationEdit.setSelection(expirationEdit.getText().length());
+                expirationEdit.addTextChangedListener(this);
             }
-        });*/
+        });
 
         initViewModel();
 
@@ -203,17 +209,17 @@ public class CardEntryFragment extends Fragment {
         ViewCompat.setTranslationZ(getView(), 10f);
     }
 
-    private void formatButtonText(int amount){
+    private void formatButtonText(int amount) {
         if (amount == 0)
             payButton.setText("PAY");
         else if (amount > 0)
-            payButton.setText("PAY ₦"+ AppUtils.formatNumberWithCommas(amount));
+            payButton.setText("PAY ₦" + AppUtils.formatNumberWithCommas(amount));
     }
 
     CardEntryViewModel cardEntryViewModel;
     Observer<List<String>> verificationObserver;
 
-    private void initViewModel(){
+    private void initViewModel() {
         CardEntryViewModelFactory viewModelFactory = InjectorUtils.provideCardEntryViewModelFactory(mContext);
         cardEntryViewModel = ViewModelProviders.of(this, viewModelFactory).get(CardEntryViewModel.class);
 
@@ -225,7 +231,7 @@ public class CardEntryFragment extends Fragment {
                 presentCompletionDialog(s.get(0).equals("success"));
 
                 //Monitor if card was able to save
-                if (saveCardSwitch.isChecked()){
+                if (saveCardSwitch.isChecked()) {
                     if (s.get(1).equals("false"))
                         AppUtils.showShortToast(getContext(), "Unable to save card details");
                 }
@@ -238,7 +244,7 @@ public class CardEntryFragment extends Fragment {
 
     }
 
-    private void presentCompletionDialog(boolean isSuccessful){
+    private void presentCompletionDialog(boolean isSuccessful) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         AlertDialog dialog = builder.create();
 
@@ -249,10 +255,10 @@ public class CardEntryFragment extends Fragment {
         TextView textView = view.findViewById(R.id.fund_status_text);
         ImageView imageIcon = view.findViewById(R.id.image_icon);
 
-        if (isSuccessful){
+        if (isSuccessful) {
             textView.setText(Html.fromHtml(
                     "Your wallet has successfully been funded with <b>&#8358;"
-                            + AppUtils.formatNumberWithCommas(amountPaid) +"</b>"));
+                            + AppUtils.formatNumberWithCommas(amountPaid) + "</b>"));
         } else {
             imageIcon.setImageResource(R.drawable.ic_error_red_24dp);
             textView.setText("Something went wrong with the payment verification, " +
@@ -261,7 +267,7 @@ public class CardEntryFragment extends Fragment {
 
         Button button = view.findViewById(R.id.complete_button);
         button.setOnClickListener(v -> {
-            if (isSuccessful){
+            if (isSuccessful) {
                 mListener.onPaymentComplete(RESULT_OK);
             } else {
                 mListener.onPaymentComplete(RESULT_CANCELED);
@@ -273,11 +279,11 @@ public class CardEntryFragment extends Fragment {
 
     }
 
-    private void validateCardForm(){
+    private void validateCardForm() {
         //validate amount field
         String amount = amountEdit.getText().toString().trim();
 
-        if (TextUtils.isEmpty(amount)){
+        if (TextUtils.isEmpty(amount)) {
             amountEdit.setError("Please enter an amount to pay");
             return;
         }
@@ -285,7 +291,7 @@ public class CardEntryFragment extends Fragment {
 
         //Validate email field
         String email = emailEdit.getText().toString().trim();
-        if (TextUtils.isEmpty(email)){
+        if (TextUtils.isEmpty(email)) {
             emailEdit.setError("Please enter an email address");
             return;
         }
@@ -299,18 +305,18 @@ public class CardEntryFragment extends Fragment {
         //validate card num field
         String cardNum = cardEdit.getText().toString().trim();
 
-        if (TextUtils.isEmpty(cardNum)){
+        if (TextUtils.isEmpty(cardNum)) {
             cardEdit.setError("Empty card number");
             return;
         }
 
         String expiryString = expirationEdit.getText().toString().trim();
-        if (TextUtils.isEmpty(expiryString)){
+        if (TextUtils.isEmpty(expiryString)) {
             expirationEdit.setError("Enter your expiration details");
             return;
         }
 
-        if (expiryString.length() != 5){
+        if (expiryString.length() != 5) {
             expirationEdit.setError("Please enter proper expiration details");
             return;
         }
@@ -321,25 +327,25 @@ public class CardEntryFragment extends Fragment {
 
         int monthInt = Integer.parseInt(month);
 
-        if (monthInt > 12 || monthInt < 1){
+        if (monthInt > 12 || monthInt < 1) {
             expirationEdit.setError("Please enter valid month");
             return;
         }
 
         int yearInt = Integer.parseInt(year);
 
-        if (yearInt < 0 || yearInt > 99){
+        if (yearInt < 0 || yearInt > 99) {
             expirationEdit.setError("Please enter valid year");
             return;
         }
 
         String cvv = cvvEdit.getText().toString().trim();
-        if (TextUtils.isEmpty(cvv)){
+        if (TextUtils.isEmpty(cvv)) {
             cvvEdit.setError("Please enter cvv");
             return;
         }
 
-        if (cvv.length() != 3){
+        if (cvv.length() != 3) {
             cvvEdit.setError("Please enter proper cvv");
             return;
         }
@@ -360,13 +366,13 @@ public class CardEntryFragment extends Fragment {
 
     }
 
-    private void chargeCard(Card card, int amount, String email){
+    private void chargeCard(Card card, int amount, String email) {
 
         //create a Charge object
         Charge charge = new Charge();
         charge.setCard(card); //sets the card to charge
         charge.setEmail(email);
-        charge.setAmount(amount*100);//kobo
+        charge.setAmount(amount * 100);//kobo
         charge.addParameter("Platform", "Android APMIS Mobile");
 
         PaystackSdk.chargeCard(getActivity(), charge, new Paystack.TransactionCallback() {
@@ -420,7 +426,7 @@ public class CardEntryFragment extends Fragment {
         });
     }
 
-    private void showLoadingDialog(){
+    private void showLoadingDialog() {
         builder = new AlertDialog.Builder(mContext);
         dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -431,7 +437,7 @@ public class CardEntryFragment extends Fragment {
         dialog.show();
     }
 
-    private void dismissLoadingDialog(){
+    private void dismissLoadingDialog() {
         if (dialog != null) {
             dialog.cancel();
         }

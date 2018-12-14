@@ -30,6 +30,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 
@@ -40,11 +41,13 @@ import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.GeofenceTransitionsIntentService;
 import ng.apmis.apmismobile.data.database.facilityModel.Address;
 import ng.apmis.apmismobile.ui.dashboard.DashboardActivity;
+import ng.apmis.apmismobile.ui.dashboard.find.foundItems.FoundItemsActivity;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
 
 
-public class FacilityLocationFragment extends Fragment implements OnMapReadyCallback {
+public class FacilityLocationFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     SupportMapFragment supportMapFragment;
     FusedLocationProviderClient mFusedLocationProviderClient;
@@ -54,6 +57,7 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
     PendingIntent mGeofencePendingIntent;
     Address[] facilityAddresses = null;
     Location currentLocation;
+    String facilityId;
 
     public FacilityLocationFragment() {
         // Required empty public constructor
@@ -69,12 +73,16 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_facility_location, container, false);
 
+        AppUtils.turnLocation(getActivity());
+
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.place_map);
         supportMapFragment.getMapAsync(this);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mGeofencingClient = LocationServices.getGeofencingClient(getActivity());
         mGeofenceList = new ArrayList<>();
+
+        initViewModel();
 
         return rootView;
     }
@@ -98,7 +106,9 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
                         latLng = new LatLng(facilityLocations[i].getAddress().getGeometry().getLocation().getLat(), facilityLocations[i].getAddress().getGeometry().getLocation().getLng());
                         facilityAddresses[i] = facilityLocations[i].getAddress();
                         if (gMap != null) {
-                            gMap.addMarker(new MarkerOptions().position(latLng).title(facilityLocations[i].getName()));
+                            gMap.addMarker(new MarkerOptions().position(latLng).title(facilityLocations[i].getName()).snippet(facilityLocations[i].getId()));
+
+                            gMap.setOnInfoWindowClickListener(this);
                         }
                     }
                 }
@@ -152,6 +162,7 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
             ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.LOCATION, false);
             ((DashboardActivity) getActivity()).mBottomNav.setVisibility(View.GONE);
         }
+        initViewModel();
     }
 
     @SuppressLint("MissingPermission")
@@ -220,4 +231,12 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
         setupMap();
     }
 
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = new Intent(getActivity(), FoundItemsActivity.class);
+        intent.putExtra("itemId", facilityId);
+        intent.putExtra("itemName", marker.getTitle());
+        getActivity().startActivity(intent);
+    }
 }
