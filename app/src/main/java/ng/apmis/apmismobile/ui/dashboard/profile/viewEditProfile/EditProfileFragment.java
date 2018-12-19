@@ -178,6 +178,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
         authorizeLayout.findViewById(R.id.cancel_button).setOnClickListener(v -> dialog.dismiss());
         authorizeLayout.findViewById(R.id.authorize_button).setOnClickListener(v -> {
+            AppUtils.hideKeyboardFrom(getContext(), passwordEdit);
             String password = passwordEdit.getText().toString();
             confirmPasswordAndSave(password, dialog);
         });
@@ -292,6 +293,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
                 AppUtils.showShortToast(getContext(), "Details saved successfully");
                 saveChangesProgress.setVisibility(View.GONE);
                 saveChangesButton.setClickable(true);
+                saveChangesButton.setEnabled(true);
                 onBackPressed();
             }
             else {
@@ -525,7 +527,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
 
     private void saveChanges(){
         Log.v("Profile", "Saving Changes...");
-        //TODO, perform some validation
+
         person.setFirstName(firstNameEdit.getText().toString());
         person.setLastName(lastNameEdit.getText().toString());
         person.setEmail(emailEdit.getText().toString());
@@ -533,6 +535,7 @@ public class EditProfileFragment extends Fragment implements ProfileActivity.OnB
         hasEditStarted = true;//flag to allow downloaded person data to be observed in this fragment
         editProfileViewModel.updatePersonEntry(person);
         saveChangesButton.setClickable(false);
+        saveChangesButton.setEnabled(false);
         saveChangesProgress.setVisibility(View.VISIBLE);
     }
 

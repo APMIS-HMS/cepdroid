@@ -101,6 +101,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
         View view = inflater.inflate(R.layout.fragment_search_items, container, false);
         ButterKnife.bind(this, view);
 
+        Log.e("Find", "On create called again");
+
         terms.add("Light hospital");
         terms.add("Mighty hospital");
         terms.add("Lagos hospital");
@@ -184,8 +186,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
         }
 
         //TODO this is good but not fully tested
-        //if (foundItemsViewModel == null)
-        initViewModel();
+        if (foundItemsViewModel == null)
+            initViewModel();
 
         findSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -331,12 +333,16 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
         skipCount = 0;
         lastSkipCount = 0;
 
+        //Remove the keyboard
+        findSearchView.clearFocus();
+
         hostActivity.setSearchQuery(searchQuery);
         hostActivity.setSearchTerm(selectedSearchTerm);
 
         searchEmptyView.setVisibility(View.GONE);
 
         if (foundItemsAdapter != null) {
+            foundItems = new ArrayList<>();
             foundItemsAdapter.clear();
             foundItemsAdapter.setLoading();
         }
@@ -373,6 +379,8 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
 
     @Override
     public void onLoadMore() {
+        Log.e("Find", "Load more called with skip at "+skipCount);
+
         skipCount = skipCount + 20;
 
         foundItemsAdapter.add(null);
@@ -390,6 +398,7 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
 
     @Override
     public void onForceReload() {
+        Log.e("Find", "Force reload called with skip at "+skipCount);
         foundItemsAdapter.removeNullLoader();
         foundItemsViewModel.populateExtra(hostActivity.getSearchTerm(),
                 hostActivity.getSearchQuery(), skipCount);

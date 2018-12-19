@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
     public interface OnCardActionListener {
         void onCardSelected(Card card);
-        void onCardRemoved(Card card);
+        void onCardRemoved(Card card, int cardPosition);
     }
 
     public CardListAdapter(Context context, List<Card> cards){
@@ -78,6 +79,18 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
             holder.cardBackground.setSelected(false);
         }
 
+        String firstName = card.getCustomer().getFirstName();
+        String lastName = card.getCustomer().getLastName();
+
+        if (!TextUtils.isEmpty(firstName) && !TextUtils.isEmpty(lastName)){
+            holder.cardHolderText.setText(String.format("%s %s", firstName, lastName));
+        } else if (!TextUtils.isEmpty(firstName))
+            holder.cardHolderText.setText(firstName);
+        else {
+            holder.cardHolderText.setText("NO NAME");
+        }
+
+
         holder.popUpMenuButton.setOnClickListener(v -> {
             //Creating the instance of PopupMenu
             PopupMenu popup = new PopupMenu(mContext, holder.popUpMenuButton);
@@ -94,8 +107,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                         builder.setMessage("Doing this would permanently remove this card from your payment options.\n" +
                                 "Do you wish to continue?");
                         builder.setPositiveButton("Remove", (dialog, which) -> {
-                            mListener.onCardRemoved(card);
-                            AppUtils.showShortToast(mContext, "Card removing...");
+                            mListener.onCardRemoved(card, cards.indexOf(card));
                         });
                         builder.setNegativeButton("Cancel", null);
                         builder.show();

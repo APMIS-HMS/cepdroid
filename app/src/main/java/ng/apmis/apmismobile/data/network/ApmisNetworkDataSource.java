@@ -16,6 +16,7 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.Category;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
+import ng.apmis.apmismobile.data.database.facilityModel.HMO;
 import ng.apmis.apmismobile.data.database.facilityModel.ScheduleItem;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
@@ -86,7 +88,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<Appointment>> appointments;
     private MutableLiveData<String> profilePhotoPath;
     private MutableLiveData<Facility> facilityData;
-    private MutableLiveData<String> serviceCategoryId;
+    private MutableLiveData<List<String>> serviceCategoryId;
     private MutableLiveData<BillManager> categoryBillManager;
     private MutableLiveData<Wallet> personWallet;
     private MutableLiveData<List<String>> paymentVerificationData;
@@ -94,6 +96,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
     private MutableLiveData<PersonEntry> paidByPerson;
     private MutableLiveData<String> cardRemovalStatus;
+    private MutableLiveData<List<HMO>> hmos;
 
     //TODO Switch to LiveData later
     private List<OrderStatus> orderStatuses;
@@ -127,6 +130,7 @@ public class ApmisNetworkDataSource {
         paidByPerson = new MutableLiveData<>();
         registeredPatient = new MutableLiveData<>();
         cardRemovalStatus = new MutableLiveData<>();
+        hmos = new MutableLiveData<>();
 
         orderStatuses = new ArrayList<>();
         sharedPreferencesManager = new SharedPreferencesManager(context);
@@ -402,7 +406,9 @@ public class ApmisNetworkDataSource {
         });
     }
 
-    private void registerPatientInFacility(String personId, String facilityId){
+    private void registerPatientInFacility(String personId, String facilityId, String coverType, int cost,
+                                           int amountPaid, String facilityServiceId, String registrationCategoryId,
+                                           String serviceId, String category, String service, JSONObject coverObject){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Found", "Patient registration started");
             new NetworkDataCalls(mContext).registerPatientInFacility(mContext, personId, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
@@ -427,6 +433,12 @@ public class ApmisNetworkDataSource {
         apmisExecutors.networkIO().execute(() -> {
             Log.d(LOG_TAG, "Remove card started");
             new NetworkDataCalls(mContext).removeCardFromWallet(mContext, sharedPreferencesManager.getPersonId(), cardId, wallet, sharedPreferencesManager.getStoredUserAccessToken());
+        });
+    }
+
+    private void fetchHMOSInFacility(String facilityId) {
+        apmisExecutors.networkIO().execute(() -> {
+            new NetworkDataCalls(mContext).fetchHMOSInFacility(mContext, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 
@@ -623,8 +635,10 @@ public class ApmisNetworkDataSource {
 
                     List<Service> services = category.getServices();
 
-                    for (Service service : services) //input the facilityId
+                    for (Service service : services) { //input the facilityId
                         service.setFacilityId(category.getFacilityId());
+                        service.setParentCategoryId(category.getId());
+                    }
 
                     this.services.postValue(services);
                     break;
@@ -650,13 +664,13 @@ public class ApmisNetworkDataSource {
 
     //Category Ids, looking for Registration services
 
-    public LiveData<String> getServiceCategoryIdForFacility(String id){
+    public LiveData<List<String>> getServiceCategoryIdForFacility(String id){
         fetchServiceCategoryForFacility(id);
         return serviceCategoryId;
     }
 
-    public void setServiceCategoryIdForFacility(String categoryServiceIdValue){
-        serviceCategoryId.postValue(categoryServiceIdValue);
+    public void setServiceCategoryIdForFacility(List<String> facilityServiceAndCategoryIds){
+        serviceCategoryId.postValue(facilityServiceAndCategoryIds);
     }
 
     public void clearServiceCategoryId(){
@@ -948,8 +962,11 @@ public class ApmisNetworkDataSource {
         registeredPatient = new MutableLiveData<>();
     }
 
-    public LiveData<Patient> registerPatient(String personId, String facilityId){
-        registerPatientInFacility(personId, facilityId);
+    public LiveData<Patient> registerPatient(String personId, String facilityId, String coverType, int cost,
+                                             int amountPaid, String facilityServiceId, String registrationCategoryId,
+                                             String serviceId, String category, String service, JSONObject coverObject){
+        registerPatientInFacility(personId, facilityId, coverType, cost,
+                amountPaid, facilityServiceId, registrationCategoryId, serviceId, category, service, coverObject);
         return registeredPatient;
     }
 
@@ -974,4 +991,18 @@ public class ApmisNetworkDataSource {
         sInstance = null;
     }
 
+
+    //HMOS
+    public LiveData<List<HMO>> getHMOSInFacility(String facilityId){
+        fetchHMOSInFacility(facilityId);
+        return hmos;
+    }
+
+    public void setHMOSInFacility(List<HMO> hmosInFacility){
+        hmos.postValue(hmosInFacility);
+    }
+
+    public void clearFetchedFacilityHMOS(){
+        hmos = new MutableLiveData<>();
+    }
 }

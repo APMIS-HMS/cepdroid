@@ -17,7 +17,7 @@ import ng.apmis.apmismobile.ui.dashboard.payment.cardEntry.CardEntryFragment;
 import ng.apmis.apmismobile.ui.dashboard.payment.cards.CardsFragment;
 
 public class FundWalletActivity extends AppCompatActivity implements CardEntryFragment.OnPaymentCompletedListener,
-        CardsFragment.OnAddCardButtonClickedListener {
+        CardsFragment.OnAddCardButtonClickedListener, CardsFragment.OnPaymentCompletedListener {
 
     @BindView(R.id.general_toolbar)
     Toolbar generalToolbar;

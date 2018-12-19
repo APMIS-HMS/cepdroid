@@ -214,21 +214,27 @@
                 android:layout_height="40dp"
                 android:layout_marginBottom="35dp">
 
-                <Spinner
-                    android:id="@+id/pricing_spinner"
+                <TextView
+                    android:id="@+id/pricing_text"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:paddingStart="5dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/almost_black"
                     android:theme="@style/AddAppointmentSpinner"
-                    android:background="@drawable/spinner_background_no_background_color"
-                    android:entries="@array/select_service_price_level" />
+                    android:background="@drawable/textview_background_no_background_color"
+                    android:entries="@array/select_service_price_level"
+                    android:text="Please select a service"/>
 
                 <ProgressBar
                     android:id="@+id/pricing_progress"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_gravity="center_vertical|end"
-                    android:layout_marginRight="35dp"
-                    android:layout_marginEnd="35dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:visibility="gone"/>
 
                 <Button
@@ -236,8 +242,8 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical|end"
-                    android:layout_marginRight="33dp"
-                    android:layout_marginEnd="33dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginEnd="3dp"
                     android:background="@drawable/ic_error_refresh"
                     android:visibility="gone"/>
 

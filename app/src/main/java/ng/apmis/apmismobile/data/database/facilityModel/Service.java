@@ -22,6 +22,8 @@ public class Service {
      */
     private String facilityId;
 
+    private String parentCategoryId;
+
     /**
      * Name/title of the Service
      */
@@ -84,6 +86,14 @@ public class Service {
         this.facilityId = facilityId;
     }
 
+    public String getParentCategoryId() {
+        return parentCategoryId;
+    }
+
+    public void setParentCategoryId(String parentCategoryId) {
+        this.parentCategoryId = parentCategoryId;
+    }
+
     public List<Price> getPrices() {
         return prices;
     }
@@ -96,4 +106,5 @@ public class Service {
     public String toString() {
         return name;
     }
+
 }
