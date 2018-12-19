@@ -113,8 +113,8 @@ public class AddAppointmentFragment extends Fragment {
     @BindView(R.id.select_employee_refresh)
     Button selectEmployeeRefresh;
 
-    @BindView(R.id.pricing_spinner)
-    Spinner selectPriceSpinner;
+    @BindView(R.id.pricing_text)
+    TextView selectPriceTextView;
 
     @BindView(R.id.pricing_progress)
     ProgressBar selectPriceProgress;
@@ -146,7 +146,6 @@ public class AddAppointmentFragment extends Fragment {
     ServiceAdapter serviceAdapter;
     EmployeeAdapter employeeAdapter;
     ScheduleAdapter scheduleAdapter;
-    PriceAdapter priceAdapter;
     AddAppointmentViewModel appointmentViewModel;
 
     //Selectable data lists
@@ -435,10 +434,6 @@ public class AddAppointmentFragment extends Fragment {
 
         billManagerObserver = bill -> {
 
-            if (mSelectedPrice == null){
-                return;
-            }
-
             //return in case a bill from the wrong facility is returned from an earlier request
             if (bill != null){
                 if (!bill.getFacilityId().equals(mSelectedFacility.getId()))
@@ -448,27 +443,55 @@ public class AddAppointmentFragment extends Fragment {
             if (bill == null){
                 selectPriceProgress.setVisibility(View.GONE);
                 selectPriceRefresh.setVisibility(View.VISIBLE);
-                //appointmentViewModel.resetEmployees();
+                selectPriceTextView.setText("Unable to fetch price");
+                //TODO i don't think this last guy should be here, since in the
+                //todo new style, my observer observes once and re-fetches thereafter
+                //todo so I can just call this clear in the reload
+                //appointmentViewModel.clearBillManager();
                 return;
             }
 
             mBill = bill;
 
-//            if (priceAdapter == null) {
-//                priceAdapter = new PriceAdapter(getContext(), 0, mPrices);
-//                selectPriceSpinner.setAdapter(priceAdapter);
-//            } else {
-//                priceAdapter.clear();
-//                //priceAdapter.addAllEmployees(mEmployees);
-//                priceAdapter.notifyDataSetChanged();
-//                selectPriceSpinner.setSelection(0);
-//            }
+            Price price = null;
+
+            //Check the found service and get the base price
+            for (Service service : mBill.getServices()){
+                if (service.getId().equals(mSelectedService.getId())){
+                    if (service.getPrices().size() == 1)
+                        price = service.getPrices().get(0);
+
+                    else if (service.getPrices().size() > 1)
+                        for (Price inPrice : service.getPrices()){
+                            if (inPrice.getIsBase()) {
+                                price = inPrice;
+                                break;
+                            }
+                        }
+                }
+            }
+
+            if (price == null)
+                selectPriceTextView.setText("Unable to fetch price");
+            else
+                selectPriceTextView.setText(price.toString());
+
+            mSelectedPrice = price;
 
             selectPriceProgress.setVisibility(View.GONE);
 
 
         };
 
+        selectPriceRefresh.setOnClickListener(v -> {
+            selectPriceTextView.setText("Loading price...");
+            selectPriceProgress.setVisibility(View.VISIBLE);
+            selectPriceRefresh.setVisibility(View.GONE);
+            appointmentViewModel.clearBillManager();
+            appointmentViewModel.getBill(mSelectedService.getFacilityId(), mSelectedService.getParentCategoryId())
+                    .observe(AddAppointmentFragment.this, billManagerObserver);
+
+        });
 
 
 
@@ -509,6 +532,8 @@ public class AddAppointmentFragment extends Fragment {
         mSelectedService = null;
         mSelectedDoctor = null;
         mSelectedSchedule = null;
+        mBill = null;
+        mSelectedPrice = null;
         mYourSchedule = null;
     }
 
@@ -576,6 +601,9 @@ public class AddAppointmentFragment extends Fragment {
 
         dialogStart.show();
     }
+
+
+    boolean areBillsObserved;
 
     /**
      * Set {@link AdapterView.OnItemSelectedListener}s on the spinners
@@ -719,9 +747,25 @@ public class AddAppointmentFragment extends Fragment {
                 //Get the correct schedule by reducing position by 1
                 if (position > 0) {
                     mSelectedService = mServices.get(position-1);
+                    selectPriceTextView.setText("Loading price...");
+                    selectPriceProgress.setVisibility(View.VISIBLE);
+                    selectPriceRefresh.setVisibility(View.GONE);
+
+                    if (!areBillsObserved) {
+                        appointmentViewModel.clearBillManager();
+                        appointmentViewModel.getBill(mSelectedService.getFacilityId(), mSelectedService.getParentCategoryId()).observe(AddAppointmentFragment.this, billManagerObserver);
+                    } else {
+                        appointmentViewModel.reFetchBillData(mSelectedService.getFacilityId(), mSelectedService.getParentCategoryId());
+                    }
 
                 } else {
+                    selectPriceProgress.setVisibility(View.GONE);
+                    selectPriceRefresh.setVisibility(View.GONE);
                     mSelectedService = null;
+                    mBill = null;
+                    areBillsObserved = false;
+                    appointmentViewModel.clearBillManager();
+                    selectPriceTextView.setText("Please select a service");
                 }
             }
 
@@ -749,27 +793,6 @@ public class AddAppointmentFragment extends Fragment {
 
             }
         });
-
-
-        selectPriceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //Get the correct price by reducing position by 1
-                if (position > 0) {
-                    mSelectedPrice = mPrices.get(position-1);
-
-                } else {
-                    mSelectedPrice = null;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
 
         clinicScheduleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -856,7 +879,6 @@ public class AddAppointmentFragment extends Fragment {
         appointment.setCategory(mSelectedService.getName());
 
         Log.e("Submit ted", appointment.toString());
-
 
         appointmentViewModel.submitAppointment(appointment);
         showProgressDialog("Creating Appointment", "Please wait...");

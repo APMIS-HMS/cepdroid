@@ -44,6 +44,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
+import ng.apmis.apmismobile.data.database.facilityModel.HMO;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.personModel.PersonEntry;
 import ng.apmis.apmismobile.data.database.patientModel.Patient;
@@ -1224,7 +1225,8 @@ public final class NetworkDataCalls {
 
         switch (itemType) {
             case "Hospital":
-                urlQuery = "facilities?$select[name]&$select[email]&$select[logoObject]&facilityTypeId=Hospital&$sort[updatedAt]=-1&$skip="+skipCount;
+                //urlQuery = "facilities?$select[name]&$select[email]&$select[logoObject]&facilityTypeId=Hospital&$sort[updatedAt]=-1&$skip="+skipCount;
+                urlQuery = "find-facilities?name="+searchQuery+"&$select[name]&$select[email]&$select[logoObject]&facilityTypeId=Hospital&$sort[updatedAt]=-1&$skip="+skipCount;
                 break;
             case "Doctor":
                 urlQuery = "employees?isActive=true&professionId=Doctor&$skip="+skipCount;
@@ -1392,12 +1394,22 @@ public final class NetworkDataCalls {
 
             Log.v("Fetch categoryId resp", String.valueOf(response));
 
+            String facilityServiceId = null;
+            String categoryId = null;
+
+            List<String> facilityServiceAndCategoryIds = null;
+
             try {
+
+
                 JSONArray jsonArray = response.getJSONArray("data");
+
+                //Get the facility service Id first
+                facilityServiceId = jsonArray.getJSONObject(0).getString("_id");
 
                 JSONArray categoryArray = jsonArray.getJSONObject(0).getJSONArray("categories");
 
-                String categoryId = null;
+                //Then obtain the category Id
                 for (int i = 0; i < categoryArray.length(); ++i){
                     if (categoryArray.getJSONObject(i).getString("name").equals("Medical Records")) {
                         categoryId = categoryArray.getJSONObject(i).getString("_id");
@@ -1406,15 +1418,21 @@ public final class NetworkDataCalls {
 
                 Log.v("Fetch categoryId", categoryArray.toString());
 
-                if (categoryId != null)
-                    InjectorUtils.provideNetworkData(context).setServiceCategoryIdForFacility(categoryId);
+                //Add them to the array list
+                facilityServiceAndCategoryIds = new ArrayList<>();
+                facilityServiceAndCategoryIds.add(facilityServiceId);
+                facilityServiceAndCategoryIds.add(categoryId);
+
+
+                InjectorUtils.provideNetworkData(context).setServiceCategoryIdForFacility(facilityServiceAndCategoryIds);
 
             } catch (JSONException e) {
+                InjectorUtils.provideNetworkData(context).setServiceCategoryIdForFacility(null);
                 e.printStackTrace();
             }
 
         }, (VolleyError error) -> {
-
+            InjectorUtils.provideNetworkData(context).setServiceCategoryIdForFacility(null);
             Log.e("Fetch categoryId error", error.toString());
 
         }) {
@@ -1461,7 +1479,7 @@ public final class NetworkDataCalls {
 
 
         }, (VolleyError error) -> {
-
+            InjectorUtils.provideNetworkData(context).setCategoryBillManager(null);
             Log.e("Fetch servCat error", error.toString());
 
         }) {
@@ -1535,9 +1553,14 @@ public final class NetworkDataCalls {
     }
 
 
+    /**
+     *
+     * @param context
+     * @param accessToken
+     */
     public void fetchNearbyFacilities (Context  context, String accessToken) {
         JsonObjectRequest nearbyFacilities = new JsonObjectRequest(Request.Method.GET, BASE_URL
-                + "facilities?$limit=null&$select[address.geometry.location]&$select[name]", null, response -> {
+                + "facilities?$limit=null&$select[address.geometry.location]&$select[name]&facilityTypeId=Hospital", null, response -> {
 
             Facility[] locationObject = null;
             try {
@@ -1710,7 +1733,6 @@ public final class NetworkDataCalls {
                 InjectorUtils.provideNetworkData(context).setPersonWallet(wallet);
             }
 
-
         }, (VolleyError error) -> {
 
             Log.e("Pay Remove error", String.valueOf(error.getMessage()));
@@ -1718,7 +1740,6 @@ public final class NetworkDataCalls {
             InjectorUtils.provideNetworkData(context).setCardRemovalStatus(null);
 
         }) {
-
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -1733,8 +1754,6 @@ public final class NetworkDataCalls {
         appointmentRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 2, 1));
         APMISAPP.getInstance().addToRequestQueue(appointmentRequest);
     }
-
-
 
 
     /**
@@ -1788,4 +1807,48 @@ public final class NetworkDataCalls {
         APMISAPP.getInstance().addToRequestQueue(registrationRequest);
     }
 
+
+    /**
+     *
+     * @param context
+     * @param accessToken
+     */
+    public void fetchHMOSInFacility (Context context, String facilityId, String accessToken) {
+        JsonObjectRequest nearbyFacilities = new JsonObjectRequest(Request.Method.GET, BASE_URL
+                + "hmos?facilityId=" + facilityId + "&setName=true&$select[hmos.hmo]", null, response -> {
+
+            List<HMO> hmos = null;
+
+            try {
+                hmos = Arrays.asList(gson.fromJson(response.getJSONArray("data")
+                        .getJSONObject(0).getJSONArray("hmos").toString(), HMO[].class));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            InjectorUtils.provideNetworkData(context).setHMOSInFacility(hmos);
+
+
+        }, (VolleyError error) -> {
+
+            Log.e("Nearby location error", String.valueOf(error.getMessage()));
+            //Return null
+            InjectorUtils.provideNetworkData(context).setHMOSInFacility(null);
+
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=utf-8");
+
+                params.put("Authorization", "Bearer " + accessToken);
+
+                return params;
+            }
+        };
+
+        nearbyFacilities.setRetryPolicy(new DefaultRetryPolicy(120000, 2, 1));
+        APMISAPP.getInstance().addToRequestQueue(nearbyFacilities);
+    }
 }

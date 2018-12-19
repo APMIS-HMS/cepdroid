@@ -80,6 +80,9 @@ public class CardEntryFragment extends Fragment {
 
     private Context mContext;
 
+    private String firstName;
+    private String lastName;
+
     //4084084084084081
     //408
 
@@ -108,6 +111,9 @@ public class CardEntryFragment extends Fragment {
             if (personEntry != null){
                 if (personEntry.getEmail() != null)
                     emailEdit.setText(personEntry.getEmail());
+
+                firstName = personEntry.getFirstName();
+                lastName = personEntry.getLastName();
             }
         };
         entryLiveData.observe(this, personEntryObserver);
@@ -218,9 +224,10 @@ public class CardEntryFragment extends Fragment {
         cardEntryViewModel = ViewModelProviders.of(this, viewModelFactory).get(CardEntryViewModel.class);
 
         verificationObserver = s -> {
+            dismissLoadingDialog();
+
             if (s != null) {
                 AppUtils.showShortToast(mContext, s.get(0).toUpperCase());
-                dismissLoadingDialog();
 
                 presentCompletionDialog(s.get(0).equals("success"));
 
@@ -231,7 +238,6 @@ public class CardEntryFragment extends Fragment {
                 }
 
             } else {
-                dismissLoadingDialog();
                 presentCompletionDialog(false);
             }
         };
@@ -344,7 +350,18 @@ public class CardEntryFragment extends Fragment {
             return;
         }
 
-        Card card = new Card(cardNum, monthInt, yearInt, cvv);
+        String name = "";
+        if (firstName != null && lastName != null)
+            name = firstName +" "+ lastName;
+        else if (firstName != null)
+            name = firstName;
+
+        Card card;
+        if (TextUtils.isEmpty(name))
+            card = new Card(cardNum, monthInt, yearInt, cvv);
+        else
+            card = new Card(cardNum, monthInt, yearInt, cvv, name);
+
         if (card.isValid()) {
             // charge card
             chargeCard(card, Integer.parseInt(amount.replaceAll(",", "")), email);

@@ -4,12 +4,15 @@ package ng.apmis.apmismobile.ui.dashboard.payment.cards;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
@@ -31,10 +35,12 @@ import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.cardModel.Card;
-import ng.apmis.apmismobile.data.database.facilityModel.LogoObject;
 import ng.apmis.apmismobile.data.database.personModel.Wallet;
 import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,12 +65,17 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardAct
     @BindView(R.id.empty_card_view)
     FrameLayout emptyCardView;
 
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
+
     private CardListAdapter cardListAdapter;
 
     CardsViewModel cardsViewModel;
     Observer<Wallet> walletObserver = null;
     Observer<List<String>> verificationObserver = null;
     Observer<String> removalObserver = null;
+
+    int lastRemovedCardPosition = -1;
 
     private SnapHelper snapHelper;
 
@@ -80,9 +91,14 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardAct
     }
 
     private OnAddCardButtonClickedListener mListener;
+    private OnPaymentCompletedListener payListener;
 
     public interface OnAddCardButtonClickedListener {
         void onAddCardButtonClicked();
+    }
+
+    public interface OnPaymentCompletedListener {
+        void onPaymentComplete(int result);
     }
 
     @Override
@@ -164,8 +180,19 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardAct
         initViewModel();
 
         fundWalletButton.setOnClickListener(v -> {
-            cardsViewModel.getPayData(null, 1000, true, false, selectedCard.getCustomer().getEmail(), selectedCard.getAuthorization().getAuthorizationCode()).observe(CardsFragment.this, verificationObserver);
 
+            if (amountToPay >= 50 && selectedCard != null) {
+                cardsViewModel.clearVerification();
+                cardsViewModel.getPayData(null, amountToPay,
+                        true, false, selectedCard.getCustomer().getEmail(),
+                        selectedCard.getAuthorization().getAuthorizationCode())
+                        .observe(CardsFragment.this, verificationObserver);
+                showLoadingDialog();
+            } else if (amountToPay < 50){
+                amountEditText.setError("Please enter amount between ₦50 and ₦20,000,000");
+            } else {
+                AppUtils.showShortToast(getContext(), "Please select a card");
+            }
         });
 
         return view;
@@ -178,14 +205,25 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardAct
     }
 
     @Override
-    public void onCardRemoved(Card card) {
+    public void onCardRemoved(Card card, int cardPosition) {
+        if (lastRemovedCardPosition != -1){
+            AppUtils.showShortToast(getContext(), "Still removing a card");
+            return;
+        }
+
+
         if (selectedCard != null && card.getAuthorization().getSignature()
                 .equals(selectedCard.getAuthorization().getSignature())){
             //remove selected card status if selected card is the one to delete
             cardListAdapter.deselectCard();
-            formatButtonText(amountToPay, null);
+            selectedCard = null;
+            formatButtonText(amountToPay, selectedCard);
         }
+
+        lastRemovedCardPosition = cardPosition;
+        cardsViewModel.clearCardRemovalStatus();
         cardsViewModel.getRemovalStatus(card.getId(), wallet).observe(this, removalObserver);
+        AppUtils.showShortSnackBar(balanceTextView, "Removing ****"+card.getAuthorization().getLast4());
     }
 
     private void formatButtonText(int amount, Card card){
@@ -244,37 +282,85 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardAct
         cardsViewModel.getWallet(prefs.getPersonId()).observe(this, walletObserver);
 
         verificationObserver = s -> {
-            if (s != null){
-                //AppUtils.showShortToast(getContext(), s.get(0));
+            dismissLoadingDialog();
 
-                if (s.get(0).equals("success")) {
+            if (s == null || !s.get(0).equals("success")){
+                presentCompletionDialog(false);
+                return;
+            }
 
-                    if (s.get(1).equals("true")) {
-                        AppUtils.showShortToast(getContext(), "SUCCESS");
-                    } else {
-                        AppUtils.showShortToast(getContext(), "UNABLE TO CHARGE CARD!!!");
-                    }
+            //if payment hit the server and successfully returned a result...
 
-                } else {
-                    AppUtils.showShortToast(getContext(), "FAILED!!!");
-                }
-
+            if (s.get(1).equals("true")) {
+                presentCompletionDialog(true);
+                AppUtils.showShortToast(getContext(), "SUCCESS");
             } else {
-                AppUtils.showShortToast(getContext(), "FAILED!!!");
+                AppUtils.showShortToast(getContext(), "Unable to charge this card, please use another");
             }
         };
 
-        removalObserver = cards -> {
+        removalObserver = cardRemovalStatus -> {
 
-            if (cards != null && cards.equals("success")){
-                cardListAdapter.notifyDataSetChanged();
-                AppUtils.showShortToast(getContext(), "Card Successfully removed");
+            if (cardRemovalStatus != null && cardRemovalStatus.equals("success")){
+                cardListAdapter.notifyItemRemoved(lastRemovedCardPosition);
+                AppUtils.showShortSnackBar(balanceTextView, "Card successfully removed");
             } else {
-                AppUtils.showShortToast(getContext(), "Card not removed");
+                AppUtils.showShortSnackBar(balanceTextView, "Unable to remove card");
             }
-
+            lastRemovedCardPosition = -1;
         };
+    }
 
+    private void presentCompletionDialog(boolean isSuccessful){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog dialog = builder.create();
+
+        dialog.setCancelable(false);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View view = inflater.inflate(R.layout.layout_fund_completed, null, false);
+
+        TextView textView = view.findViewById(R.id.fund_status_text);
+        ImageView imageIcon = view.findViewById(R.id.image_icon);
+
+        if (isSuccessful){
+            textView.setText(Html.fromHtml(
+                    "Your wallet has successfully been funded with <b>&#8358;"
+                            + AppUtils.formatNumberWithCommas(amountToPay) +"</b>"));
+        } else {
+            imageIcon.setImageResource(R.drawable.ic_error_red_24dp);
+            textView.setText("Something went wrong with the payment verification, " +
+                    "please contact us within 24hrs to resolve the issue");
+        }
+
+        Button button = view.findViewById(R.id.complete_button);
+        button.setOnClickListener(v -> {
+            if (isSuccessful){
+                payListener.onPaymentComplete(RESULT_OK);
+            } else {
+                payListener.onPaymentComplete(RESULT_CANCELED);
+            }
+        });
+
+        dialog.setView(view);
+        dialog.show();
+
+    }
+
+    private void showLoadingDialog(){
+        builder = new AlertDialog.Builder(getContext());
+        dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.setCancelable(false);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View view = inflater.inflate(R.layout.layout_full_screen_loader, null, false);
+        dialog.setView(view);
+        dialog.show();
+    }
+
+    private void dismissLoadingDialog(){
+        if (dialog != null) {
+            dialog.cancel();
+        }
     }
 
     @Override
@@ -286,12 +372,19 @@ public class CardsFragment extends Fragment implements CardListAdapter.OnCardAct
             throw new RuntimeException(context.toString()
                     + " must implement OnAddCardButtonClickedListener");
         }
+        if (context instanceof OnPaymentCompletedListener) {
+            payListener = (OnPaymentCompletedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnPaymentCompletedListener");
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        payListener = null;
     }
 
 }

@@ -1,8 +1,6 @@
 package ng.apmis.apmismobile.ui.dashboard.find.foundItems.foundHospital;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -25,7 +23,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -34,11 +34,12 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ import ng.apmis.apmismobile.APMISAPP;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.data.database.SharedPreferencesManager;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
-import ng.apmis.apmismobile.data.database.facilityModel.Geometry;
+import ng.apmis.apmismobile.data.database.facilityModel.HMO;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
 import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.database.fundAccount.Price;
@@ -75,10 +76,14 @@ public class FoundHospitalDetailFragment extends Fragment {
     private static String KEY_NAME = "facilityNameKey";
     private static String KEY_EMAIL = "facilityEmailKey";
 
+    private static final String COVER_TYPE_WALLET = "wallet";
+    private static final String COVER_TYPE_INSURANCE = "insurance";
+    private static final String COVER_TYPE_FAMILY = "family";
+
     public static final int FUND_WALLET_REQUEST = 1;
 
     private OnFragmentInteractionListener mListener;
-    private String id, name, email;
+    private String facilityId, name, email;
 
     private FoundHospitalDetailViewModel foundHospitalViewModel;
 
@@ -127,16 +132,47 @@ public class FoundHospitalDetailFragment extends Fragment {
     @BindView(R.id.pay_button)
     Button payButton;
 
+    @BindView(R.id.family_cover_row)
+    TableRow familyCoverRow;
+
+    @BindView(R.id.insurance_row)
+    TableRow insuranceRow;
+
+    @BindView(R.id.reg_status_loading)
+    TableRow regStatusTableRow;
+
+    @BindView(R.id.reg_status_text)
+    TextView regStatusTextView;
+
+    @BindView(R.id.image_register)
+    ImageView imageRegisterView;
+
+    @BindView(R.id.pay_type_radio_group)
+    RadioGroup payTypeRadioGroup;
+
+    @BindView(R.id.hmo_spinner)
+    Spinner hmoSpinner;
+
+
     SupportMapFragment mapFragment;
 
     private BillManager registrationBillManager;
 
     private ArrayAdapter registrationServiceArrayAdapter;
     private ArrayAdapter priceArrayAdapter;
+    private ArrayAdapter hmoArrayAdapter;
 
+    String facilityServiceId;
     String registrationCategoryId;
+
     private Service selectedService;
     private Price selectedPrice;
+    private HMO selectedHMO;
+
+    List<String> registeredIds = null;
+    List<HMO> hmos = null;
+
+    private String coverType;
 
     private SharedPreferencesManager pref;
 
@@ -146,8 +182,8 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     private ProgressDialog progressDialog;
 
-    @BindView(R.id.map_group)
-    LinearLayout mapGroup;
+    @BindView(R.id.register_btn_group)
+    LinearLayout regBtnGroup;
 
 
     public interface OnFragmentInteractionListener{
@@ -177,7 +213,7 @@ public class FoundHospitalDetailFragment extends Fragment {
         if (getArguments() != null) {
 
             if (getArguments().getSerializable(KEY_ID) != null) {
-                id = getArguments().getString(KEY_ID);
+                facilityId = getArguments().getString(KEY_ID);
                 name = getArguments().getString(KEY_NAME);
                 email = getArguments().getString(KEY_EMAIL);
             }
@@ -197,6 +233,8 @@ public class FoundHospitalDetailFragment extends Fragment {
         hospitalNameTextView.setText(name);
         emailTextView.setText(email);
 
+        coverType = COVER_TYPE_WALLET;
+
         initViewModel();
 
         progressDialog = new ProgressDialog(getContext());
@@ -205,6 +243,7 @@ public class FoundHospitalDetailFragment extends Fragment {
             registrationBillManager = null;
             TransitionManager.beginDelayedTransition(mainLayout);
             priceServiceLayout.setVisibility(View.VISIBLE);
+            v.setVisibility(View.INVISIBLE);
             initBillManagerObserver();
         });
 
@@ -232,8 +271,8 @@ public class FoundHospitalDetailFragment extends Fragment {
                 if (selectedService != null) {
                     selectedPrice = selectedService.getPrices().get(position);
 
-                    TransitionManager.beginDelayedTransition(priceServiceLayout);
-                    payButton.setVisibility(View.VISIBLE);
+                    //TransitionManager.beginDelayedTransition(priceServiceLayout);
+                    payButton.setEnabled(true);
                 }
             }
 
@@ -243,12 +282,46 @@ public class FoundHospitalDetailFragment extends Fragment {
             }
         });
 
-        payButton.setOnClickListener(new View.OnClickListener() {
+        hmoSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                showPaymentDetailsDialog();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (hmos != null && hmos.size() > 0)
+                    selectedHMO = hmos.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+
+        payButton.setOnClickListener(v -> showPaymentDetailsDialog());
+
+        payTypeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId){
+                case R.id.pocket_radio:
+                    familyCoverRow.setVisibility(View.GONE);
+                    insuranceRow.setVisibility(View.GONE);
+                    coverType = COVER_TYPE_WALLET;
+                    break;
+                case R.id.insurance_radio:
+                    familyCoverRow.setVisibility(View.GONE);
+                    insuranceRow.setVisibility(View.VISIBLE);
+                    coverType = COVER_TYPE_INSURANCE;
+                    break;
+                case R.id.family_radio:
+                    familyCoverRow.setVisibility(View.VISIBLE);
+                    insuranceRow.setVisibility(View.GONE);
+                    coverType = COVER_TYPE_FAMILY;
+                    break;
+                default:
+                    familyCoverRow.setVisibility(View.GONE);
+                    insuranceRow.setVisibility(View.GONE);
+                    coverType = COVER_TYPE_WALLET;
+                    break;
+            }
+        });
+
 
         return view;
     }
@@ -258,8 +331,6 @@ public class FoundHospitalDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ViewCompat.setTranslationZ(getView(), 10f);
     }
-
-    List<String> registeredIds = null;
 
     private void initViewModel(){
         FoundHospitalDetailViewModelFactory viewModelFactory = InjectorUtils.provideFoundHospitalDetailViewModelFactory(getContext());
@@ -333,19 +404,40 @@ public class FoundHospitalDetailFragment extends Fragment {
             }
         };
 
-        final Observer<String> serviceIdObserver = s -> {
-            if (s != null) {
-                registrationCategoryId = s;
-                priceLoader.setVisibility(View.GONE);
+        final Observer<List<String>> serviceIdObserver = ids -> {
+
+            priceLoader.setVisibility(View.INVISIBLE);
+
+            if (ids != null) {
+                facilityServiceId = ids.get(0);
+                registrationCategoryId = ids.get(1);
+
 
                 if (registeredIds != null) {
-                    if (registeredIds.contains(id))
-                        AppUtils.showShortToast(getContext(), "You have already registered in this facility");
-                    else
-                        mapGroup.setVisibility(View.VISIBLE);
+                    if (registeredIds.contains(facilityId)) {
+                        imageRegisterView.setVisibility(View.VISIBLE);
+                        regStatusTextView.setText("Registered in this facility");
+                    }
+                    else {
+                        //Continue the registration view process
+                        regStatusTableRow.setVisibility(View.GONE);
+                        regBtnGroup.setVisibility(View.VISIBLE);
+                    }
                 } else {
-                    AppUtils.showShortToast(getContext(), "Could not fetch registration details. Please try again later");
+                    regStatusTextView.setText("Could not fetch your registration details.");
                 }
+
+            } else {
+                regStatusTextView.setText("Unable to fetch service details");
+            }
+        };
+
+        final Observer<List<HMO>> facilityHMOObserver = hmos -> {
+            if (hmos != null) {
+                this.hmos = hmos;
+                hmoArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, hmos);
+                hmoArrayAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
+                hmoSpinner.setAdapter(hmoArrayAdapter);
             }
         };
 
@@ -361,10 +453,13 @@ public class FoundHospitalDetailFragment extends Fragment {
         };
 
         foundHospitalViewModel.clearFacilityData();
-        foundHospitalViewModel.getFacility(id).observe(this, facilityObserver);
+        foundHospitalViewModel.getFacility(facilityId).observe(this, facilityObserver);
 
         foundHospitalViewModel.clearServiceCategoryId();
-        foundHospitalViewModel.getServiceCategoryIdForFacility(id).observe(this, serviceIdObserver);
+        foundHospitalViewModel.getFacilityServiceCategoryIdsForFacility(facilityId).observe(this, serviceIdObserver);
+
+        foundHospitalViewModel.clearFacilityHMOS();
+        foundHospitalViewModel.getFacilityHmos(facilityId).observe(this, facilityHMOObserver);
 
     }
 
@@ -408,13 +503,12 @@ public class FoundHospitalDetailFragment extends Fragment {
                 if (billManager.getServices() != null && billManager.getServices().size() > 0)
                     setupSpinnerAdaptersWithBillManager(billManager);
                 else
-                    AppUtils.showShortToast(getContext(), "No registration service available");
-
+                    AppUtils.showIndefiniteSnackBar(hospitalNameTextView, "No registration service available");
             }
         };
 
         foundHospitalViewModel.clearBills();
-        foundHospitalViewModel.getBillManagerForRegistration(id, registrationCategoryId).observe(this, billManagerObserver);
+        foundHospitalViewModel.getBillManagerForRegistration(facilityId, registrationCategoryId).observe(this, billManagerObserver);
 
     }
 
@@ -485,7 +579,12 @@ public class FoundHospitalDetailFragment extends Fragment {
                 registerOrFundButton.setEnabled(true);
                 registerOrFundButton.setOnClickListener(v -> {
                     if (isMoneyEnough){
-                        attemptFacilityRegistration();
+                        try {
+                            attemptFacilityRegistration();
+                        } catch (JSONException e) {
+                            AppUtils.showShortToast(getContext(), "Unable to register at the moment");
+                            e.printStackTrace();
+                        }
                         builder.cancel();
                     } else {
                         builder.cancel();
@@ -504,11 +603,42 @@ public class FoundHospitalDetailFragment extends Fragment {
         builder.show();
     }
 
-    private void attemptFacilityRegistration(){
+    private void attemptFacilityRegistration() throws JSONException {
         showProgressDialog("Registering", "Please wait while we connect you to "+name);
 
         foundHospitalViewModel.clearPatientOnRegistration();
-        foundHospitalViewModel.registerPatient(pref.getPersonId(), id).observe(this, patientObserver);
+
+        String personId = pref.getPersonId();
+        String facilityId = this.facilityId;
+        String coverType = this.coverType;
+        int cost = selectedPrice.getPrice();
+        int amountPaid = selectedPrice.getPrice();
+        String facilityServiceId = this.facilityServiceId;
+        String registrationCategoryId = this.registrationCategoryId;
+        String serviceId = selectedService.getId();
+        String category = "Medical Records";//TODO make dynamic later
+        String service = selectedService.getName();
+
+        JSONObject coverObject = new JSONObject();
+
+        //COVER
+        switch (coverType) {
+            case COVER_TYPE_WALLET:
+                coverObject = null;
+                break;
+            case COVER_TYPE_INSURANCE:
+                coverObject.put("id", selectedHMO.getHmo());
+                coverObject.put("name", selectedHMO.getHmoName());
+                coverObject.put("fileNo", 0);
+                break;
+            case COVER_TYPE_FAMILY:
+                coverObject.put("fileNo", 0);
+                break;
+        }
+
+        foundHospitalViewModel.registerPatient(personId, facilityId, coverType, cost,
+                amountPaid, facilityServiceId, registrationCategoryId, serviceId, category, service, coverObject)
+                .observe(this, patientObserver);
     }
 
     private void showProgressDialog(String title, String message){

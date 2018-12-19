@@ -47,7 +47,7 @@
         <activity
             android:name=".ui.dashboard.DashboardActivity"
             android:theme="@style/BackgroundTheme"
-            android:windowSoftInputMode="adjustNothing">
+            android:windowSoftInputMode="adjustPan">
 
             <!-- enable the search dialog to send searches to SearchableActivity -->
             <meta-data

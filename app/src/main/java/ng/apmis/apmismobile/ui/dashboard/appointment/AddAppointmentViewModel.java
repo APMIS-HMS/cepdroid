@@ -14,6 +14,7 @@ import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
 import ng.apmis.apmismobile.data.database.facilityModel.Service;
+import ng.apmis.apmismobile.data.database.fundAccount.BillManager;
 import ng.apmis.apmismobile.data.network.ApmisNetworkDataSource;
 
 public class AddAppointmentViewModel extends ViewModel {
@@ -22,6 +23,7 @@ public class AddAppointmentViewModel extends ViewModel {
     private MutableLiveData<List<ClinicSchedule>> mClinics;
     private MutableLiveData<List<Service>> mServices;
     private MutableLiveData<List<Employee>> mEmployees;
+    private LiveData<BillManager> mBill;
 
     private MutableLiveData<Appointment> mAppointment;
 
@@ -86,6 +88,14 @@ public class AddAppointmentViewModel extends ViewModel {
         return mAppointment;
     }
 
+    public LiveData<BillManager> getBill(String facilityId, String categoryId) {
+        mBill = apmisNetworkDataSource.getBillManagerForFacilityServiceCategory(facilityId, categoryId);
+        return mBill;
+    }
+
+    public void reFetchBillData(String facilityId, String categoryId){
+        apmisNetworkDataSource.getBillManagerForFacilityServiceCategory(facilityId, categoryId);
+    }
 
 
     public void resetClinics(){
@@ -107,6 +117,12 @@ public class AddAppointmentViewModel extends ViewModel {
     public void tempRefreshApptTypes(){
         appointmentTypes = new MutableLiveData<>();
     }
+
+    public void clearBillManager(){
+        apmisNetworkDataSource.clearBillManager();
+    }
+
+
 
 
 

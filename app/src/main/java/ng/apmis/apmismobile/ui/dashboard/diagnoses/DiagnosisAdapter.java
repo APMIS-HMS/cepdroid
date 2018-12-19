@@ -101,6 +101,7 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.Diag
 
         authorizeLayout.findViewById(R.id.cancel_button).setOnClickListener(v -> dialog.dismiss());
         authorizeLayout.findViewById(R.id.authorize_button).setOnClickListener(v -> {
+            AppUtils.hideKeyboardFrom(mContext, passwordEdit);
             String password = passwordEdit.getText().toString();
             confirmPasswordAndAccess(password, dialog, intent);
         });

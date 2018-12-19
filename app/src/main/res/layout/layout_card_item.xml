@@ -10,6 +10,7 @@
     android:clickable="true"
     android:focusable="true"
     android:layout_margin="15dp"
+    android:animateLayoutChanges="true"
     android:padding="10dp">
 
     <ImageView
@@ -106,9 +107,13 @@
         android:id="@+id/card_holder_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical|start"
         android:layout_below="@id/card_holder_title"
+        android:layout_alignLeft="@+id/card_holder_title"
+        android:layout_alignStart="@+id/card_holder_title"
+        android:layout_toLeftOf="@+id/expiry_text"
+        android:layout_toStartOf="@+id/expiry_text"
         android:textSize="12sp"
         android:lines="1"
         android:ellipsize="end"
@@ -136,7 +141,7 @@
         android:layout_marginBottom="5dp"
         android:textSize="12sp"
         android:gravity="start"
-        android:layout_alignBottom="@+id/card_holder_text"
+        android:layout_alignBaseline="@+id/card_holder_text"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignLeft="@+id/expiry_title"

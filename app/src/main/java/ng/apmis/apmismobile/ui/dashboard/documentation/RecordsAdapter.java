@@ -87,6 +87,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         authorizeLayout.findViewById(R.id.cancel_button).setOnClickListener(v -> dialog.dismiss());
         authorizeLayout.findViewById(R.id.authorize_button).setOnClickListener(v -> {
+            AppUtils.hideKeyboardFrom(mContext, passwordEdit);
             String password = passwordEdit.getText().toString();
             confirmPasswordAndAccess(password, dialog, documentation);
         });

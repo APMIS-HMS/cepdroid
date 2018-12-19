@@ -124,7 +124,8 @@ public class SearchTermsRowAdapter extends RecyclerView.Adapter<SearchTermsRowAd
                     String hospitalId = appointment.getFacilityId();
                     String name = appointment.getPatientDetails().getFacilityObj().getName();
                     String clinic = appointment.getClinicId();
-                    item = new SearchTermItem(hospitalId, name, clinic, "Hospital");
+                    String imageLogoUrl = appointment.getPatientDetails().getFacilityObj().getLogoObject().getPath();
+                    item = new SearchTermItem(imageLogoUrl, hospitalId, name, clinic, "Hospital");
                     break;
                 case "Doctor":
                     try {

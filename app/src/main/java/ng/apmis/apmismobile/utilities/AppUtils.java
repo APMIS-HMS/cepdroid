@@ -1,5 +1,6 @@
 package ng.apmis.apmismobile.utilities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +10,10 @@ import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -287,6 +291,35 @@ public class AppUtils {
      */
     public static void showShortToast(Context context, String message){
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Convenience method to display a short timed snackBar
+     * @param view The referenced view
+     * @param message The toast message
+     */
+    public static void showShortSnackBar(View view, String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Convenience method to display a long timed snackBar
+     * @param view The referenced view
+     * @param message The toast message
+     */
+    public static void showLongSnackBar(View view, String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    /**
+     * Convenience method to display an untimed snackBar
+     * @param view The referenced view
+     * @param message The toast message
+     */
+    public static void showIndefiniteSnackBar(View view, String message){
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("DISMISS", v -> snackbar.dismiss());
+        snackbar.show();
     }
 
     /**
@@ -573,5 +606,8 @@ public class AppUtils {
 
     }
 
-
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 }
