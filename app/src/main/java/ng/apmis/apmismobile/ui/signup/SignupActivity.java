@@ -32,6 +32,7 @@ import butterknife.ButterKnife;
 import ng.apmis.apmismobile.R;
 import ng.apmis.apmismobile.ui.login.LoginActivity;
 import ng.apmis.apmismobile.utilities.AlarmManagerSingleton;
+import ng.apmis.apmismobile.utilities.Constants;
 
 public class SignupActivity extends AppCompatActivity implements SignupFragmentA.OnFragmentInteractionListener, SignupFragmentB.OnFragmentInteractionListener {
 
@@ -41,7 +42,7 @@ public class SignupActivity extends AppCompatActivity implements SignupFragmentA
     public static String genderString = "";
     public static String securityQuestionString = "";
 
-    static final String BASE_URL = "https://apmisapitest.azurewebsites.net/";
+    static final String BASE_URL = Constants.BASE_URL;
 
     FragmentManager fm;
 

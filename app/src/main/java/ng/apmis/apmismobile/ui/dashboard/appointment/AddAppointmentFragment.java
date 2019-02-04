@@ -234,6 +234,8 @@ public class AddAppointmentFragment extends Fragment {
                 hospitalAdapter = new FacilityAdapter(getContext(), 0, mFacilities);
                 selectHospitalSpinner.setAdapter(hospitalAdapter);
             } else {
+                hospitalAdapter.clear();
+                hospitalAdapter.addAllFacilities(mFacilities);
                 hospitalAdapter.notifyDataSetChanged();
             }
 

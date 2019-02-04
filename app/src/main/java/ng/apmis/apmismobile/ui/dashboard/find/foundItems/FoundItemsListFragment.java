@@ -185,7 +185,6 @@ public class FoundItemsListFragment extends Fragment implements FoundItemsAdapte
             searchShimmer.stopShimmer();
         }
 
-        //TODO this is good but not fully tested
         if (foundItemsViewModel == null)
             initViewModel();
 

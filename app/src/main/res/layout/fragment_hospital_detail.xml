@@ -71,10 +71,28 @@
                     android:layout_alignLeft="@+id/hospital_name"
                     android:layout_alignStart="@+id/hospital_name"
                     android:layout_below="@+id/hospital_name"
+                    android:layout_marginBottom="5dp"
                     android:autoLink="email"
+                    android:textColor="@color/colorPrimary"
                     android:textColorLink="@color/colorPrimary"
+                    android:drawableLeft="@drawable/ic_mail_outline"
+                    android:drawableStart="@drawable/ic_mail_outline"
+                    android:drawablePadding="5dp"
                     android:textSize="14sp"
-                    android:text="My Hospital"/>
+                    android:text=". . ."/>
+
+                <TextView
+                    android:id="@+id/reg_no_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/hospital_name"
+                    android:layout_alignStart="@+id/hospital_name"
+                    android:layout_below="@+id/email_text"
+                    android:drawableLeft="@drawable/ic_copyright_24dp"
+                    android:drawableStart="@drawable/ic_copyright_24dp"
+                    android:drawablePadding="5dp"
+                    android:textSize="14sp"
+                    android:text=". . ."/>
 
             </RelativeLayout>
 
@@ -94,12 +112,31 @@
                 android:animateLayoutChanges="true"
                 android:orientation="vertical">
 
-                <TextView
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:text="Hospital Registration"
-                    android:layout_margin="5dp"/>
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:text="Hospital Registration"
+                        android:layout_margin="5dp"/>
+
+                    <TextView
+                        android:id="@+id/faq_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorPrimary"
+                        android:textColorLink="@color/colorPrimary"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:visibility="invisible"
+                        android:text="What's this?"/>
+
+                </RelativeLayout>
 
                 <View
                     style="@style/HorizontalDivider"
@@ -192,6 +229,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:gravity="center"
                                 android:checked="true"
                                 android:text="Pocket "/>
 
@@ -200,6 +238,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:gravity="center"
                                 android:text="Insurance "/>
 
                             <RadioButton
@@ -207,6 +246,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:gravity="center"
                                 android:text="Family "/>
 
                         </RadioGroup>
@@ -231,6 +271,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="42dp"
                                 android:gravity="start|center_vertical"
+                                android:maxLines="1"
                                 android:hint="Principal ID"
                                 android:background="@drawable/textview_background_no_background_color"
                                 android:entries="@array/select_service"
@@ -245,9 +286,9 @@
                                 android:id="@+id/client_id_text"
                                 android:layout_width="0dp"
                                 android:layout_height="42dp"
+                                android:maxLines="1"
                                 android:gravity="start|center_vertical"
                                 android:background="@drawable/textview_background_no_background_color"
-                                android:entries="@array/select_price"
                                 android:hint="Client ID"
                                 android:layout_weight="1"/>
 
@@ -277,6 +318,7 @@
                                 android:id="@+id/insurance_id_text"
                                 android:layout_width="0dp"
                                 android:layout_height="42dp"
+                                android:maxLines="1"
                                 android:gravity="start|center_vertical"
                                 android:background="@drawable/textview_background_no_background_color"
                                 android:hint="Insurance ID"
@@ -327,16 +369,6 @@
                                 android:textColor="@android:color/white"
                                 android:background="@drawable/action_button"
                                 android:text="Pay"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="bottom|end"
-                                android:layout_margin="12dp"
-                                android:textSize="12sp"
-                                android:textColor="@color/colorPrimary"
-                                android:textColorLink="@color/colorPrimary"
-                                android:text="What's this?"/>
 
                         </FrameLayout>
 
@@ -396,6 +428,8 @@
                             android:layout_gravity="center"
                             android:textSize="12sp"
                             android:layout_margin="3dp"
+                            android:autoLink="phone"
+                            android:textColorLink="@color/colorPrimary"
                             android:text=". . ."/>
 
                     </LinearLayout>
@@ -425,6 +459,8 @@
                             android:layout_gravity="center"
                             android:textSize="12sp"
                             android:layout_margin="3dp"
+                            android:autoLink="web"
+                            android:textColorLink="@color/colorPrimary"
                             android:text=". . ."/>
 
                     </LinearLayout>
@@ -457,6 +493,7 @@
             android:id="@+id/map_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             android:layout_marginBottom="20dp">
 
             <fragment

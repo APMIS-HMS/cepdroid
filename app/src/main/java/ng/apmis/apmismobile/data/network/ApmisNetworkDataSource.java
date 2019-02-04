@@ -92,7 +92,7 @@ public class ApmisNetworkDataSource {
     private MutableLiveData<BillManager> categoryBillManager;
     private MutableLiveData<Wallet> personWallet;
     private MutableLiveData<List<String>> paymentVerificationData;
-    private MutableLiveData<Patient> registeredPatient;
+    private MutableLiveData<String> registeredPatientFacilityId;
     private MutableLiveData<List<AppointmentType>> appointmentTypes;
     private MutableLiveData<PersonEntry> paidByPerson;
     private MutableLiveData<String> cardRemovalStatus;
@@ -128,7 +128,7 @@ public class ApmisNetworkDataSource {
         appointmentTypes = new MutableLiveData<>();
         paymentVerificationData = new MutableLiveData<>();
         paidByPerson = new MutableLiveData<>();
-        registeredPatient = new MutableLiveData<>();
+        registeredPatientFacilityId = new MutableLiveData<>();
         cardRemovalStatus = new MutableLiveData<>();
         hmos = new MutableLiveData<>();
 
@@ -411,7 +411,9 @@ public class ApmisNetworkDataSource {
                                            String serviceId, String category, String service, JSONObject coverObject){
         apmisExecutors.networkIO().execute(() -> {
             Log.d("Found", "Patient registration started");
-            new NetworkDataCalls(mContext).registerPatientInFacility(mContext, personId, facilityId, sharedPreferencesManager.getStoredUserAccessToken());
+            new NetworkDataCalls(mContext).registerPatientInFacility(mContext, personId, facilityId, coverType, cost,
+                    amountPaid, facilityServiceId, registrationCategoryId,
+                    serviceId, category, service, coverObject, sharedPreferencesManager.getStoredUserAccessToken());
         });
     }
 
@@ -494,8 +496,9 @@ public class ApmisNetworkDataSource {
         if (ids != null) {
             this.registeredFacilityIds.postValue(ids);
 
-            if (ids.size() == 0)
-                this.registeredFacilityIds = new MutableLiveData<>();
+            //TODO this is not a listed value, so no need to reset if empty
+            //if (ids.size() == 0)
+                //this.registeredFacilityIds = new MutableLiveData<>();
         }
 
         else {//set null if a null value was received, but post back the original value afterwards
@@ -927,6 +930,10 @@ public class ApmisNetworkDataSource {
         return paidByPerson;
     }
 
+    public void clearPaidByPersonData () {
+        paidByPerson = new MutableLiveData<>();
+    }
+
     public void setPaidByName(PersonEntry personEntry) {
         paidByPerson.postValue(personEntry);
     }
@@ -959,32 +966,32 @@ public class ApmisNetworkDataSource {
 
     //Patient registration
     public void clearPatientOnRegistration(){
-        registeredPatient = new MutableLiveData<>();
+        registeredPatientFacilityId = new MutableLiveData<>();
     }
 
-    public LiveData<Patient> registerPatient(String personId, String facilityId, String coverType, int cost,
+    public LiveData<String> registerPatient(String personId, String facilityId, String coverType, int cost,
                                              int amountPaid, String facilityServiceId, String registrationCategoryId,
                                              String serviceId, String category, String service, JSONObject coverObject){
         registerPatientInFacility(personId, facilityId, coverType, cost,
                 amountPaid, facilityServiceId, registrationCategoryId, serviceId, category, service, coverObject);
-        return registeredPatient;
+        return registeredPatientFacilityId;
     }
 
-    public void setRegisteredPatient(Patient patient){
-        if (patient != null) {
+    public void setRegisteredPatientFacility(String facilityId){
+        if (facilityId != null) {
             //quickly add the new facility id to avoid double registration
             if (registeredFacilityIds.getValue() != null) {
                 List<String> current = new ArrayList<>(registeredFacilityIds.getValue());
-                current.add(patient.getFacilityId());
+                current.add(facilityId);
                 registeredFacilityIds.postValue(current);
-                Log.e("Reg","added "+patient.getFacilityId());
+                Log.e("Reg","added "+facilityId);
             }
 
             //then refresh the facility list for the new facility the patient just registered in
             new NetworkDataCalls(mContext).fetchRegisteredFacilities(mContext, sharedPreferencesManager.getPersonId(), sharedPreferencesManager.getStoredUserAccessToken());
         }
 
-        registeredPatient.postValue(patient);
+        registeredPatientFacilityId.postValue(facilityId);
     }
 
     public void clearSingleton () {

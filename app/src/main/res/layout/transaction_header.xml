@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/background_color"
     android:paddingTop="8dp">
 
     <TextView
@@ -13,29 +14,26 @@
         android:textColor="#292929"
         android:textSize="14sp"
         android:layout_marginLeft="16dp"
-        android:layout_alignBottom="@id/select_month"
+        android:layout_alignBottom="@id/select_time_period"
         android:layout_marginStart="16dp" />
 
     <Spinner
-        android:id="@+id/select_month"
+        android:id="@+id/select_time_period"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/spinner_background_with_radius_black"
+        android:background="@drawable/spinner_background_no_background_color"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
-        tools:entries="@array/select_class"
-        android:entries="@array/select_class"
+        android:entries="@array/trans_history"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp" />
 
     <View
         android:id="@+id/divider"
+        style="@style/HorizontalDivider"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#f2f2f2"
-        android:layout_marginTop="8dp"
         android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

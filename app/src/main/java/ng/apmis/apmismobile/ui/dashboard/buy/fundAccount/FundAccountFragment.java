@@ -42,8 +42,8 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    @BindView(R.id.history_shimmer)
-    ShimmerFrameLayout transactionHistoryShimmer;
+//    @BindView(R.id.history_shimmer)
+//    ShimmerFrameLayout transactionHistoryShimmer;
 
     @BindView(R.id.beneficiary_shimmer)
     ShimmerFrameLayout beneficiaryShimmer;
@@ -67,7 +67,7 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
         View root = inflater.inflate(R.layout.fragment_buys, container, false);
         ButterKnife.bind(this, root);
 
-        transactionHistoryShimmer.startShimmer();
+        //transactionHistoryShimmer.startShimmer();
         beneficiaryShimmer.startShimmer();
 
         sharedPreferencesManager = new SharedPreferencesManager(getActivity());
@@ -83,16 +83,18 @@ public class FundAccountFragment extends Fragment implements FundAccountAdapter.
         transactionHistoryViewModelFactory = InjectorUtils.provideTransactionViewModelFactory(getActivity());
 
         transactionViewModel = ViewModelProviders.of(this, transactionHistoryViewModelFactory).get(TransactionViewModel.class);
-
         transactionViewModel.getPersonWallet(sharedPreferencesManager.getPersonId()).observe(this, wallet -> {
+
+            Log.e("Buy", "Requested Change");
 
             if (wallet != null){
                 adapter.setTransactionItems(wallet.getTransactions());
             } else {
-                adapter.setTransactionItems(new ArrayList<>());
+                adapter.setTransactionItems(null);
             }
-            transactionHistoryShimmer.stopShimmer();
-            transactionHistoryShimmer.setVisibility(View.INVISIBLE);
+
+            //transactionHistoryShimmer.stopShimmer();
+            //transactionHistoryShimmer.setVisibility(View.INVISIBLE);
         });
 
         listItems = new ArrayList<>();

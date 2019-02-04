@@ -1,9 +1,7 @@
 package ng.apmis.apmismobile.ui.dashboard.buy.fundAccount;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +16,9 @@ import android.widget.Spinner;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,7 +28,7 @@ import ng.apmis.apmismobile.data.database.fundAccount.Beneficiaries;
 import ng.apmis.apmismobile.data.database.personModel.Transaction;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.beneficiaries.BeneficiariesAdapter;
 import ng.apmis.apmismobile.ui.dashboard.buy.fundAccount.transactionHistory.TransactionHistoryAdapter;
-import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
+import ng.apmis.apmismobile.utilities.AppUtils;
 
 /**
  * Created by Thadeus-APMIS on 10/26/2018.
@@ -35,14 +36,19 @@ import ng.apmis.apmismobile.ui.dashboard.payment.FundWalletActivity;
 
 public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final int BENEFICIARIES = 2;
-    private final int TRANSACTION = 3;
     private final int BENEFICIARIES_HEADER = 0;
     private final int TRANSACTION_HEADER = 1;
+    private final int BENEFICIARIES = 2;
+    private final int TRANSACTION = 3;
+
+    private final static long[] TIME_PERIODS_IN_DAYS = {1, 7, 30, 92, 184, 365};
 
     private Context context;
     private ArrayList<Beneficiaries> beneficiaries;
     private ArrayList<Transaction> transactions;
+    private ArrayList<Transaction> segmentedTransactions;
+
+    boolean shouldDisplayActionViews;
 
     private OnFundWalletClickedListener mListener;
 
@@ -53,29 +59,47 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public FundAccountAdapter(Context context) {
         this.context = context;
-        this.beneficiaries = new ArrayList<>();
-        this.transactions = new ArrayList<>();
     }
 
     void setTransactionItems (List<Transaction> trxList) {
-        if (!this.transactions.isEmpty()) {
-            this.transactions = new ArrayList<>();
+        if (trxList == null){
+            trxList = new ArrayList<>();
+            //If the wallet failed to load, prevent actions like funding
+            shouldDisplayActionViews = false;
+        } else {
+            shouldDisplayActionViews = true;
         }
-        this.transactions.addAll(trxList);
+
+        transactions = new ArrayList<>(trxList);
+        segmentedTransactions = new ArrayList<>(truncateTransactionsWithDays(TIME_PERIODS_IN_DAYS[0], transactions));
         notifyDataSetChanged();
     }
 
     void setBeneficiaryItems (ArrayList<Beneficiaries> benList) {
-
-        if (!this.beneficiaries.isEmpty()) {
-            this.beneficiaries = new ArrayList<>();
-        }
-        this.beneficiaries.addAll(benList);
-        notifyDataSetChanged();
+        this.beneficiaries = new ArrayList<>(benList);
+        notifyItemChanged(1);
     }
 
     void instantiateFundWalletClickedListener(OnFundWalletClickedListener listener) {
         this.mListener = listener;
+    }
+
+    private List<Transaction> truncateTransactionsWithDays(long days, List<Transaction> transactions){
+        List<Transaction> truncatedTransactions = new ArrayList<>();
+
+        int i = 0;
+        Date today = new Date();
+        Date nDaysAgo = new Date(today.getTime() - (days * 1000L * 60L * 60L * 24L));
+
+        while (i < transactions.size()){
+            if (AppUtils.dbStringToLocalDate(transactions.get(i).getCreatedAt()).after(nDaysAgo))
+                truncatedTransactions.add(transactions.get(i));
+            ++i;
+        }
+
+        Log.e("Buy", truncatedTransactions.size()+" is size");
+
+        return truncatedTransactions;
     }
 
 
@@ -124,11 +148,27 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder.getItemViewType() == BENEFICIARIES) {
+        if (holder.getItemViewType() == BENEFICIARIES_HEADER){
+            if (transactions != null && shouldDisplayActionViews) {
+                ((BeneficiariesHeaderViewHolder)holder).fundWalletButton.setVisibility(View.VISIBLE);
+            } else {
+                ((BeneficiariesHeaderViewHolder)holder).fundWalletButton.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        else if (holder.getItemViewType() == TRANSACTION_HEADER){
+            if (transactions != null && shouldDisplayActionViews) {
+                ((TransactionHistoryHeaderViewHolder)holder).selectTimePeriodSpinner.setVisibility(View.VISIBLE);
+            } else {
+                ((TransactionHistoryHeaderViewHolder)holder).selectTimePeriodSpinner.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        else if (holder.getItemViewType() == BENEFICIARIES) {
             beneficiaryViewHolder((BeneficiariesViewHolder) holder);
         }
 
-        if (holder.getItemViewType() == TRANSACTION) {
+        else if (holder.getItemViewType() == TRANSACTION) {
             transactionViewHolder((TransactionHistoryViewHolder) holder);
         }
 
@@ -146,13 +186,29 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void transactionViewHolder(TransactionHistoryViewHolder holder) {
-        if (transactions.isEmpty()) {
+        if (transactions == null){
+            holder.transactionHistoryShimmer.startShimmer();
+            return;
+        }
+
+        holder.transactionHistoryShimmer.stopShimmer();
+        holder.transactionHistoryShimmer.setVisibility(View.GONE);
+
+        if (segmentedTransactions.isEmpty()) {
             holder.emptyView.setVisibility(View.VISIBLE);
             holder.transactionRecycler.setVisibility(View.GONE);
+
         } else {
-            TransactionHistoryAdapter transactionHistoryAdapter = new TransactionHistoryAdapter(context, transactions);
+            holder.emptyView.setVisibility(View.GONE);
+            holder.transactionRecycler.setVisibility(View.VISIBLE);
+
+            //descending order of dates, from newest to oldest
+            Collections.sort(segmentedTransactions, (o1, o2) -> o2.compareTo(o1));
+
+            TransactionHistoryAdapter transactionHistoryAdapter = new TransactionHistoryAdapter(context, segmentedTransactions);
             holder.transactionRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
             holder.transactionRecycler.setAdapter(transactionHistoryAdapter);
+            transactionHistoryAdapter.notifyDataSetChanged();
             holder.transactionRecycler.setNestedScrollingEnabled(false);
         }
     }
@@ -166,22 +222,35 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         BeneficiariesHeaderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
             fundWalletButton.setOnClickListener(v -> mListener.onFundWalletClicked());
         }
     }
 
     class TransactionHistoryHeaderViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.select_month)
-        Spinner selectMonthSpinner;
+        @BindView(R.id.select_time_period)
+        Spinner selectTimePeriodSpinner;
 
         TransactionHistoryHeaderViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            selectMonthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            if (transactions != null && shouldDisplayActionViews) {
+                selectTimePeriodSpinner.setVisibility(View.VISIBLE);
+            } else {
+                selectTimePeriodSpinner.setVisibility(View.INVISIBLE);
+            }
+
+            selectTimePeriodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                    if (transactions != null) {
+                        long days = TIME_PERIODS_IN_DAYS[position];
+                        segmentedTransactions.clear();
+                        segmentedTransactions.addAll(new ArrayList<>(truncateTransactionsWithDays(days, transactions)));
+                    }
+                    notifyItemChanged(3);
                 }
 
                 @Override
@@ -191,7 +260,6 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             });
         }
     }
-
 
     class BeneficiariesViewHolder extends RecyclerView.ViewHolder {
 
@@ -205,13 +273,16 @@ public class FundAccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     }
 
-
     class TransactionHistoryViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.transaction_recycler)
         RecyclerView transactionRecycler;
+
         @BindView(R.id.empty_view)
-        CardView emptyView;
+        RelativeLayout emptyView;
+
+        @BindView(R.id.history_shimmer)
+        ShimmerFrameLayout transactionHistoryShimmer;
 
         TransactionHistoryViewHolder(View itemView) {
             super(itemView);

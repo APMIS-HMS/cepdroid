@@ -170,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="50dp"
-                    android:src="@drawable/ill_help"
+                    android:src="@drawable/ill_help_bot"
                     android:clickable="true"
                     android:focusable="true"/>
 
@@ -179,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginBottom="10dp"
-                    android:text="Help"
+                    android:text="Help Bot"
                     android:clickable="false"
                     android:focusable="false"/>
 
@@ -223,6 +223,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="0dp"
+            android:textStyle="bold"
             android:textSize="18sp"
             android:text="Wednesday, 28th November, 2018"/>
 

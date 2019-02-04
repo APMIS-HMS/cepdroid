@@ -310,7 +310,7 @@ public class Appointment implements Comparable<Appointment>{
         long date1 = AppUtils.dbStringToLocalDate(getStartDate()).getTime();
         long date2 = AppUtils.dbStringToLocalDate(o.getStartDate()).getTime();
 
-        //descending order
+
         return Long.compare(date1, date2);
     }
 }

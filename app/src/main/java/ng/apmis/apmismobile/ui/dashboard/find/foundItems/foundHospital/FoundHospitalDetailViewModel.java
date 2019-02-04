@@ -67,7 +67,7 @@ public class FoundHospitalDetailViewModel extends ViewModel {
         apmisRepository.getNetworkDataSource().clearPatientOnRegistration();
     }
 
-    public LiveData<Patient> registerPatient(String personId, String facilityId, String coverType, int cost,
+    public LiveData<String> registerPatient(String personId, String facilityId, String coverType, int cost,
                                              int amountPaid, String facilityServiceId, String registrationCategoryId,
                                              String serviceId, String category, String service, JSONObject coverObject){
 

@@ -11,9 +11,11 @@
         android:layout_margin="8dp">
 
         <LinearLayout
+            android:id="@+id/paid_by_view"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:orientation="vertical">
 
             <TextView

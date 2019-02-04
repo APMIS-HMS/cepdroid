@@ -5,19 +5,19 @@
     <item android:id="@+id/home_menu"
         android:title="@string/home"
         app:showAsAction="always"
-        android:icon="@mipmap/ic_home" />
+        android:icon="@drawable/btm_nav_home" />
 
     <item android:id="@+id/view_menu"
         android:title="@string/view"
         app:showAsAction="always"
         android:enabled="true"
-        android:icon="@drawable/ic_view" />
+        android:icon="@drawable/btm_nav_view" />
 
     <item android:id="@+id/buy_menu"
         android:title="@string/buy"
         android:enabled="true"
         app:showAsAction="always"
-        android:icon="@mipmap/ic_naira" />
+        android:icon="@drawable/btm_nav_account" />
 
   <!--  <item android:id="@+id/chat_menu"
         android:title="@string/chat"
@@ -27,6 +27,6 @@
     <item android:id="@+id/find_menu"
         android:title="@string/find"
         app:showAsAction="always"
-        android:icon="@drawable/ic_find" />
+        android:icon="@drawable/btm_nav_search" />
 
 </menu>

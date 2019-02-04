@@ -37,6 +37,7 @@ import ng.apmis.apmismobile.ui.dashboard.healthProfile.HealthProfileFragment;
 import ng.apmis.apmismobile.ui.dashboard.places.FacilityLocationFragment;
 import ng.apmis.apmismobile.ui.dashboard.profile.ProfileActivity;
 import ng.apmis.apmismobile.ui.dashboard.view.ViewFragment;
+import ng.apmis.apmismobile.utilities.AppUtils;
 import ng.apmis.apmismobile.utilities.BottomNavigationViewHelper;
 import ng.apmis.apmismobile.utilities.Constants;
 import ng.apmis.apmismobile.utilities.InjectorUtils;
@@ -310,7 +311,7 @@ public class DashboardActivity extends AppCompatActivity implements DashboardFra
                 placeFragment(new FacilityLocationFragment(), true);
                 break;
             case Constants.HELP:
-                placeFragment(new ChatFragment(), true);
+                AppUtils.showShortToast(this, "ChatBot not available now");
                 break;
             default:
                 break;

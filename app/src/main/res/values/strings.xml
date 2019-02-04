@@ -209,6 +209,15 @@
         <item>Select Price</item>
     </string-array>
 
+    <string-array name="trans_history">
+        <item>Last 24 hours</item>
+        <item>Last 7 days</item>
+        <item>Last 30 days</item>
+        <item>Last 3 months</item>
+        <item>Last 6 months</item>
+        <item>Last Year</item>
+    </string-array>
+
     <string-array name="filter">
         <item>Hospital</item>
         <item>Doctor</item>

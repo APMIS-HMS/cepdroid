@@ -106,7 +106,11 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
                         latLng = new LatLng(facilityLocations[i].getAddress().getGeometry().getLocation().getLat(), facilityLocations[i].getAddress().getGeometry().getLocation().getLng());
                         facilityAddresses[i] = facilityLocations[i].getAddress();
                         if (gMap != null) {
-                            gMap.addMarker(new MarkerOptions().position(latLng).title(facilityLocations[i].getName()).snippet(facilityLocations[i].getId()));
+                            MarkerOptions options = new MarkerOptions().position(latLng)
+                                    .title(facilityLocations[i].getName())
+                                    .snippet("Click here to view");
+
+                            gMap.addMarker(options).setTag(facilityLocations[i].getId());
 
                             gMap.setOnInfoWindowClickListener(this);
                         }
@@ -235,8 +239,8 @@ public class FacilityLocationFragment extends Fragment implements OnMapReadyCall
     @Override
     public void onInfoWindowClick(Marker marker) {
         Intent intent = new Intent(getActivity(), FoundItemsActivity.class);
-        intent.putExtra("itemId", facilityId);
+        intent.putExtra("itemId", String.valueOf(marker.getTag()));
         intent.putExtra("itemName", marker.getTitle());
-        getActivity().startActivity(intent);
+        startActivity(intent);
     }
 }

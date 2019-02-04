@@ -15,7 +15,6 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +39,6 @@ import ng.apmis.apmismobile.data.database.cardModel.Card;
 import ng.apmis.apmismobile.data.database.diagnosesModel.LabRequest;
 import ng.apmis.apmismobile.data.database.documentationModel.Documentation;
 import ng.apmis.apmismobile.data.database.facilityModel.Category;
-import ng.apmis.apmismobile.data.database.facilityModel.Clinic;
 import ng.apmis.apmismobile.data.database.facilityModel.ClinicSchedule;
 import ng.apmis.apmismobile.data.database.facilityModel.Employee;
 import ng.apmis.apmismobile.data.database.facilityModel.Facility;
@@ -1763,32 +1761,55 @@ public final class NetworkDataCalls {
      * @param facilityId The id of the facility the person is being registered into
      * @param accessToken The security access token obtained from login
      */
-    public void registerPatientInFacility(Context context, String personId, String facilityId, String accessToken){
+    public void registerPatientInFacility(Context context, String personId, String facilityId, String coverType, int cost,
+                                          int amountPaid, String facilityServiceId, String registrationCategoryId,
+                                          String serviceId, String category, String service, JSONObject coverObject, String accessToken){
         Log.d("Reg patient", "Started registration");
 
         JSONObject params = new JSONObject();
         try {
             params.put("personId", personId);
             params.put("facilityId", facilityId);
-            params.put("isActive", true);
+            params.put("coverType", coverType);
+            params.put("cost", cost);
+            params.put("amountPaid", amountPaid);
+            params.put("facilityServiceId", facilityServiceId);
+            params.put("serviceId", serviceId);
+            params.put("categoryId", registrationCategoryId);
+            params.put("service", service);
+            params.put("category", category);
+            params.put("cover", coverObject);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        JsonObjectRequest registrationRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "patients", params, response -> {
+        Log.e("Find", params.toString());
+
+
+        JsonObjectRequest registrationRequest = new JsonObjectRequest(Request.Method.POST,
+                BASE_URL + "create-patient-bills", params, response -> {
+
+            String registrationResponse = "";
 
             Log.v("Reg patient response", String.valueOf(response));
 
-            Patient registrationResponse = gson.fromJson(response.toString(), Patient.class);
+            try {
+                registrationResponse = response.getString("status");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-            InjectorUtils.provideNetworkData(context).setRegisteredPatient(registrationResponse);
+            if (registrationResponse.equals("success"))
+                InjectorUtils.provideNetworkData(context).setRegisteredPatientFacility(facilityId);
+            else
+                InjectorUtils.provideNetworkData(context).setRegisteredPatientFacility(null);
 
         }, (VolleyError error) -> {
 
             Log.e("Reg patient error", String.valueOf(error.getMessage()));
             //Return a null object
-            InjectorUtils.provideNetworkData(context).setRegisteredPatient(null);
+            InjectorUtils.provideNetworkData(context).setRegisteredPatientFacility(null);
 
         }) {
 

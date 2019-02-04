@@ -109,7 +109,6 @@ public class BuyFragment extends android.support.v4.app.Fragment implements Fund
 
     @Override
     public void onWalletFunded() {
-        buyViewModel.getPersonWallet(personId).removeObservers(this);
-        buyViewModel.getPersonWallet(personId).observe(this, walletObserver);
+        buyViewModel.reFetchWallet(personId);
     }
 }

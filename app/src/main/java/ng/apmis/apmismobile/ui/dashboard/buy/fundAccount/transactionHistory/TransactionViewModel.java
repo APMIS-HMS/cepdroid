@@ -24,4 +24,8 @@ public class TransactionViewModel extends ViewModel {
         return wallet;
     }
 
+    public void reFetchWallet(String personId){
+        wallet = apmisNetworkDataSource.getPersonWallet(personId, true);
+    }
+
 }

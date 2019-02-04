@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -85,6 +87,8 @@ public class FoundHospitalDetailFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private String facilityId, name, email;
 
+    private String insuranceID, principalID, clientID;
+
     private FoundHospitalDetailViewModel foundHospitalViewModel;
 
     @BindView(R.id.logo_image)
@@ -99,6 +103,9 @@ public class FoundHospitalDetailFragment extends Fragment {
     @BindView(R.id.email_text)
     TextView emailTextView;
 
+    @BindView(R.id.reg_no_text)
+    TextView regNoTextView;
+
     @BindView(R.id.phone_text)
     TextView phoneText;
 
@@ -110,6 +117,9 @@ public class FoundHospitalDetailFragment extends Fragment {
 
     @BindView(R.id.price_loader)
     ProgressBar priceLoader;
+
+    @BindView(R.id.faq_text)
+    TextView faqText;
 
     @BindView(R.id.register_button)
     Button registerButton;
@@ -153,6 +163,14 @@ public class FoundHospitalDetailFragment extends Fragment {
     @BindView(R.id.hmo_spinner)
     Spinner hmoSpinner;
 
+    @BindView(R.id.pid_text)
+    EditText principalIdText;
+
+    @BindView(R.id.insurance_id_text)
+    EditText insuranceIdText;
+
+    @BindView(R.id.client_id_text)
+    EditText clientIdText;
 
     SupportMapFragment mapFragment;
 
@@ -177,7 +195,7 @@ public class FoundHospitalDetailFragment extends Fragment {
     private SharedPreferencesManager pref;
 
     private Observer<Wallet> walletObserver;
-    private Observer<Patient> patientObserver;
+    private Observer<String> patientFacilityIdObserver;
     private long walletFunds;
 
     private ProgressDialog progressDialog;
@@ -243,6 +261,7 @@ public class FoundHospitalDetailFragment extends Fragment {
             registrationBillManager = null;
             TransitionManager.beginDelayedTransition(mainLayout);
             priceServiceLayout.setVisibility(View.VISIBLE);
+            faqText.setVisibility(View.VISIBLE);
             v.setVisibility(View.INVISIBLE);
             initBillManagerObserver();
         });
@@ -367,15 +386,26 @@ public class FoundHospitalDetailFragment extends Fragment {
                 if (facility.getEmail() != null)
                     emailTextView.setText(facility.getEmail());
 
+                if (facility.getCacNo() != null)
+                    regNoTextView.setText(facility.getCacNo());
+                else
+                    regNoTextView.setText("Unavailable");
+
                 if (facility.getPrimaryContactPhoneNo() != null)
                     phoneText.setText(facility.getPrimaryContactPhoneNo());
+                else
+                    phoneText.setText("Unavailable");
 
                 if (facility.getWebsite() != null)
                     websiteText.setText(facility.getWebsite());
+                else
+                    websiteText.setText("Unavailable");
 
                 try {
                     addressText.setText(facility.getAddress().getDescription());
-                } catch (Exception ignored){}
+                } catch (Exception e){
+                    addressText.setText("Unavailable");
+                }
 
                 if (facility.getLogoObject() != null) {
 
@@ -441,8 +471,8 @@ public class FoundHospitalDetailFragment extends Fragment {
             }
         };
 
-        patientObserver = patient -> {
-            if (patient != null){
+        patientFacilityIdObserver = patientFacilityId -> {
+            if (patientFacilityId != null){
                 //Show patient completion dialog
                 hideProgressDialog();
                 showRegistrationCompletedDialog();
@@ -464,10 +494,31 @@ public class FoundHospitalDetailFragment extends Fragment {
     }
 
     private void showRegistrationCompletedDialog(){
+        String successMessage;
+
+        switch (coverType){
+            case COVER_TYPE_WALLET:
+                successMessage = "You have registered as a patient in this Hospital." +
+                        "\nWould you like to set an appointment now?";
+                break;
+            case COVER_TYPE_INSURANCE:
+                successMessage = "You have been registered as a patient in this Hospital." +
+                        "\nPlease await a confirmation of your insurance service  from the facility";
+                break;
+            case COVER_TYPE_FAMILY:
+                successMessage = "You have been registered as a patient in this Hospital." +
+                        "\nPlease await a confirmation of your insurance service  from the facility";
+                break;
+            default:
+                successMessage = "You have registered as a patient in this Hospital." +
+                        "\nWould you like to set an appointment now?";
+                break;
+        }
+
         new android.support.v7.app.AlertDialog.Builder(getContext())
                 .setTitle("Success")
                 .setCancelable(false)
-                .setMessage("You have registered as a patient in this Hospital.\nWould you like to set an appointment now?")
+                .setMessage(successMessage)
                 .setPositiveButton("Yes", (dialog, which) -> {
                     dialog.dismiss();
                     getActivity().onBackPressed();
@@ -482,7 +533,7 @@ public class FoundHospitalDetailFragment extends Fragment {
     private void displayErrorDialog(){
         new android.support.v7.app.AlertDialog.Builder(getContext())
                 .setTitle("Failed")
-                .setMessage("Could not create appointment.\nPlease try again")
+                .setMessage("Unable to register in this facility.\nPlease try again")
                 .setPositiveButton("Close", (dialog, which) -> {
                     hideProgressDialog();
                     dialog.dismiss();
@@ -566,7 +617,8 @@ public class FoundHospitalDetailFragment extends Fragment {
                 walletFunds = wallet.getBalance();
                 walletText.setText(String.format("₦%s", AppUtils.formatNumberWithCommas(walletFunds)));
 
-                boolean isMoneyEnough = walletFunds >= selectedPrice.getPrice();
+                boolean isMoneyEnough = walletFunds >= selectedPrice.getPrice()
+                        || coverType.equals(COVER_TYPE_INSURANCE) || coverType.equals(COVER_TYPE_FAMILY);
 
                 if (isMoneyEnough){
                     registerOrFundButton.setText("Register");
@@ -604,6 +656,36 @@ public class FoundHospitalDetailFragment extends Fragment {
     }
 
     private void attemptFacilityRegistration() throws JSONException {
+
+        if (coverType.equals(COVER_TYPE_INSURANCE)) {
+            insuranceID = insuranceIdText.getText().toString();
+
+            if (hmos == null || hmos.size() == 0){
+                AppUtils.showShortToast(getContext(), "No available HMO's for this Hospital");
+                return;
+            }
+
+            if (TextUtils.isEmpty(insuranceID)){
+                insuranceIdText.setError("Please enter your insurance ID");
+                return;
+            }
+        }
+
+        if (coverType.equals(COVER_TYPE_FAMILY)) {
+            principalID = principalIdText.getText().toString();
+            clientID = clientIdText.getText().toString();
+
+            if (TextUtils.isEmpty(principalID)){
+                principalIdText.setError("Please enter your principal ID");
+                return;
+            }
+
+            if (TextUtils.isEmpty(clientID)){
+                clientIdText.setError("Please enter your client ID");
+                return;
+            }
+        }
+
         showProgressDialog("Registering", "Please wait while we connect you to "+name);
 
         foundHospitalViewModel.clearPatientOnRegistration();
@@ -629,16 +711,16 @@ public class FoundHospitalDetailFragment extends Fragment {
             case COVER_TYPE_INSURANCE:
                 coverObject.put("id", selectedHMO.getHmo());
                 coverObject.put("name", selectedHMO.getHmoName());
-                coverObject.put("fileNo", 0);
+                coverObject.put("fileNo", insuranceID);
                 break;
             case COVER_TYPE_FAMILY:
-                coverObject.put("fileNo", 0);
+                coverObject.put("fileNo", principalID);
                 break;
         }
 
         foundHospitalViewModel.registerPatient(personId, facilityId, coverType, cost,
                 amountPaid, facilityServiceId, registrationCategoryId, serviceId, category, service, coverObject)
-                .observe(this, patientObserver);
+                .observe(this, patientFacilityIdObserver);
     }
 
     private void showProgressDialog(String title, String message){

@@ -29,6 +29,16 @@ public class FacilityAdapter extends ArrayAdapter {
         mFacilities = facilities;
     }
 
+    public void addAllFacilities(List<Facility> clinics){
+        mFacilities.addAll(clinics);
+        notifyDataSetChanged();
+    }
+
+    public void clear(){
+        mFacilities.clear();
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public int getCount() {

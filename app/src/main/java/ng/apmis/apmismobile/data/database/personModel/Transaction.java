@@ -1,9 +1,13 @@
 package ng.apmis.apmismobile.data.database.personModel;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Transaction {
+import ng.apmis.apmismobile.utilities.AppUtils;
+
+public class Transaction implements Comparable<Transaction>{
 
     @SerializedName("transactionType")
     @Expose
@@ -202,5 +206,14 @@ public class Transaction {
                 ", sourceId='" + sourceId + '\'' +
                 ", id='" + id + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(@NonNull Transaction o) {
+        long date1 = AppUtils.dbStringToLocalDate(getCreatedAt()).getTime();
+        long date2 = AppUtils.dbStringToLocalDate(o.getCreatedAt()).getTime();
+
+        //descending order
+        return Long.compare(date1, date2);
     }
 }

@@ -67,7 +67,7 @@ public class FoundItemsActivity extends AppCompatActivity implements FoundItemsL
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, FoundHospitalDetailFragment.newInstance(id, name, null))
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
             return;
         }
