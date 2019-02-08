@@ -8,7 +8,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +100,7 @@ public class BuyFragment extends android.support.v4.app.Fragment implements Fund
     @Override
     public void onResume() {
         if (getActivity() != null) {
-            ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.ACCOUNT, true);
+            ((DashboardActivity) getActivity()).setToolBarTitleAndBottomNavVisibility(Constants.BUY, true);
             ((DashboardActivity)getActivity()).mBottomNav.getMenu().findItem(R.id.buy_menu).setChecked(true);
         }
         super.onResume();

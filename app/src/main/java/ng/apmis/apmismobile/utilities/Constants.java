@@ -12,7 +12,7 @@ public class Constants {
     public final static String VITALS = "Vitals";
     public final static String PRESCRIPTION = "Prescriptions";
     public final static String INVESTIGATIONS = "Investigations";
-    public final static String ACCOUNT = "Account";
+    public final static String BUY = "Buy";
     public final static String VIEW = "View";
     public final static String CHAT = "Chat";
     public final static String SEARCH = "Search";
